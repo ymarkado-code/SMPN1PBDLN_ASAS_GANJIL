@@ -546,33 +546,39 @@
         };
 
         window.loadManajemenJadwal = function(forceRefresh = false) {
-            window.currentRoute = 'jadwal';
-            window.renderJadwalUI(window.appData.jadwal, !window.appData.isFetched.jadwal || forceRefresh);
-            if (!window.appData.isFetched.jadwal || forceRefresh) {
-                const queries = [sbClient7.from('jadwal').select('*')];
-                if (sbClient8 !== sbClient7) queries.push(sbClient8.from('jadwal').select('*'));
-                if (sbClient9 !== sbClient7) queries.push(sbClient9.from('jadwal').select('*'));
+        window.currentRoute = 'jadwal';
+        window.renderJadwalUI(window.appData.jadwal, !window.appData.isFetched.jadwal || forceRefresh);
+        if (!window.appData.isFetched.jadwal || forceRefresh) {
+            const queries = [sbClient7.from('jadwal').select('*')];
+            if (sbClient8 !== sbClient7) queries.push(sbClient8.from('jadwal').select('*'));
+            if (sbClient9 !== sbClient7) queries.push(sbClient9.from('jadwal').select('*'));
 
-                Promise.allSettled(queries).then(results => {
-                let newData = []; results.forEach(res => { if(res.status === 'fulfilled' && res.value.data) newData.push(...res.value.data); });
-                window.appData.jadwal = newData; window.appData.isFetched.jadwal = true;
-                if(window.currentRoute === 'jadwal') window.renderJadwalUI(window.appData.jadwal, false);
-            });
-        }
+            Promise.allSettled(queries).then(results => {
+            let newData = []; results.forEach(res => { if(res.status === 'fulfilled' && res.value.data) newData.push(...res.value.data); });
+            window.appData.jadwal = newData; window.appData.isFetched.jadwal = true;
+            if(window.currentRoute === 'jadwal') window.renderJadwalUI(window.appData.jadwal, false);
+        });
+    }
     };
 
     window.toggleStatusJadwal = async function(id, currentStatus, tingkat) { 
         const newStatus = currentStatus === 'Aktif' ? 'Tidak Aktif' : 'Aktif'; 
         try { 
-            const db = getDb(tingkat); 
-            const { data, error } = await db.from('jadwal').update({ status: newStatus }).eq('id', id).select(); 
+            let db = getDb(tingkat); 
+            let { data, error } = await db.from('jadwal').update({ status: newStatus }).eq('id', id).select(); 
             if (error) throw error;
+            // PENCARIAN CERDAS: Jika data tidak ditemukan di Server 8/9, cari di Server 7 (Data Lama)
+            if ((!data || data.length === 0) && db !== sbClient7) {
+                const fallback = await sbClient7.from('jadwal').update({ status: newStatus }).eq('id', id).select();
+                data = fallback.data; error = fallback.error; if (error) throw error;
+            }
             if (!data || data.length === 0) throw new Error("Akses ditolak (RLS).");
+            
             window.loadManajemenJadwal(true); 
             showNotification(`Status jadwal berhasil diubah menjadi ${newStatus}!`);
         } catch(e) {
             showNotification(`Gagal mengubah status: ${e.message}`);
-            window.loadManajemenJadwal(true); // Paksa muat ulang dari server karena gagal
+            window.loadManajemenJadwal(true); 
         } 
     };
     
@@ -580,10 +586,16 @@
         if(confirm("Yakin ingin menghapus jadwal ujian ini secara permanen?")) { 
             const btn = e ? e.currentTarget : null; const ori = btn ? btn.innerHTML : ''; if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
             try { 
-                const db = getDb(tingkat); 
-                const { data, error } = await db.from('jadwal').delete().eq('id', id).select(); 
+                let db = getDb(tingkat); 
+                let { data, error } = await db.from('jadwal').delete().eq('id', id).select(); 
                 if(error) throw error; 
+                // PENCARIAN CERDAS: Jika gagal dihapus dari Server 8/9, paksa hapus dari Server 7
+                if ((!data || data.length === 0) && db !== sbClient7) {
+                    const fallback = await sbClient7.from('jadwal').delete().eq('id', id).select();
+                    data = fallback.data; error = fallback.error; if(error) throw error;
+                }
                 if(!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS).");
+                
                 window.loadManajemenJadwal(true); 
                 showNotification('Jadwal Ujian berhasil dihapus.'); 
             } catch(err){ 
@@ -609,31 +621,40 @@
         };
 
         window.openEditExamModal = function(id, tingkat) {
-            const j = window.appData.jadwal.find(x => String(x.id) === String(id) && String(x.tingkat) === String(tingkat));
-            if(!j) return showNotification("Data jadwal tidak ditemukan");
-            
-            let modal = document.getElementById('edit-exam-modal'); 
-            if (!modal) { modal = document.createElement('div'); modal.id = 'edit-exam-modal'; modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 p-4'; document.body.appendChild(modal); }
-            
-            modal.innerHTML = `<div class="glass-card-dark p-6 md:p-8 rounded-3xl max-w-md w-full border border-slate-700 shadow-2xl"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold text-white"><i class="fa-solid fa-pen-to-square mr-2 text-amber-400"></i>Edit Jadwal Ujian</h3><button onclick="document.getElementById('edit-exam-modal').classList.add('hidden')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button></div><form onsubmit="window.handleUpdateExam(event, '${id}', '${tingkat}')" class="space-y-4 text-sm text-left"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Tanggal Pelaksanaan</label><input type="date" id="edit-exam-date" required value="${j.tanggal}" class="w-full px-4 py-3 rounded-xl glass-input text-slate-200"></div><div class="grid grid-cols-2 gap-3"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Tingkat</label><select id="edit-exam-tingkat" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900"><option value="7" ${j.tingkat==='7'?'selected':''}>Kelas 7</option><option value="8" ${j.tingkat==='8'?'selected':''}>Kelas 8</option><option value="9" ${j.tingkat==='9'?'selected':''}>Kelas 9</option></select></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Durasi (Menit)</label><input type="number" id="edit-exam-durasi" required min="10" value="${j.durasi||90}" class="w-full px-4 py-3 rounded-xl glass-input"></div></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Mata Pelajaran</label><select id="edit-exam-mapel" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900">${window.listMapel.map(m=>`<option value="${m}" ${j.mapel===m?'selected':''}>${m}</option>`).join('')}</select></div><div class="grid grid-cols-2 gap-3"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Token Pengawas</label><div class="flex gap-2"><input type="text" id="edit-exam-token" required value="${j.token}" class="w-full px-4 py-3 rounded-xl glass-input font-mono font-bold uppercase text-amber-400 text-center tracking-widest"><button type="button" onclick="document.getElementById('edit-exam-token').value = Array.from({length:5},()=>'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.charAt(Math.floor(Math.random()*36))).join('')" class="px-4 py-3 bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 rounded-xl hover:bg-indigo-600/30 transition"><i class="fa-solid fa-rotate"></i></button></div></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Status Ujian</label><select id="edit-exam-status" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900 font-bold ${j.status === 'Aktif' ? 'text-emerald-400' : 'text-red-400'}"><option value="Aktif" ${j.status === 'Aktif' ? 'selected' : ''} class="text-emerald-400">Aktif</option><option value="Tidak Aktif" ${j.status !== 'Aktif' ? 'selected' : ''} class="text-red-400">Tidak Aktif</option></select></div></div><div class="pt-4"><button type="submit" class="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl shadow-lg text-xs uppercase tracking-wider transition">Simpan Perubahan</button></div></form></div>`;
-            modal.classList.remove('hidden');
-        };
+        const j = window.appData.jadwal.find(x => String(x.id) === String(id) && String(x.tingkat) === String(tingkat));
+        if(!j) return showNotification("Data jadwal tidak ditemukan");
+        
+        let modal = document.getElementById('edit-exam-modal'); 
+        if (!modal) { modal = document.createElement('div'); modal.id = 'edit-exam-modal'; modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 p-4'; document.body.appendChild(modal); }
+        
+        modal.innerHTML = `<div class="glass-card-dark p-6 md:p-8 rounded-3xl max-w-md w-full border border-slate-700 shadow-2xl"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold text-white"><i class="fa-solid fa-pen-to-square mr-2 text-amber-400"></i>Edit Jadwal Ujian</h3><button onclick="document.getElementById('edit-exam-modal').classList.add('hidden')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button></div><form onsubmit="window.handleUpdateExam(event, '${id}', '${tingkat}')" class="space-y-4 text-sm text-left"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Tanggal Pelaksanaan</label><input type="date" id="edit-exam-date" required value="${j.tanggal}" class="w-full px-4 py-3 rounded-xl glass-input text-slate-200"></div><div class="grid grid-cols-2 gap-3"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Tingkat</label><select id="edit-exam-tingkat" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900"><option value="7" ${j.tingkat==='7'?'selected':''}>Kelas 7</option><option value="8" ${j.tingkat==='8'?'selected':''}>Kelas 8</option><option value="9" ${j.tingkat==='9'?'selected':''}>Kelas 9</option></select></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Durasi (Menit)</label><input type="number" id="edit-exam-durasi" required min="10" value="${j.durasi||90}" class="w-full px-4 py-3 rounded-xl glass-input"></div></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Mata Pelajaran</label><select id="edit-exam-mapel" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900">${window.listMapel.map(m=>`<option value="${m}" ${j.mapel===m?'selected':''}>${m}</option>`).join('')}</select></div><div class="grid grid-cols-2 gap-3"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Token Pengawas</label><div class="flex gap-2"><input type="text" id="edit-exam-token" required value="${j.token}" class="w-full px-4 py-3 rounded-xl glass-input font-mono font-bold uppercase text-amber-400 text-center tracking-widest"><button type="button" onclick="document.getElementById('edit-exam-token').value = Array.from({length:5},()=>'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.charAt(Math.floor(Math.random()*36))).join('')" class="px-4 py-3 bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 rounded-xl hover:bg-indigo-600/30 transition"><i class="fa-solid fa-rotate"></i></button></div></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Status Ujian</label><select id="edit-exam-status" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900 font-bold ${j.status === 'Aktif' ? 'text-emerald-400' : 'text-red-400'}"><option value="Aktif" ${j.status === 'Aktif' ? 'selected' : ''} class="text-emerald-400">Aktif</option><option value="Tidak Aktif" ${j.status !== 'Aktif' ? 'selected' : ''} class="text-red-400">Tidak Aktif</option></select></div></div><div class="pt-4"><button type="submit" class="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl shadow-lg text-xs uppercase tracking-wider transition">Simpan Perubahan</button></div></form></div>`;
+        modal.classList.remove('hidden');
+    };
 
-        window.handleUpdateExam = async function(e, id, oldTingkat) {
+    window.handleUpdateExam = async function(e, id, oldTingkat) {
         e.preventDefault(); const btn = e.target.querySelector('button'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...'; btn.disabled = true;
         const tk = document.getElementById('edit-exam-tingkat').value; const dt = new Date(document.getElementById('edit-exam-date').value);
         const payload = { hari: ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][dt.getDay()], tanggal: document.getElementById('edit-exam-date').value, mapel: document.getElementById('edit-exam-mapel').value, tingkat: tk, durasi: parseInt(document.getElementById('edit-exam-durasi').value)||90, token: document.getElementById('edit-exam-token').value.trim().toUpperCase(), status: document.getElementById('edit-exam-status').value };
         
         try { 
             if(oldTingkat === tk) { 
-                const db = getDb(tk); 
-                const { data, error } = await db.from('jadwal').update(payload).eq('id', id).select(); 
+                let db = getDb(tk); 
+                let { data, error } = await db.from('jadwal').update(payload).eq('id', id).select(); 
                 if(error) throw error; 
+                // PENCARIAN CERDAS: Cari di Server 7 jika tidak ketemu
+                if((!data || data.length === 0) && db !== sbClient7) {
+                    const fb = await sbClient7.from('jadwal').update(payload).eq('id', id).select();
+                    data = fb.data; error = fb.error; if(error) throw error;
+                }
                 if(!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS).");
             } else { 
-                const dbOld = getDb(oldTingkat); 
-                const { data: dataOld, error: errOld } = await dbOld.from('jadwal').delete().eq('id', id).select(); 
+                let dbOld = getDb(oldTingkat); 
+                let { data: dataOld, error: errOld } = await dbOld.from('jadwal').delete().eq('id', id).select(); 
                 if(errOld) throw errOld;
+                if((!dataOld || dataOld.length === 0) && dbOld !== sbClient7) {
+                    const fb = await sbClient7.from('jadwal').delete().eq('id', id).select();
+                    dataOld = fb.data; errOld = fb.error; if(errOld) throw errOld;
+                }
                 if(!dataOld || dataOld.length === 0) throw new Error("Gagal menghapus jadwal lama (Akses ditolak RLS).");
                 
                 const dbNew = getDb(tk); 
