@@ -163,6 +163,17 @@
             } catch (err) {} finally {
                 document.getElementById('loading-overlay').classList.add('hidden');
                 updateLogoDisplay(); updateAppHeaderTitles();
+                
+                // Pulihkan sesi jika pengguna me-reload halaman
+                const savedSession = sessionStorage.getItem('cbt_session');
+                if (savedSession) {
+                    window.currentUser = JSON.parse(savedSession);
+                    if (window.currentUser.role === 'siswa') {
+                        window.loadSiswaSelectMapelView();
+                    } else {
+                        initAppSession();
+                    }
+                }
             }
         }
         document.addEventListener('DOMContentLoaded', initApp);
@@ -229,14 +240,16 @@
                 if (String(foundPeserta.status_blokir || 'AKTIF').toUpperCase() === 'BLOKIR') { showNotification('AKUN ANDA DIBLOKIR! Silakan hubungi pengawas ruang.'); btnSubmit.innerHTML = originalHtml; btnSubmit.disabled = false; return; }
 
                 window.currentUser = { nomor: username, nama: foundPeserta.nama, tingkat: foundPeserta.tingkat, kelas: foundPeserta.kelas, role: 'siswa' };
+                sessionStorage.setItem('cbt_session', JSON.stringify(window.currentUser)); // Simpan Sesi
                 window.violationCount = 0; window.loadSiswaSelectMapelView();
             } catch (err) { showNotification('Gagal koneksi ke Server Supabase.'); } finally { btnSubmit.innerHTML = originalHtml; btnSubmit.disabled = false; }
         }
 
-        window.handlePengawasLogin = function(e) { e.preventDefault(); window.currentUser = { nama: document.getElementById('pengawas-nama').value.trim(), ruang: document.getElementById('pengawas-ruang').value, role: 'pengawas' }; initAppSession(); }
-        window.handleAdminLogin = function(e) { e.preventDefault(); if (document.getElementById('admin-username').value.trim() === "admin" && document.getElementById('admin-password').value === "123tek") { window.currentUser = { nama: "Administrator", role: "admin" }; initAppSession(); } else { showNotification('Username atau Password salah!'); } }
+        window.handlePengawasLogin = function(e) { e.preventDefault(); window.currentUser = { nama: document.getElementById('pengawas-nama').value.trim(), ruang: document.getElementById('pengawas-ruang').value, role: 'pengawas' }; sessionStorage.setItem('cbt_session', JSON.stringify(window.currentUser)); initAppSession(); }
+        window.handleAdminLogin = function(e) { e.preventDefault(); if (document.getElementById('admin-username').value.trim() === "admin" && document.getElementById('admin-password').value === "123tek") { window.currentUser = { nama: "Administrator", role: "admin" }; sessionStorage.setItem('cbt_session', JSON.stringify(window.currentUser)); initAppSession(); } else { showNotification('Username atau Password salah!'); } }
 
         window.handleLogout = function() {
+            sessionStorage.removeItem('cbt_session'); // Hapus sesi saat logout
             window.currentUser = null; window.isExamActive = false; if(window.examTimerInterval) clearInterval(window.examTimerInterval);
             window.currentRoute = 'login'; document.getElementById('main-app').classList.add('hidden'); document.getElementById('login-view').classList.remove('hidden');
             document.getElementById('sidebar').classList.add('hidden'); document.getElementById('sidebar').classList.remove('md:flex'); document.getElementById('mobile-header').classList.add('hidden');
