@@ -305,11 +305,87 @@
 
         window.renderPesertaUI = function(allP, filterTingkat, isSyncing = false) {
             const container = document.getElementById('content-container'); if(window.currentRoute !== 'peserta') return;
-            let html = `<div class="mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4"><div><h1 class="text-2xl md:text-3xl font-extrabold text-white">Database Siswa</h1><p class="text-sm text-slate-400 mt-1">Mengelola akun CBT Peserta Didik</p></div><div class="flex gap-2 flex-wrap w-full lg:w-auto"><button onclick="window.loadDatabasePeserta('${filterTingkat}', true)" class="flex-1 lg:flex-none px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-rotate ${isSyncing ? 'fa-spin text-indigo-400' : ''}"></i></button><button onclick="window.openNewPesertaModal()" class="flex-1 lg:flex-none px-4 py-3 bg-indigo-600 text-white font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-plus mr-1"></i> Tambah</button><button onclick="window.downloadExcelTemplatePeserta()" class="flex-1 lg:flex-none px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md">📥 Template</button><button onclick="document.getElementById('excel-peserta-input').click()" class="flex-1 lg:flex-none px-5 py-3 gradient-btn text-white font-bold rounded-xl text-xs uppercase shadow-lg">📊 Import</button><input type="file" id="excel-peserta-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="window.handleExcelImportPeserta(event)"></div></div><div class="flex gap-2 mb-6 text-xs font-bold overflow-x-auto pb-2 scrollbar-hide"><button onclick="window.loadDatabasePeserta('semua')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === 'semua' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Semua Tingkat</button><button onclick="window.loadDatabasePeserta('7')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '7' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 7</button><button onclick="window.loadDatabasePeserta('8')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '8' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 8</button><button onclick="window.loadDatabasePeserta('9')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '9' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 9</button></div><div class="glass-card-dark rounded-2xl border border-slate-800 overflow-x-auto shadow-lg"><table class="w-full text-left text-xs"><thead class="bg-slate-900/80"><tr class="border-b border-slate-800 text-slate-400 font-bold uppercase"><th class="p-4 w-12 text-center">No</th><th class="p-4">Username</th><th class="p-4">Nama Lengkap</th><th class="p-4 text-center">Kelas</th><th class="p-4 text-center">Status</th><th class="p-4 text-center">Aksi</th></tr></thead><tbody class="divide-y divide-slate-800/60">`;
-            if(isSyncing && allP.length === 0) { html += `<tr><td colspan="6" class="p-8 text-center text-indigo-400 font-medium"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Mensinkronkan data...</td></tr>`; }
-            else if(allP.length === 0) { html += `<tr><td colspan="6" class="p-8 text-center text-slate-500 font-medium">Data kosong.</td></tr>`; } 
-            else { allP.forEach((p, idx) => { const isBlokir = String(p.status_blokir||'AKTIF').toUpperCase() === 'BLOKIR'; html += `<tr class="hover:bg-slate-800/30"><td class="p-4 text-center text-slate-400">${idx + 1}</td><td class="p-4 font-mono font-bold text-indigo-300 tracking-wider">${p.username||'-'}</td><td class="p-4 font-semibold text-white">${p.nama||'-'}</td><td class="p-4 text-center font-bold text-emerald-400">${p.kelas||'-'}</td><td class="p-4 text-center">${isBlokir ? `<span class="px-2 py-1 bg-red-500/20 text-red-400 border border-red-500/40 rounded-lg font-bold text-[10px]">DIBLOKIR</span>` : `<span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-lg font-bold text-[10px]">AKTIF</span>`}</td><td class="p-4 text-center space-x-1">${isBlokir ? `<button onclick="window.unblockPeserta('${p.id}', '${p.tingkat}')" class="px-3 py-1.5 bg-amber-500/20 text-amber-300 rounded-lg font-bold text-[10px]"><i class="fa-solid fa-unlock mr-1"></i>Buka</button>` : ''}<button onclick="window.hapusPeserta('${p.id}', '${p.tingkat}', event)" class="w-8 h-8 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition"><i class="fa-solid fa-trash"></i></button></td></tr>`; }); }
+            let html = `<div class="mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4"><div><h1 class="text-2xl md:text-3xl font-extrabold text-white">Database Siswa</h1><p class="text-sm text-slate-400 mt-1">Mengelola akun CBT Peserta Didik</p></div><div class="flex gap-2 flex-wrap w-full lg:w-auto"><button onclick="window.hapusPesertaTerpilih()" id="btn-hapus-terpilih" class="hidden flex-1 lg:flex-none px-4 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs uppercase shadow-lg border border-red-500/50 transition"><i class="fa-solid fa-trash-can mr-1"></i> Hapus (<span id="count-terpilih">0</span>)</button><button onclick="window.loadDatabasePeserta('${filterTingkat}', true)" class="flex-1 lg:flex-none px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-rotate ${isSyncing ? 'fa-spin text-indigo-400' : ''}"></i></button><button onclick="window.openNewPesertaModal()" class="flex-1 lg:flex-none px-4 py-3 bg-indigo-600 text-white font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-plus mr-1"></i> Tambah</button><button onclick="window.downloadExcelTemplatePeserta()" class="flex-1 lg:flex-none px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md">📥 Template</button><button onclick="document.getElementById('excel-peserta-input').click()" class="flex-1 lg:flex-none px-5 py-3 gradient-btn text-white font-bold rounded-xl text-xs uppercase shadow-lg">📊 Import</button><input type="file" id="excel-peserta-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="window.handleExcelImportPeserta(event)"></div></div><div class="flex gap-2 mb-6 text-xs font-bold overflow-x-auto pb-2 scrollbar-hide"><button onclick="window.loadDatabasePeserta('semua')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === 'semua' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Semua Tingkat</button><button onclick="window.loadDatabasePeserta('7')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '7' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 7</button><button onclick="window.loadDatabasePeserta('8')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '8' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 8</button><button onclick="window.loadDatabasePeserta('9')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '9' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 9</button></div><div class="glass-card-dark rounded-2xl border border-slate-800 overflow-x-auto shadow-lg"><table class="w-full text-left text-xs"><thead class="bg-slate-900/80"><tr class="border-b border-slate-800 text-slate-400 font-bold uppercase"><th class="p-4 w-10 text-center"><input type="checkbox" id="chk-all-peserta" onchange="window.toggleAllPeserta(event)" class="cursor-pointer accent-indigo-500 w-4 h-4 rounded"></th><th class="p-4 w-12 text-center">No</th><th class="p-4">Username</th><th class="p-4">Nama Lengkap</th><th class="p-4 text-center">Kelas</th><th class="p-4 text-center">Status</th><th class="p-4 text-center">Aksi</th></tr></thead><tbody class="divide-y divide-slate-800/60">`;
+            if(isSyncing && allP.length === 0) { html += `<tr><td colspan="7" class="p-8 text-center text-indigo-400 font-medium"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Mensinkronkan data...</td></tr>`; }
+            else if(allP.length === 0) { html += `<tr><td colspan="7" class="p-8 text-center text-slate-500 font-medium">Data kosong.</td></tr>`; } 
+            else { allP.forEach((p, idx) => { const isBlokir = String(p.status_blokir||'AKTIF').toUpperCase() === 'BLOKIR'; html += `<tr class="hover:bg-slate-800/30"><td class="p-4 text-center"><input type="checkbox" class="chk-peserta cursor-pointer accent-indigo-500 w-4 h-4 rounded" value="${p.id}|${p.tingkat}" onchange="window.updateBtnHapusTerpilih()"></td><td class="p-4 text-center text-slate-400">${idx + 1}</td><td class="p-4 font-mono font-bold text-indigo-300 tracking-wider">${p.username||'-'}</td><td class="p-4 font-semibold text-white">${p.nama||'-'}</td><td class="p-4 text-center font-bold text-emerald-400">${p.kelas||'-'}</td><td class="p-4 text-center">${isBlokir ? `<span class="px-2 py-1 bg-red-500/20 text-red-400 border border-red-500/40 rounded-lg font-bold text-[10px]">DIBLOKIR</span>` : `<span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-lg font-bold text-[10px]">AKTIF</span>`}</td><td class="p-4 text-center space-x-1">${isBlokir ? `<button onclick="window.unblockPeserta('${p.id}', '${p.tingkat}')" class="px-3 py-1.5 bg-amber-500/20 text-amber-300 rounded-lg font-bold text-[10px]"><i class="fa-solid fa-unlock mr-1"></i>Buka</button>` : ''}<button onclick="window.hapusPeserta('${p.id}', '${p.tingkat}', event)" class="w-8 h-8 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition"><i class="fa-solid fa-trash"></i></button></td></tr>`; }); }
             container.innerHTML = html + `</tbody></table></div>`;
+        };
+
+        window.toggleAllPeserta = function(e) {
+            const isChecked = e.target.checked;
+            document.querySelectorAll('.chk-peserta').forEach(chk => chk.checked = isChecked);
+            window.updateBtnHapusTerpilih();
+        };
+
+        window.updateBtnHapusTerpilih = function() {
+            const checkBoxes = document.querySelectorAll('.chk-peserta');
+            const checkedCount = document.querySelectorAll('.chk-peserta:checked').length;
+            const btn = document.getElementById('btn-hapus-terpilih');
+            const chkAll = document.getElementById('chk-all-peserta');
+            
+            if (chkAll) chkAll.checked = (checkBoxes.length > 0 && checkedCount === checkBoxes.length);
+
+            if(btn) {
+                if(checkedCount > 0) {
+                    btn.classList.remove('hidden');
+                    document.getElementById('count-terpilih').innerText = checkedCount;
+                } else {
+                    btn.classList.add('hidden');
+                }
+            }
+        };
+
+        window.hapusPesertaTerpilih = async function() {
+            const checked = document.querySelectorAll('.chk-peserta:checked');
+            if(checked.length === 0) return;
+            if(!confirm(`Yakin ingin menghapus ${checked.length} siswa yang dipilih secara permanen? Data tidak dapat dikembalikan.`)) return;
+
+            const btn = document.getElementById('btn-hapus-terpilih');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...';
+            btn.disabled = true;
+
+            const toDelete = { '7': [], '8': [], '9': [] };
+            checked.forEach(chk => {
+                const parts = chk.value.split('|');
+                if(parts.length === 2) {
+                    toDelete[parts[1]].push(parts[0]);
+                }
+            });
+
+            try {
+                for (let tk of ['7', '8', '9']) {
+                    if (toDelete[tk].length > 0) {
+                        const db = getDb(tk);
+                        // Fitur Hapus Massal Supabase (Bulk Delete In)
+                        const { error } = await db.from('peserta').delete().in('id', toDelete[tk]);
+                        if (error) throw error;
+                        // Hapus dari data sementara aplikasi
+                        window.appData.peserta = window.appData.peserta.filter(p => !(String(p.tingkat) === String(tk) && toDelete[tk].includes(String(p.id))));
+                    }
+                }
+                showNotification(`${checked.length} Siswa berhasil dihapus.`);
+                window.loadDatabasePeserta(window.currentFilterPeserta, false);
+            } catch(err) {
+                // Skema Cadangan jika hapus massal (In) gagal di server
+                try {
+                     for (let tk of ['7', '8', '9']) {
+                         if (toDelete[tk].length > 0) {
+                             for (let id of toDelete[tk]) {
+                                 await getDb(tk).from('peserta').delete().eq('id', id);
+                             }
+                             window.appData.peserta = window.appData.peserta.filter(p => !(String(p.tingkat) === String(tk) && toDelete[tk].includes(String(p.id))));
+                         }
+                     }
+                     showNotification(`${checked.length} Siswa berhasil dihapus.`);
+                     window.loadDatabasePeserta(window.currentFilterPeserta, false);
+                } catch (err2) {
+                     showNotification('Gagal menghapus beberapa data: ' + err2.message);
+                     btn.innerHTML = originalHtml;
+                     btn.disabled = false;
+                }
+            }
         };
 
         window.loadDatabasePeserta = function(filterTingkat = 'semua', forceRefresh = false) {
