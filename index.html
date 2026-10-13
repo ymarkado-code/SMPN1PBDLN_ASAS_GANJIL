@@ -358,17 +358,14 @@
                 for (let tk of ['7', '8', '9']) {
                     if (toDelete[tk].length > 0) {
                         const db = getDb(tk);
-                        // Fitur Hapus Massal Supabase (Bulk Delete In)
                         const { error } = await db.from('peserta').delete().in('id', toDelete[tk]);
                         if (error) throw error;
-                        // Hapus dari data sementara aplikasi
                         window.appData.peserta = window.appData.peserta.filter(p => !(String(p.tingkat) === String(tk) && toDelete[tk].includes(String(p.id))));
                     }
                 }
                 showNotification(`${checked.length} Siswa berhasil dihapus.`);
                 window.loadDatabasePeserta(window.currentFilterPeserta, false);
             } catch(err) {
-                // Skema Cadangan jika hapus massal (In) gagal di server
                 try {
                      for (let tk of ['7', '8', '9']) {
                          if (toDelete[tk].length > 0) {
@@ -413,7 +410,7 @@
         window.unblockPeserta = async function(id, tingkat) { 
             try { 
                 const db = getDb(tingkat); 
-                const { data, error } = await db.from('peserta').update({ status_blokir: 'AKTIF' }).eq('id', id).select(); 
+                const { error } = await db.from('peserta').update({ status_blokir: 'AKTIF' }).eq('id', id).select(); 
                 if (error) throw error;
                 const idx = window.appData.peserta.findIndex(p => String(p.id) === String(id) && String(p.tingkat) === String(tingkat));
                 if(idx !== -1) window.appData.peserta[idx].status_blokir = 'AKTIF';
@@ -429,16 +426,14 @@
                 const btn = e ? e.currentTarget : null; const ori = btn ? btn.innerHTML : ''; if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
                 try { 
                     const db = getDb(tingkat); 
-                    const { data, error } = await db.from('peserta').delete().eq('id', id).select(); 
+                    const { error } = await db.from('peserta').delete().eq('id', id).select(); 
                     if(error) throw error; 
                     window.appData.peserta = window.appData.peserta.filter(p => !(String(p.id) === String(id) && String(p.tingkat) === String(tingkat)));
                     window.loadDatabasePeserta(window.currentFilterPeserta, false); 
                     showNotification('Data Siswa berhasil dihapus.'); 
                 } catch(err){ 
                     try {
-                        for(let tk of ['7', '8', '9']) {
-                            await getDb(tk).from('peserta').delete().eq('id', id);
-                        }
+                        for(let tk of ['7', '8', '9']) { await getDb(tk).from('peserta').delete().eq('id', id); }
                         window.appData.peserta = window.appData.peserta.filter(p => String(p.id) !== String(id));
                         window.loadDatabasePeserta(window.currentFilterPeserta, false);
                         showNotification('Data Siswa berhasil dihapus.');
@@ -484,7 +479,7 @@
             };
             try { 
                 const db = getDb(tk); 
-                const { data, error } = await db.from('peserta').insert([payload]).select(); 
+                const { error } = await db.from('peserta').insert([payload]).select(); 
                 if (error) throw error; 
                 document.getElementById('new-peserta-modal').classList.add('hidden'); 
                 window.loadDatabasePeserta(window.currentFilterPeserta, true); 
@@ -534,16 +529,14 @@
                 const btn = e ? e.currentTarget : null; const ori = btn ? btn.innerHTML : ''; if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
                 try { 
                     const db = getDb(tingkat); 
-                    const { data, error } = await db.from('soal').delete().eq('id', id).select(); 
+                    const { error } = await db.from('soal').delete().eq('id', id).select(); 
                     if(error) throw error; 
                     window.appData.soal = window.appData.soal.filter(s => !(String(s.id) === String(id) && String(s.tingkat) === String(tingkat)));
                     window.loadManajemenSoal(window.currentFilterTingkat, false); 
                     showNotification('Soal berhasil dihapus.'); 
                 } catch(err){ 
                     try {
-                        for(let tk of ['7', '8', '9']) {
-                            await getDb(tk).from('soal').delete().eq('id', id);
-                        }
+                        for(let tk of ['7', '8', '9']) { await getDb(tk).from('soal').delete().eq('id', id); }
                         window.appData.soal = window.appData.soal.filter(s => String(s.id) !== String(id));
                         window.loadManajemenSoal(window.currentFilterTingkat, false);
                         showNotification('Soal berhasil dihapus.');
@@ -624,16 +617,14 @@
                 const btn = e ? e.currentTarget : null; const ori = btn ? btn.innerHTML : ''; if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
                 try { 
                     const db = getDb(tingkat); 
-                    const { data, error } = await db.from('jadwal').delete().eq('id', id).select(); 
+                    const { error } = await db.from('jadwal').delete().eq('id', id).select(); 
                     if(error) throw error; 
                     window.appData.jadwal = window.appData.jadwal.filter(j => !(String(j.id) === String(id) && String(j.tingkat) === String(tingkat)));
                     window.loadManajemenJadwal(false); 
                     showNotification('Jadwal Ujian berhasil dihapus.'); 
                 } catch(err){ 
                     try {
-                        for(let tk of ['7', '8', '9']) {
-                            await getDb(tk).from('jadwal').delete().eq('id', id);
-                        }
+                        for(let tk of ['7', '8', '9']) { await getDb(tk).from('jadwal').delete().eq('id', id); }
                         window.appData.jadwal = window.appData.jadwal.filter(j => String(j.id) !== String(id));
                         window.loadManajemenJadwal(false);
                         showNotification('Jadwal Ujian berhasil dihapus.');
@@ -692,11 +683,84 @@
 
         window.renderHasilUI = function(allH, filterTingkat, isSyncing = false) {
             if (window.currentRoute !== 'hasil') return; const container = document.getElementById('content-container');
-            let html = `<div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"><div><h1 class="text-2xl md:text-3xl font-extrabold text-white">Rekap Nilai Ujian</h1><p class="text-sm text-slate-400 mt-1">Sinkronisasi Real-Time ke Database Pusat</p></div><div class="flex gap-2 flex-wrap w-full md:w-auto"><button onclick="window.loadRekapNilai('${filterTingkat}', true)" class="px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-rotate ${isSyncing?'fa-spin text-emerald-400':''}"></i></button><button onclick="window.downloadRekapNilaiExcel('${filterTingkat}')" class="flex-1 md:flex-none px-6 py-3 bg-emerald-600 text-white font-bold rounded-xl text-xs uppercase shadow-lg hover:bg-emerald-500 transition"><i class="fa-solid fa-download mr-2"></i> Download Excel</button></div></div><div class="flex gap-2 mb-6 text-xs font-bold overflow-x-auto pb-2 scrollbar-hide"><button onclick="window.loadRekapNilai('semua')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === 'semua' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Semua Kelas</button><button onclick="window.loadRekapNilai('7')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '7' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 7</button><button onclick="window.loadRekapNilai('8')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '8' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 8</button><button onclick="window.loadRekapNilai('9')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '9' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 9</button></div><div class="glass-card-dark rounded-2xl border border-slate-800 overflow-x-auto shadow-lg"><table class="w-full text-left text-xs"><thead class="bg-slate-900/80"><tr class="border-b border-slate-800 text-slate-400 font-bold uppercase"><th class="p-4">Nama Siswa</th><th class="p-4 text-center">Kelas</th><th class="p-4">Mata Pelajaran</th><th class="p-4 text-center">Nilai Akhir</th></tr></thead><tbody class="divide-y divide-slate-800/60">`;
-            if(isSyncing && allH.length === 0) { html += `<tr><td colspan="4" class="p-8 text-center text-emerald-500 font-medium"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Mensinkronkan nilai...</td></tr>`; }
-            else if(allH.length === 0) { html += `<tr><td colspan="4" class="p-8 text-center text-slate-500 font-medium">Belum ada data nilai.</td></tr>`; }
-            else { html += allH.map(h => `<tr class="hover:bg-slate-800/30"><td class="p-4 font-bold text-white whitespace-nowrap">${h.nama}</td><td class="p-4 text-slate-400 font-semibold text-center">${h.kelas}</td><td class="p-4 text-indigo-300 font-bold">${h.mapel}</td><td class="p-4 font-black text-emerald-400 text-base text-center">${h.nilai}</td></tr>`).join(''); }
+            let html = `<div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"><div><h1 class="text-2xl md:text-3xl font-extrabold text-white">Rekap Nilai Ujian</h1><p class="text-sm text-slate-400 mt-1">Sinkronisasi Real-Time ke Database Pusat</p></div><div class="flex gap-2 flex-wrap w-full md:w-auto">
+            <button onclick="window.hapusHasilTerpilih()" id="btn-hapus-hasil" class="hidden flex-1 md:flex-none px-4 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs uppercase shadow-lg border border-red-500/50 transition"><i class="fa-solid fa-trash-can mr-1"></i> Hapus (<span id="count-hasil-terpilih">0</span>)</button>
+            <button onclick="window.loadRekapNilai('${filterTingkat}', true)" class="px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-rotate ${isSyncing?'fa-spin text-emerald-400':''}"></i></button><button onclick="window.downloadRekapNilaiExcel('${filterTingkat}')" class="flex-1 md:flex-none px-6 py-3 bg-emerald-600 text-white font-bold rounded-xl text-xs uppercase shadow-lg hover:bg-emerald-500 transition"><i class="fa-solid fa-download mr-2"></i> Download Excel</button></div></div><div class="flex gap-2 mb-6 text-xs font-bold overflow-x-auto pb-2 scrollbar-hide"><button onclick="window.loadRekapNilai('semua')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === 'semua' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Semua Kelas</button><button onclick="window.loadRekapNilai('7')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '7' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 7</button><button onclick="window.loadRekapNilai('8')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '8' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 8</button><button onclick="window.loadRekapNilai('9')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '9' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 9</button></div><div class="glass-card-dark rounded-2xl border border-slate-800 overflow-x-auto shadow-lg"><table class="w-full text-left text-xs"><thead class="bg-slate-900/80"><tr class="border-b border-slate-800 text-slate-400 font-bold uppercase"><th class="p-4 w-10 text-center"><input type="checkbox" id="chk-all-hasil" onchange="window.toggleAllHasil(event)" class="cursor-pointer accent-indigo-500 w-4 h-4 rounded"></th><th class="p-4">Nama Siswa</th><th class="p-4 text-center">Kelas</th><th class="p-4">Mata Pelajaran</th><th class="p-4 text-center">Nilai Akhir</th></tr></thead><tbody class="divide-y divide-slate-800/60">`;
+            if(isSyncing && allH.length === 0) { html += `<tr><td colspan="5" class="p-8 text-center text-emerald-500 font-medium"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Mensinkronkan nilai...</td></tr>`; }
+            else if(allH.length === 0) { html += `<tr><td colspan="5" class="p-8 text-center text-slate-500 font-medium">Belum ada data nilai.</td></tr>`; }
+            else { html += allH.map(h => `<tr class="hover:bg-slate-800/30"><td class="p-4 text-center"><input type="checkbox" class="chk-hasil cursor-pointer accent-indigo-500 w-4 h-4 rounded" value="${h.id}|${h.tingkat}" onchange="window.updateBtnHapusHasilTerpilih()"></td><td class="p-4 font-bold text-white whitespace-nowrap">${h.nama}</td><td class="p-4 text-slate-400 font-semibold text-center">${h.kelas}</td><td class="p-4 text-indigo-300 font-bold">${h.mapel}</td><td class="p-4 font-black text-emerald-400 text-base text-center">${h.nilai}</td></tr>`).join(''); }
             container.innerHTML = html + `</tbody></table></div>`;
+        };
+
+        window.toggleAllHasil = function(e) {
+            const isChecked = e.target.checked;
+            document.querySelectorAll('.chk-hasil').forEach(chk => chk.checked = isChecked);
+            window.updateBtnHapusHasilTerpilih();
+        };
+
+        window.updateBtnHapusHasilTerpilih = function() {
+            const checkBoxes = document.querySelectorAll('.chk-hasil');
+            const checkedCount = document.querySelectorAll('.chk-hasil:checked').length;
+            const btn = document.getElementById('btn-hapus-hasil');
+            const chkAll = document.getElementById('chk-all-hasil');
+            
+            if (chkAll) chkAll.checked = (checkBoxes.length > 0 && checkedCount === checkBoxes.length);
+
+            if(btn) {
+                if(checkedCount > 0) {
+                    btn.classList.remove('hidden');
+                    document.getElementById('count-hasil-terpilih').innerText = checkedCount;
+                } else {
+                    btn.classList.add('hidden');
+                }
+            }
+        };
+
+        window.hapusHasilTerpilih = async function() {
+            const checked = document.querySelectorAll('.chk-hasil:checked');
+            if(checked.length === 0) return;
+            if(!confirm(`Yakin ingin menghapus ${checked.length} data nilai yang dipilih secara permanen?`)) return;
+
+            const btn = document.getElementById('btn-hapus-hasil');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...';
+            btn.disabled = true;
+
+            const toDelete = { '7': [], '8': [], '9': [] };
+            checked.forEach(chk => {
+                const parts = chk.value.split('|');
+                if(parts.length === 2) {
+                    toDelete[parts[1]].push(parts[0]);
+                }
+            });
+
+            try {
+                for (let tk of ['7', '8', '9']) {
+                    if (toDelete[tk].length > 0) {
+                        const db = getDb(tk);
+                        const { error } = await db.from('hasil').delete().in('id', toDelete[tk]);
+                        if (error) throw error;
+                        window.appData.hasil = window.appData.hasil.filter(h => !(String(h.tingkat) === String(tk) && toDelete[tk].includes(String(h.id))));
+                    }
+                }
+                showNotification(`${checked.length} Data Nilai berhasil dihapus.`);
+                window.loadRekapNilai(window.currentFilterTingkat, false);
+            } catch(err) {
+                try {
+                     for (let tk of ['7', '8', '9']) {
+                         if (toDelete[tk].length > 0) {
+                             for (let id of toDelete[tk]) { await getDb(tk).from('hasil').delete().eq('id', id); }
+                             window.appData.hasil = window.appData.hasil.filter(h => !(String(h.tingkat) === String(tk) && toDelete[tk].includes(String(h.id))));
+                         }
+                     }
+                     showNotification(`${checked.length} Data Nilai berhasil dihapus.`);
+                     window.loadRekapNilai(window.currentFilterTingkat, false);
+                } catch (err2) {
+                     showNotification('Gagal menghapus beberapa data: ' + err2.message);
+                     btn.innerHTML = originalHtml;
+                     btn.disabled = false;
+                }
+            }
         };
 
         window.loadRekapNilai = function(filterTingkat = 'semua', forceRefresh = false) {
@@ -730,12 +794,77 @@
         window.renderBeritaAcaraUI = function(baData, isSyncing = false) {
             if (window.currentRoute !== 'beritaAcara') return; const container = document.getElementById('content-container');
             let grouped = {}; baData.forEach(b => { let t = b.tanggalpelaksanaan || 'Lainnya'; if(!grouped[t]) grouped[t]=[]; grouped[t].push(b); });
-            let html = `<div class="mb-8 flex justify-between items-center"><div><h1 class="text-2xl md:text-3xl font-extrabold text-white">Berita Acara Pengawas</h1><p class="text-sm text-slate-400 mt-1">Arsip Dokumen Resmi Server Master</p></div> <button onclick="window.loadAdminDaftarBeritaAcara(true)" class="px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-rotate ${isSyncing?'fa-spin text-indigo-400':''}"></i></button></div><div class="space-y-6">`;
+            let html = `<div class="mb-8 flex justify-between items-center"><div><h1 class="text-2xl md:text-3xl font-extrabold text-white">Berita Acara Pengawas</h1><p class="text-sm text-slate-400 mt-1">Arsip Dokumen Resmi Server Master</p></div> <div class="flex gap-2">
+            <button onclick="window.hapusBATerpilih()" id="btn-hapus-ba" class="hidden px-4 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs uppercase shadow-lg border border-red-500/50 transition"><i class="fa-solid fa-trash-can mr-1"></i> Hapus (<span id="count-ba-terpilih">0</span>)</button>
+            <button onclick="window.loadAdminDaftarBeritaAcara(true)" class="px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-rotate ${isSyncing?'fa-spin text-indigo-400':''}"></i></button></div></div><div class="space-y-6">`;
             
             if(isSyncing && Object.keys(grouped).length === 0) { html += `<div class="glass-card-dark p-8 rounded-2xl text-center text-indigo-400 font-medium"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Mensinkronkan data...</div>`; }
             else if(Object.keys(grouped).length === 0) { html += `<div class="glass-card-dark p-8 rounded-2xl text-center text-slate-500 font-medium">Belum ada Berita Acara yang dikirim.</div>`; } 
-            else { Object.keys(grouped).sort().reverse().forEach(tgl => { html += `<div class="glass-card-dark rounded-2xl border border-slate-800 overflow-x-auto shadow-lg"><div class="p-4 bg-slate-900/90 border-b border-slate-800 flex justify-between items-center"><span class="font-bold text-indigo-300 text-sm"><i class="fa-solid fa-calendar-check text-indigo-500 mr-2"></i>Tgl: ${formatTanggalIndo(tgl)}</span></div><table class="w-full text-left text-xs"><thead class="bg-slate-900/40 text-slate-400 font-bold uppercase"><tr class="border-b border-slate-800"><th class="p-4">Ruang & Pengawas</th><th class="p-4">Mapel</th><th class="p-4 text-center">Kehadiran</th><th class="p-4 text-center">Tanda Tangan</th><th class="p-4 text-center">Cetak</th></tr></thead><tbody class="divide-y divide-slate-800/60">`; grouped[tgl].forEach(b => { html += `<tr class="hover:bg-slate-800/30"><td class="p-4 whitespace-nowrap"><div class="font-bold text-white text-sm">${b.ruang}</div><div class="text-slate-400 mt-0.5"><i class="fa-solid fa-user-tie mr-1"></i> ${b.pengawas}</div></td><td class="p-4 text-indigo-300 font-bold whitespace-nowrap">${b.mapel}</td><td class="p-4 text-center font-bold text-slate-300 whitespace-nowrap">H:${b.hadir} | S:${b.sakit||0} I:${b.izin||0} A:${b.alpha||0}</td><td class="p-4 text-center">${(b.signaturedata) ? `<img src="${b.signaturedata}" class="h-8 bg-white rounded p-0.5 mx-auto"/>` : '<span class="text-slate-500">Tdk ada</span>'}</td><td class="p-4 text-center"><button onclick="window.cetakBeritaAcara('${b.ruang}', '${b.mapel}', '${tgl}')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-[11px] shadow transition uppercase tracking-wider"><i class="fa-solid fa-print mr-1"></i> Cetak</button></td></tr>`; }); html += `</tbody></table></div>`; }); }
+            else { Object.keys(grouped).sort().reverse().forEach(tgl => { html += `<div class="glass-card-dark rounded-2xl border border-slate-800 overflow-x-auto shadow-lg"><div class="p-4 bg-slate-900/90 border-b border-slate-800 flex justify-between items-center"><span class="font-bold text-indigo-300 text-sm"><i class="fa-solid fa-calendar-check text-indigo-500 mr-2"></i>Tgl: ${formatTanggalIndo(tgl)}</span></div><table class="w-full text-left text-xs"><thead class="bg-slate-900/40 text-slate-400 font-bold uppercase"><tr class="border-b border-slate-800"><th class="p-4 w-10 text-center"><input type="checkbox" onchange="window.toggleAllBA(event)" class="cursor-pointer accent-indigo-500 w-4 h-4 rounded"></th><th class="p-4">Ruang & Pengawas</th><th class="p-4">Mapel</th><th class="p-4 text-center">Kehadiran</th><th class="p-4 text-center">Tanda Tangan</th><th class="p-4 text-center">Cetak</th></tr></thead><tbody class="divide-y divide-slate-800/60">`; grouped[tgl].forEach(b => { html += `<tr class="hover:bg-slate-800/30"><td class="p-4 text-center"><input type="checkbox" class="chk-ba cursor-pointer accent-indigo-500 w-4 h-4 rounded" value="${b.id}" onchange="window.updateBtnHapusBATerpilih()"></td><td class="p-4 whitespace-nowrap"><div class="font-bold text-white text-sm">${b.ruang}</div><div class="text-slate-400 mt-0.5"><i class="fa-solid fa-user-tie mr-1"></i> ${b.pengawas}</div></td><td class="p-4 text-indigo-300 font-bold whitespace-nowrap">${b.mapel}</td><td class="p-4 text-center font-bold text-slate-300 whitespace-nowrap">H:${b.hadir} | S:${b.sakit||0} I:${b.izin||0} A:${b.alpha||0}</td><td class="p-4 text-center">${(b.signaturedata) ? `<img src="${b.signaturedata}" class="h-8 bg-white rounded p-0.5 mx-auto"/>` : '<span class="text-slate-500">Tdk ada</span>'}</td><td class="p-4 text-center"><button onclick="window.cetakBeritaAcara('${b.ruang}', '${b.mapel}', '${tgl}')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-[11px] shadow transition uppercase tracking-wider"><i class="fa-solid fa-print mr-1"></i> Cetak</button></td></tr>`; }); html += `</tbody></table></div>`; }); }
             container.innerHTML = html + `</div>`;
+        };
+
+        window.toggleAllBA = function(e) {
+            const isChecked = e.target.checked;
+            const table = e.target.closest('table');
+            table.querySelectorAll('.chk-ba').forEach(chk => chk.checked = isChecked);
+            window.updateBtnHapusBATerpilih();
+        };
+
+        window.updateBtnHapusBATerpilih = function() {
+            const checkedCount = document.querySelectorAll('.chk-ba:checked').length;
+            const btn = document.getElementById('btn-hapus-ba');
+            
+            document.querySelectorAll('table').forEach(table => {
+                 const chks = table.querySelectorAll('.chk-ba');
+                 const chksChecked = table.querySelectorAll('.chk-ba:checked');
+                 const chkAll = table.querySelector('thead input[type="checkbox"]');
+                 if(chkAll && chks.length > 0) chkAll.checked = (chks.length === chksChecked.length);
+            });
+
+            if(btn) {
+                if(checkedCount > 0) {
+                    btn.classList.remove('hidden');
+                    document.getElementById('count-ba-terpilih').innerText = checkedCount;
+                } else {
+                    btn.classList.add('hidden');
+                }
+            }
+        };
+
+        window.hapusBATerpilih = async function() {
+            const checked = document.querySelectorAll('.chk-ba:checked');
+            if(checked.length === 0) return;
+            if(!confirm(`Yakin ingin menghapus ${checked.length} Berita Acara yang dipilih secara permanen?`)) return;
+
+            const btn = document.getElementById('btn-hapus-ba');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...';
+            btn.disabled = true;
+
+            const toDelete = Array.from(checked).map(chk => chk.value);
+
+            try {
+                const { error } = await sbClient7.from('berita_acara').delete().in('id', toDelete);
+                if (error) throw error;
+                
+                window.appData.beritaAcara = window.appData.beritaAcara.filter(b => !toDelete.includes(String(b.id)));
+                showNotification(`${checked.length} Berita Acara berhasil dihapus.`);
+                window.loadAdminDaftarBeritaAcara(false);
+            } catch(err) {
+                try {
+                     for (let id of toDelete) {
+                         await sbClient7.from('berita_acara').delete().eq('id', id);
+                     }
+                     window.appData.beritaAcara = window.appData.beritaAcara.filter(b => !toDelete.includes(String(b.id)));
+                     showNotification(`${checked.length} Berita Acara berhasil dihapus.`);
+                     window.loadAdminDaftarBeritaAcara(false);
+                } catch (err2) {
+                     showNotification('Gagal menghapus beberapa data: ' + err2.message);
+                     btn.innerHTML = originalHtml;
+                     btn.disabled = false;
+                }
+            }
         };
 
         window.loadAdminDaftarBeritaAcara = function(forceRefresh = false) {
