@@ -327,46 +327,38 @@
         window.updateBtnHapusTerpilih = function() {
             const checkBoxes = document.querySelectorAll('.chk-peserta'); const checkedCount = document.querySelectorAll('.chk-peserta:checked').length;
             const btn = document.getElementById('btn-hapus-terpilih'); const chkAll = document.getElementById('chk-all-peserta');
-            if (chkAll) chkAll.checked = (checkBoxes.length > 0 && checkedCount === checkBoxes.length);
-            if(btn) { if(checkedCount > 0) { btn.classList.remove('hidden'); document.getElementById('count-terpilih').innerText = checkedCount; } else { btn.classList.add('hidden'); } }
-        };
+        if (chkAll) chkAll.checked = (checkBoxes.length > 0 && checkedCount === checkBoxes.length);
+        if(btn) { if(checkedCount > 0) { btn.classList.remove('hidden'); document.getElementById('count-terpilih').innerText = checkedCount; } else { btn.classList.add('hidden'); } }
+    };
 
-        window.hapusPesertaTerpilih = async function() {
-            const checked = document.querySelectorAll('.chk-peserta:checked');
-            if(checked.length === 0) return;
-            if(!confirm(`Yakin ingin menghapus ${checked.length} siswa yang dipilih secara permanen?`)) return;
+    window.hapusPesertaTerpilih = async function() {
+        const checked = document.querySelectorAll('.chk-peserta:checked');
+        if(checked.length === 0) return;
+        if(!confirm(`Yakin ingin menghapus ${checked.length} siswa yang dipilih secara permanen?`)) return;
 
-            const btn = document.getElementById('btn-hapus-terpilih'); const originalHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...'; btn.disabled = true;
+        const btn = document.getElementById('btn-hapus-terpilih'); const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...'; btn.disabled = true;
 
-            const toDelete = { '7': [], '8': [], '9': [] };
-            checked.forEach(chk => { const parts = chk.value.split('|'); if(parts.length === 2) { toDelete[parts[1]].push(parts[0]); } });
+        const toDelete = { '7': [], '8': [], '9': [] };
+        checked.forEach(chk => { const parts = chk.value.split('|'); if(parts.length === 2) { toDelete[parts[1]].push(parts[0]); } });
 
-            try {
-                for (let tk of ['7', '8', '9']) {
-                    if (toDelete[tk].length > 0) {
-                        const db = getDb(tk); const { error } = await db.from('peserta').delete().in('id', toDelete[tk]);
-                        if (error) throw error;
-                        window.appData.peserta = window.appData.peserta.filter(p => !(String(p.tingkat) === String(tk) && toDelete[tk].includes(String(p.id))));
-                    }
-                }
-                showNotification(`${checked.length} Siswa berhasil dihapus.`); window.loadDatabasePeserta(window.currentFilterPeserta, false);
-            } catch(err) {
-                try {
-                     for (let tk of ['7', '8', '9']) {
-                         if (toDelete[tk].length > 0) {
-                             for (let id of toDelete[tk]) { await getDb(tk).from('peserta').delete().eq('id', id); }
-                             window.appData.peserta = window.appData.peserta.filter(p => !(String(p.tingkat) === String(tk) && toDelete[tk].includes(String(p.id))));
-                         }
-                     }
-                     showNotification(`${checked.length} Siswa berhasil dihapus.`); window.loadDatabasePeserta(window.currentFilterPeserta, false);
-                } catch (err2) {
-                     showNotification('Gagal menghapus beberapa data: ' + err2.message); btn.innerHTML = originalHtml; btn.disabled = false;
+        try {
+            for (let tk of ['7', '8', '9']) {
+                if (toDelete[tk].length > 0) {
+                    const db = getDb(tk); 
+                    const { data, error } = await db.from('peserta').delete().in('id', toDelete[tk]).select();
+                    if (error) throw error;
+                    if (!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS belum dinonaktifkan).");
                 }
             }
-        };
+            showNotification(`${checked.length} Siswa berhasil dihapus.`); window.loadDatabasePeserta(window.currentFilterPeserta, true);
+        } catch(err) {
+            showNotification('Gagal menghapus: ' + err.message); btn.innerHTML = originalHtml; btn.disabled = false;
+            window.loadDatabasePeserta(window.currentFilterPeserta, true);
+        }
+    };
 
-        window.loadDatabasePeserta = function(filterTingkat = 'semua', forceRefresh = false) {
+    window.loadDatabasePeserta = function(filterTingkat = 'semua', forceRefresh = false) {
             window.currentRoute = 'peserta'; window.currentFilterPeserta = filterTingkat;
             let currentData = filterTingkat === 'semua' ? window.appData.peserta : window.appData.peserta.filter(p => String(p.tingkat) === filterTingkat);
             window.renderPesertaUI(currentData, filterTingkat, !window.appData.isFetched.peserta || forceRefresh);
@@ -381,52 +373,46 @@
                     results.forEach(res => { if(res.status === 'fulfilled' && res.value.data) newData.push(...res.value.data); });
                     window.appData.peserta = newData; window.appData.isFetched.peserta = true;
                     if (window.currentRoute === 'peserta') {
-                        let filtered = filterTingkat === 'semua' ? window.appData.peserta : window.appData.peserta.filter(p => String(p.tingkat) === filterTingkat);
-                        window.renderPesertaUI(filtered, filterTingkat, false);
-                    }
-                });
-            }
-        };
+                    let filtered = filterTingkat === 'semua' ? window.appData.peserta : window.appData.peserta.filter(p => String(p.tingkat) === filterTingkat);
+                    window.renderPesertaUI(filtered, filterTingkat, false);
+                }
+            });
+        }
+    };
 
-        window.unblockPeserta = async function(id, tingkat) { 
+    window.unblockPeserta = async function(id, tingkat) { 
+        try { 
+            const db = getDb(tingkat); 
+            const { data, error } = await db.from('peserta').update({ status_blokir: 'AKTIF' }).eq('id', id).select(); 
+            if (error) throw error;
+            if (!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS).");
+            window.loadDatabasePeserta(window.currentFilterPeserta, true); 
+            showNotification('Blokir akun berhasil dibuka!'); 
+        } catch(e){ 
+            showNotification('Gagal buka blokir: ' + (e.message || 'Periksa tabel peserta')); 
+            window.loadDatabasePeserta(window.currentFilterPeserta, true); 
+        } 
+    };
+    
+    window.hapusPeserta = async function(id, tingkat, e) { 
+        if(confirm("Yakin ingin menghapus siswa ini secara permanen?")) { 
+            const btn = e ? e.currentTarget : null; const ori = btn ? btn.innerHTML : ''; if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
             try { 
                 const db = getDb(tingkat); 
-                const { error } = await db.from('peserta').update({ status_blokir: 'AKTIF' }).eq('id', id).select(); 
-                if (error) throw error;
-                const idx = window.appData.peserta.findIndex(p => String(p.id) === String(id) && String(p.tingkat) === String(tingkat));
-                if(idx !== -1) window.appData.peserta[idx].status_blokir = 'AKTIF';
-                window.loadDatabasePeserta(window.currentFilterPeserta, false); 
-                showNotification('Blokir akun berhasil dibuka!'); 
-            } catch(e){ 
-                showNotification('Gagal buka blokir: ' + (e.message || 'Periksa tabel peserta')); 
+                const { data, error } = await db.from('peserta').delete().eq('id', id).select(); 
+                if(error) throw error; 
+                if(!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS).");
+                window.loadDatabasePeserta(window.currentFilterPeserta, true); 
+                showNotification('Data Siswa berhasil dihapus.'); 
+            } catch(err){ 
+                showNotification('Gagal Menghapus: ' + err.message); 
+                if(btn) btn.innerHTML = ori; 
+                window.loadDatabasePeserta(window.currentFilterPeserta, true); 
             } 
-        };
-        
-        window.hapusPeserta = async function(id, tingkat, e) { 
-            if(confirm("Yakin ingin menghapus siswa ini secara permanen?")) { 
-                const btn = e ? e.currentTarget : null; const ori = btn ? btn.innerHTML : ''; if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
-                try { 
-                    const db = getDb(tingkat); 
-                    const { error } = await db.from('peserta').delete().eq('id', id).select(); 
-                    if(error) throw error; 
-                    window.appData.peserta = window.appData.peserta.filter(p => !(String(p.id) === String(id) && String(p.tingkat) === String(tingkat)));
-                    window.loadDatabasePeserta(window.currentFilterPeserta, false); 
-                    showNotification('Data Siswa berhasil dihapus.'); 
-                } catch(err){ 
-                    try {
-                        for(let tk of ['7', '8', '9']) { await getDb(tk).from('peserta').delete().eq('id', id); }
-                        window.appData.peserta = window.appData.peserta.filter(p => String(p.id) !== String(id));
-                        window.loadDatabasePeserta(window.currentFilterPeserta, false);
-                        showNotification('Data Siswa berhasil dihapus.');
-                    } catch(err2) {
-                        showNotification('Gagal Menghapus: ' + err.message); 
-                        if(btn) btn.innerHTML = ori; 
-                    }
-                } 
-            } 
-        };
+        } 
+    };
 
-        window.downloadExcelTemplatePeserta = function() { const ws = XLSX.utils.json_to_sheet([{ username: "123456789", nama: "Ahmad Rizky", tingkat: "7", kelas: "7A" }]); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Template"); XLSX.writeFile(wb, "Template_Siswa.xlsx"); }
+    window.downloadExcelTemplatePeserta = function() { const ws = XLSX.utils.json_to_sheet([{ username: "123456789", nama: "Ahmad Rizky", tingkat: "7", kelas: "7A" }]); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Template"); XLSX.writeFile(wb, "Template_Siswa.xlsx"); }
         window.handleExcelImportPeserta = function(e) {
             const file = e.target.files[0]; if (!file) return; showNotification('Mengimpor ke Server...'); const reader = new FileReader();
             reader.onload = async function(evt) {
@@ -497,38 +483,32 @@
                     let newData = []; results.forEach(res => { if(res.status === 'fulfilled' && res.value.data) newData.push(...res.value.data); });
                     window.appData.soal = newData; window.appData.isFetched.soal = true;
                     if (window.currentRoute === 'soal') {
-                        let filtered = filterTingkat === 'semua' ? window.appData.soal : window.appData.soal.filter(s => String(s.tingkat) === filterTingkat);
-                        window.renderSoalUI(filtered, filterTingkat, false);
-                    }
-                });
-            }
-        };
+                    let filtered = filterTingkat === 'semua' ? window.appData.soal : window.appData.soal.filter(s => String(s.tingkat) === filterTingkat);
+                    window.renderSoalUI(filtered, filterTingkat, false);
+                }
+            });
+        }
+    };
 
-        window.hapusSoal = async function(id, tingkat, e) { 
-            if(confirm("Hapus soal ini?")) { 
-                const btn = e ? e.currentTarget : null; const ori = btn ? btn.innerHTML : ''; if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
-                try { 
-                    const db = getDb(tingkat); 
-                    const { error } = await db.from('soal').delete().eq('id', id).select(); 
-                    if(error) throw error; 
-                    window.appData.soal = window.appData.soal.filter(s => !(String(s.id) === String(id) && String(s.tingkat) === String(tingkat)));
-                    window.loadManajemenSoal(window.currentFilterTingkat, false); 
-                    showNotification('Soal berhasil dihapus.'); 
-                } catch(err){ 
-                    try {
-                        for(let tk of ['7', '8', '9']) { await getDb(tk).from('soal').delete().eq('id', id); }
-                        window.appData.soal = window.appData.soal.filter(s => String(s.id) !== String(id));
-                        window.loadManajemenSoal(window.currentFilterTingkat, false);
-                        showNotification('Soal berhasil dihapus.');
-                    } catch(err2) {
-                        showNotification('Gagal Menghapus: ' + err.message); 
-                        if(btn) btn.innerHTML = ori; 
-                    }
-                } 
+    window.hapusSoal = async function(id, tingkat, e) { 
+        if(confirm("Hapus soal ini?")) { 
+            const btn = e ? e.currentTarget : null; const ori = btn ? btn.innerHTML : ''; if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
+            try { 
+                const db = getDb(tingkat); 
+                const { data, error } = await db.from('soal').delete().eq('id', id).select(); 
+                if(error) throw error; 
+                if(!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS).");
+                window.loadManajemenSoal(window.currentFilterTingkat, true); 
+                showNotification('Soal berhasil dihapus.'); 
+            } catch(err){ 
+                showNotification('Gagal Menghapus: ' + err.message); 
+                if(btn) btn.innerHTML = ori; 
+                window.loadManajemenSoal(window.currentFilterTingkat, true); 
             } 
-        };
+        } 
+    };
 
-        window.openNewSoalModal = function() {
+    window.openNewSoalModal = function() {
             let modal = document.getElementById('new-soal-modal');
             if (!modal) { modal = document.createElement('div'); modal.id = 'new-soal-modal'; modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/90 p-4 overflow-y-auto'; document.body.appendChild(modal); }
             modal.innerHTML = `<div class="glass-card-dark p-6 md:p-8 rounded-3xl max-w-2xl w-full border border-slate-700 shadow-2xl my-auto"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold text-white"><i class="fa-solid fa-pen-to-square mr-2"></i> Tambah Soal Manual</h3><button onclick="document.getElementById('new-soal-modal').classList.add('hidden')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button></div><form onsubmit="window.handleCreateSoal(event)" class="space-y-4 text-sm text-left"><div class="grid grid-cols-2 gap-3"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Tingkat Kelas</label><select id="modal-soal-tingkat" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900"><option value="7">Kelas 7</option><option value="8">Kelas 8</option><option value="9">Kelas 9</option></select></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Mata Pelajaran</label><select id="modal-soal-mapel" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900">${window.listMapel.map(m=>`<option value="${m}">${m}</option>`).join('')}</select></div></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Teks Pertanyaan (Dapat Menggunakan HTML)</label><textarea id="modal-soal-tanya" required rows="4" class="w-full px-4 py-3 rounded-xl glass-input"></textarea></div><div class="grid grid-cols-1 md:grid-cols-2 gap-3"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Pilihan A</label><input type="text" id="modal-soal-a" required class="w-full px-4 py-2.5 rounded-xl glass-input"></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Pilihan B</label><input type="text" id="modal-soal-b" required class="w-full px-4 py-2.5 rounded-xl glass-input"></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Pilihan C</label><input type="text" id="modal-soal-c" required class="w-full px-4 py-2.5 rounded-xl glass-input"></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Pilihan D</label><input type="text" id="modal-soal-d" required class="w-full px-4 py-2.5 rounded-xl glass-input"></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-3"><div><label class="block font-bold text-emerald-400 mb-1.5 text-xs">Kunci Jawaban Benar</label><select id="modal-soal-kunci" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900 font-bold text-emerald-400"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div><div><label class="block font-bold text-amber-400 mb-1.5 text-xs">Skor Soal</label><input type="number" id="modal-soal-skor" required value="2" min="1" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900 font-bold text-amber-400"></div></div><div class="pt-4"><button type="submit" class="w-full py-3.5 gradient-btn text-white font-bold rounded-xl shadow-lg text-xs uppercase tracking-wider">Simpan Soal</button></div></form></div>`;
@@ -574,56 +554,47 @@
                 if (sbClient9 !== sbClient7) queries.push(sbClient9.from('jadwal').select('*'));
 
                 Promise.allSettled(queries).then(results => {
-                    let newData = []; results.forEach(res => { if(res.status === 'fulfilled' && res.value.data) newData.push(...res.value.data); });
-                    window.appData.jadwal = newData; window.appData.isFetched.jadwal = true;
-                    if(window.currentRoute === 'jadwal') window.renderJadwalUI(window.appData.jadwal, false);
-                });
-            }
-        };
+                let newData = []; results.forEach(res => { if(res.status === 'fulfilled' && res.value.data) newData.push(...res.value.data); });
+                window.appData.jadwal = newData; window.appData.isFetched.jadwal = true;
+                if(window.currentRoute === 'jadwal') window.renderJadwalUI(window.appData.jadwal, false);
+            });
+        }
+    };
 
-        window.toggleStatusJadwal = async function(id, currentStatus, tingkat) { 
-            const newStatus = currentStatus === 'Aktif' ? 'Tidak Aktif' : 'Aktif'; 
+    window.toggleStatusJadwal = async function(id, currentStatus, tingkat) { 
+        const newStatus = currentStatus === 'Aktif' ? 'Tidak Aktif' : 'Aktif'; 
+        try { 
+            const db = getDb(tingkat); 
+            const { data, error } = await db.from('jadwal').update({ status: newStatus }).eq('id', id).select(); 
+            if (error) throw error;
+            if (!data || data.length === 0) throw new Error("Akses ditolak (RLS).");
+            window.loadManajemenJadwal(true); 
+            showNotification(`Status jadwal berhasil diubah menjadi ${newStatus}!`);
+        } catch(e) {
+            showNotification(`Gagal mengubah status: ${e.message}`);
+            window.loadManajemenJadwal(true); // Paksa muat ulang dari server karena gagal
+        } 
+    };
+    
+    window.hapusJadwal = async function(id, tingkat, e) { 
+        if(confirm("Yakin ingin menghapus jadwal ujian ini secara permanen?")) { 
+            const btn = e ? e.currentTarget : null; const ori = btn ? btn.innerHTML : ''; if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
             try { 
                 const db = getDb(tingkat); 
-                const { error } = await db.from('jadwal').update({ status: newStatus }).eq('id', id); 
-                if (error) throw error;
-                
-                const idx = window.appData.jadwal.findIndex(j => String(j.id) === String(id) && String(j.tingkat) === String(tingkat));
-                if(idx !== -1) window.appData.jadwal[idx].status = newStatus;
-                
-                window.loadManajemenJadwal(false); 
-                showNotification(`Status jadwal berhasil diubah menjadi ${newStatus}!`);
-            } catch(e) {
-                showNotification(`Gagal mengubah status: ${e.message}`);
-                window.loadManajemenJadwal(true); // Paksa muat ulang dari server karena gagal
+                const { data, error } = await db.from('jadwal').delete().eq('id', id).select(); 
+                if(error) throw error; 
+                if(!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS).");
+                window.loadManajemenJadwal(true); 
+                showNotification('Jadwal Ujian berhasil dihapus.'); 
+            } catch(err){ 
+                showNotification('Gagal Menghapus: ' + err.message); 
+                if(btn) btn.innerHTML = ori; 
+                window.loadManajemenJadwal(true); 
             } 
-        };
-        
-        window.hapusJadwal = async function(id, tingkat, e) { 
-            if(confirm("Yakin ingin menghapus jadwal ujian ini secara permanen?")) { 
-                const btn = e ? e.currentTarget : null; const ori = btn ? btn.innerHTML : ''; if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
-                try { 
-                    const db = getDb(tingkat); 
-                    const { error } = await db.from('jadwal').delete().eq('id', id).select(); 
-                    if(error) throw error; 
-                    window.appData.jadwal = window.appData.jadwal.filter(j => !(String(j.id) === String(id) && String(j.tingkat) === String(tingkat)));
-                    window.loadManajemenJadwal(false); 
-                    showNotification('Jadwal Ujian berhasil dihapus.'); 
-                } catch(err){ 
-                    try {
-                        for(let tk of ['7', '8', '9']) { await getDb(tk).from('jadwal').delete().eq('id', id); }
-                        window.appData.jadwal = window.appData.jadwal.filter(j => String(j.id) !== String(id));
-                        window.loadManajemenJadwal(false);
-                        showNotification('Jadwal Ujian berhasil dihapus.');
-                    } catch(err2) {
-                        showNotification('Gagal Menghapus: ' + err.message); 
-                        if(btn) btn.innerHTML = ori; 
-                    }
-                } 
-            } 
-        };
+        } 
+    };
 
-        window.openNewExamModal = function() {
+    window.openNewExamModal = function() {
             let modal = document.getElementById('new-exam-modal'); if (!modal) { modal = document.createElement('div'); modal.id = 'new-exam-modal'; modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 p-4'; document.body.appendChild(modal); }
             modal.innerHTML = `<div class="glass-card-dark p-6 md:p-8 rounded-3xl max-w-md w-full border border-slate-700 shadow-2xl"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold text-white">Jadwal Ujian Baru</h3><button onclick="document.getElementById('new-exam-modal').classList.add('hidden')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button></div><form onsubmit="window.handleCreateExam(event)" class="space-y-4 text-sm text-left"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Tanggal Pelaksanaan</label><input type="date" id="modal-exam-date" required class="w-full px-4 py-3 rounded-xl glass-input text-slate-200"></div><div class="grid grid-cols-2 gap-3"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Tingkat</label><select id="modal-exam-tingkat" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900"><option value="7">Kelas 7</option><option value="8">Kelas 8</option><option value="9">Kelas 9</option></select></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Durasi (Menit)</label><input type="number" id="modal-exam-durasi" required min="10" value="90" class="w-full px-4 py-3 rounded-xl glass-input"></div></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Mata Pelajaran</label><select id="modal-exam-mapel" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900">${window.listMapel.map(m=>`<option value="${m}">${m}</option>`).join('')}</select></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Token Pengawas</label><div class="flex gap-2"><input type="text" id="modal-exam-token" required class="w-full px-4 py-3 rounded-xl glass-input font-mono font-bold uppercase text-amber-400 text-center tracking-widest"><button type="button" onclick="window.generateNewToken()" class="px-4 py-3 bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 rounded-xl hover:bg-indigo-600/30 transition"><i class="fa-solid fa-rotate"></i></button></div></div><div class="pt-4"><button type="submit" class="w-full py-4 gradient-btn text-white font-bold rounded-xl shadow-lg text-xs uppercase tracking-wider">Simpan Jadwal</button></div></form></div>`;
             modal.classList.remove('hidden'); document.getElementById('modal-exam-date').valueAsDate = new Date();
@@ -649,26 +620,33 @@
         };
 
         window.handleUpdateExam = async function(e, id, oldTingkat) {
-            e.preventDefault(); const btn = e.target.querySelector('button'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...'; btn.disabled = true;
-            const tk = document.getElementById('edit-exam-tingkat').value; const dt = new Date(document.getElementById('edit-exam-date').value);
-            const payload = { hari: ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][dt.getDay()], tanggal: document.getElementById('edit-exam-date').value, mapel: document.getElementById('edit-exam-mapel').value, tingkat: tk, durasi: parseInt(document.getElementById('edit-exam-durasi').value)||90, token: document.getElementById('edit-exam-token').value.trim().toUpperCase(), status: document.getElementById('edit-exam-status').value };
-            
-            try { 
-                if(oldTingkat === tk) { 
-                    const db = getDb(tk); 
-                    const { error } = await db.from('jadwal').update(payload).eq('id', id); 
-                    if(error) throw error; 
-                } else { 
-                    const dbOld = getDb(oldTingkat); await dbOld.from('jadwal').delete().eq('id', id); 
-                    const dbNew = getDb(tk); await dbNew.from('jadwal').insert([payload]); 
-                }
-                document.getElementById('edit-exam-modal').classList.add('hidden'); 
-                window.loadManajemenJadwal(true); 
-                showNotification("Perubahan Jadwal berhasil disimpan!");
-            } catch(err) { showNotification(`Gagal: ${err.message}`); } finally { btn.innerHTML = 'Simpan Perubahan'; btn.disabled = false; }
-        };
+        e.preventDefault(); const btn = e.target.querySelector('button'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...'; btn.disabled = true;
+        const tk = document.getElementById('edit-exam-tingkat').value; const dt = new Date(document.getElementById('edit-exam-date').value);
+        const payload = { hari: ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][dt.getDay()], tanggal: document.getElementById('edit-exam-date').value, mapel: document.getElementById('edit-exam-mapel').value, tingkat: tk, durasi: parseInt(document.getElementById('edit-exam-durasi').value)||90, token: document.getElementById('edit-exam-token').value.trim().toUpperCase(), status: document.getElementById('edit-exam-status').value };
+        
+        try { 
+            if(oldTingkat === tk) { 
+                const db = getDb(tk); 
+                const { data, error } = await db.from('jadwal').update(payload).eq('id', id).select(); 
+                if(error) throw error; 
+                if(!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS).");
+            } else { 
+                const dbOld = getDb(oldTingkat); 
+                const { data: dataOld, error: errOld } = await dbOld.from('jadwal').delete().eq('id', id).select(); 
+                if(errOld) throw errOld;
+                if(!dataOld || dataOld.length === 0) throw new Error("Gagal menghapus jadwal lama (Akses ditolak RLS).");
+                
+                const dbNew = getDb(tk); 
+                const { error: errNew } = await dbNew.from('jadwal').insert([payload]); 
+                if (errNew) throw errNew;
+            }
+            document.getElementById('edit-exam-modal').classList.add('hidden'); 
+            window.loadManajemenJadwal(true); 
+            showNotification("Perubahan Jadwal berhasil disimpan!");
+        } catch(err) { showNotification(`Gagal: ${err.message}`); window.loadManajemenJadwal(true); } finally { btn.innerHTML = 'Simpan Perubahan'; btn.disabled = false; }
+    };
 
-        window.renderHasilUI = function(allH, filterTingkat, isSyncing = false) {
+    window.renderHasilUI = function(allH, filterTingkat, isSyncing = false) {
             if (window.currentRoute !== 'hasil') return; const container = document.getElementById('content-container');
             let html = `<div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"><div><h1 class="text-2xl md:text-3xl font-extrabold text-white">Rekap Nilai Ujian</h1><p class="text-sm text-slate-400 mt-1">Sinkronisasi Real-Time ke Database Pusat</p></div><div class="flex gap-2 flex-wrap w-full md:w-auto">
             <button onclick="window.hapusHasilTerpilih()" id="btn-hapus-hasil" class="hidden flex-1 md:flex-none px-4 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs uppercase shadow-lg border border-red-500/50 transition"><i class="fa-solid fa-trash-can mr-1"></i> Hapus (<span id="count-hasil-terpilih">0</span>)</button>
@@ -686,46 +664,38 @@
         window.updateBtnHapusHasilTerpilih = function() {
             const checkBoxes = document.querySelectorAll('.chk-hasil'); const checkedCount = document.querySelectorAll('.chk-hasil:checked').length;
             const btn = document.getElementById('btn-hapus-hasil'); const chkAll = document.getElementById('chk-all-hasil');
-            if (chkAll) chkAll.checked = (checkBoxes.length > 0 && checkedCount === checkBoxes.length);
-            if(btn) { if(checkedCount > 0) { btn.classList.remove('hidden'); document.getElementById('count-hasil-terpilih').innerText = checkedCount; } else { btn.classList.add('hidden'); } }
-        };
+        if (chkAll) chkAll.checked = (checkBoxes.length > 0 && checkedCount === checkBoxes.length);
+        if(btn) { if(checkedCount > 0) { btn.classList.remove('hidden'); document.getElementById('count-hasil-terpilih').innerText = checkedCount; } else { btn.classList.add('hidden'); } }
+    };
 
-        window.hapusHasilTerpilih = async function() {
-            const checked = document.querySelectorAll('.chk-hasil:checked');
-            if(checked.length === 0) return;
-            if(!confirm(`Yakin ingin menghapus ${checked.length} data nilai yang dipilih secara permanen?`)) return;
+    window.hapusHasilTerpilih = async function() {
+        const checked = document.querySelectorAll('.chk-hasil:checked');
+        if(checked.length === 0) return;
+        if(!confirm(`Yakin ingin menghapus ${checked.length} data nilai yang dipilih secara permanen?`)) return;
 
-            const btn = document.getElementById('btn-hapus-hasil'); const originalHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...'; btn.disabled = true;
+        const btn = document.getElementById('btn-hapus-hasil'); const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...'; btn.disabled = true;
 
-            const toDelete = { '7': [], '8': [], '9': [] };
-            checked.forEach(chk => { const parts = chk.value.split('|'); if(parts.length === 2) { toDelete[parts[1]].push(parts[0]); } });
+        const toDelete = { '7': [], '8': [], '9': [] };
+        checked.forEach(chk => { const parts = chk.value.split('|'); if(parts.length === 2) { toDelete[parts[1]].push(parts[0]); } });
 
-            try {
-                for (let tk of ['7', '8', '9']) {
-                    if (toDelete[tk].length > 0) {
-                        const db = getDb(tk); const { error } = await db.from('hasil').delete().in('id', toDelete[tk]);
-                        if (error) throw error;
-                        window.appData.hasil = window.appData.hasil.filter(h => !(String(h.tingkat) === String(tk) && toDelete[tk].includes(String(h.id))));
-                    }
-                }
-                showNotification(`${checked.length} Data Nilai berhasil dihapus.`); window.loadRekapNilai(window.currentFilterTingkat, false);
-            } catch(err) {
-                try {
-                     for (let tk of ['7', '8', '9']) {
-                         if (toDelete[tk].length > 0) {
-                             for (let id of toDelete[tk]) { await getDb(tk).from('hasil').delete().eq('id', id); }
-                             window.appData.hasil = window.appData.hasil.filter(h => !(String(h.tingkat) === String(tk) && toDelete[tk].includes(String(h.id))));
-                         }
-                     }
-                     showNotification(`${checked.length} Data Nilai berhasil dihapus.`); window.loadRekapNilai(window.currentFilterTingkat, false);
-                } catch (err2) {
-                     showNotification('Gagal menghapus beberapa data: ' + err2.message); btn.innerHTML = originalHtml; btn.disabled = false;
+        try {
+            for (let tk of ['7', '8', '9']) {
+                if (toDelete[tk].length > 0) {
+                    const db = getDb(tk); 
+                    const { data, error } = await db.from('hasil').delete().in('id', toDelete[tk]).select();
+                    if (error) throw error;
+                    if (!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS).");
                 }
             }
-        };
+            showNotification(`${checked.length} Data Nilai berhasil dihapus.`); window.loadRekapNilai(window.currentFilterTingkat, true);
+        } catch(err) {
+            showNotification('Gagal menghapus: ' + err.message); btn.innerHTML = originalHtml; btn.disabled = false;
+            window.loadRekapNilai(window.currentFilterTingkat, true);
+        }
+    };
 
-        window.loadRekapNilai = function(filterTingkat = 'semua', forceRefresh = false) {
+    window.loadRekapNilai = function(filterTingkat = 'semua', forceRefresh = false) {
             window.currentRoute = 'hasil'; window.currentFilterTingkat = filterTingkat;
             let currentData = filterTingkat === 'semua' ? window.appData.hasil : window.appData.hasil.filter(h => String(h.tingkat) === filterTingkat);
             window.renderHasilUI(currentData, filterTingkat, !window.appData.isFetched.hasil || forceRefresh);
@@ -774,39 +744,34 @@
         window.updateBtnHapusBATerpilih = function() {
             const checkedCount = document.querySelectorAll('.chk-ba:checked').length; const btn = document.getElementById('btn-hapus-ba');
             document.querySelectorAll('table').forEach(table => {
-                 const chks = table.querySelectorAll('.chk-ba'); const chksChecked = table.querySelectorAll('.chk-ba:checked'); const chkAll = table.querySelector('thead input[type="checkbox"]');
-                 if(chkAll && chks.length > 0) chkAll.checked = (chks.length === chksChecked.length);
-            });
-            if(btn) { if(checkedCount > 0) { btn.classList.remove('hidden'); document.getElementById('count-ba-terpilih').innerText = checkedCount; } else { btn.classList.add('hidden'); } }
-        };
+             const chks = table.querySelectorAll('.chk-ba'); const chksChecked = table.querySelectorAll('.chk-ba:checked'); const chkAll = table.querySelector('thead input[type="checkbox"]');
+             if(chkAll && chks.length > 0) chkAll.checked = (chks.length === chksChecked.length);
+        });
+        if(btn) { if(checkedCount > 0) { btn.classList.remove('hidden'); document.getElementById('count-ba-terpilih').innerText = checkedCount; } else { btn.classList.add('hidden'); } }
+    };
 
-        window.hapusBATerpilih = async function() {
-            const checked = document.querySelectorAll('.chk-ba:checked');
-            if(checked.length === 0) return;
-            if(!confirm(`Yakin ingin menghapus ${checked.length} Berita Acara yang dipilih secara permanen?`)) return;
+    window.hapusBATerpilih = async function() {
+        const checked = document.querySelectorAll('.chk-ba:checked');
+        if(checked.length === 0) return;
+        if(!confirm(`Yakin ingin menghapus ${checked.length} Berita Acara yang dipilih secara permanen?`)) return;
 
-            const btn = document.getElementById('btn-hapus-ba'); const originalHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...'; btn.disabled = true;
+        const btn = document.getElementById('btn-hapus-ba'); const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...'; btn.disabled = true;
 
-            const toDelete = Array.from(checked).map(chk => chk.value);
+        const toDelete = Array.from(checked).map(chk => chk.value);
 
-            try {
-                const { error } = await sbClient7.from('berita_acara').delete().in('id', toDelete);
-                if (error) throw error;
-                window.appData.beritaAcara = window.appData.beritaAcara.filter(b => !toDelete.includes(String(b.id)));
-                showNotification(`${checked.length} Berita Acara berhasil dihapus.`); window.loadAdminDaftarBeritaAcara(false);
-            } catch(err) {
-                try {
-                     for (let id of toDelete) { await sbClient7.from('berita_acara').delete().eq('id', id); }
-                     window.appData.beritaAcara = window.appData.beritaAcara.filter(b => !toDelete.includes(String(b.id)));
-                     showNotification(`${checked.length} Berita Acara berhasil dihapus.`); window.loadAdminDaftarBeritaAcara(false);
-                } catch (err2) {
-                     showNotification('Gagal menghapus beberapa data: ' + err2.message); btn.innerHTML = originalHtml; btn.disabled = false;
-                }
-            }
-        };
+        try {
+            const { data, error } = await sbClient7.from('berita_acara').delete().in('id', toDelete).select();
+            if (error) throw error;
+            if (!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS).");
+            showNotification(`${checked.length} Berita Acara berhasil dihapus.`); window.loadAdminDaftarBeritaAcara(true);
+        } catch(err) {
+            showNotification('Gagal menghapus: ' + err.message); btn.innerHTML = originalHtml; btn.disabled = false;
+            window.loadAdminDaftarBeritaAcara(true);
+        }
+    };
 
-        window.loadAdminDaftarBeritaAcara = function(forceRefresh = false) {
+    window.loadAdminDaftarBeritaAcara = function(forceRefresh = false) {
             window.currentRoute = 'beritaAcara'; window.renderBeritaAcaraUI(window.appData.beritaAcara, !window.appData.isFetched.beritaAcara || forceRefresh);
             if (!window.appData.isFetched.beritaAcara || forceRefresh) { sbClient7.from('berita_acara').select('*').then(res => { if (res.data) { window.appData.beritaAcara = res.data; window.appData.isFetched.beritaAcara = true; if(window.currentRoute === 'beritaAcara') window.renderBeritaAcaraUI(window.appData.beritaAcara, false); } }); }
         };
