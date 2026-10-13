@@ -99,21 +99,19 @@
             if(e.ctrlKey && e.keyCode === 85) return false;
         };
 
-        // KONFIGURASI SUPABASE (HARDCODE - PATEN)
-        // SERVER 7 (MASTER)
+        // KONFIGURASI SUPABASE (HARDCODE)
+        // SERVER 7
         const DEFAULT_URL = "https://rcvuwfvcyxhqukjmnabz.supabase.co";
         const DEFAULT_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjdnV3ZnZjeXhocXVram1uYWJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MzMwNDAsImV4cCI6MjEwNzMwOTA0MH0.qLlh_3IpQJdwNSXwmsFwX-9RS8vpEgk2SykKd4ZD5Ac";
-        
-        const SB_URL_7 = localStorage.getItem('sb_url_7') || DEFAULT_URL;
-        const SB_KEY_7 = localStorage.getItem('sb_key_7') || DEFAULT_KEY;
+        const SB_URL_7 = DEFAULT_URL; const SB_KEY_7 = DEFAULT_KEY;
         
         // SERVER 8
-        const SB_URL_8 = localStorage.getItem('sb_url_8') || "https://bbfvxgbdisbjmjhmopqb.supabase.co";
-        const SB_KEY_8 = localStorage.getItem('sb_key_8') || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiZnZ4Z2JkaXNiam1qaG1vcHFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4NjMzNTcsImV4cCI6MjEwNzQzOTM1N30.0GNE4g6NmECKti5fzRVfBH527f-pr7FQ0jlyNX4E5zc";
+        const SB_URL_8 = "https://bbfvxgbdisbjmjhmopqb.supabase.co";
+        const SB_KEY_8 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiZnZ4Z2JkaXNiam1qaG1vcHFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4NjMzNTcsImV4cCI6MjEwNzQzOTM1N30.0GNE4g6NmECKti5fzRVfBH527f-pr7FQ0jlyNX4E5zc";
         
         // SERVER 9
-        const SB_URL_9 = localStorage.getItem('sb_url_9') || "https://rteagpcpykmggvcslxnq.supabase.co";
-        const SB_KEY_9 = localStorage.getItem('sb_key_9') || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0ZWFncGNweWttZ2d2Y3NseG5xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MTM2NjcsImV4cCI6MjEwNzM4OTY2N30.1lqcMUtt_T4381NXUiFJtmpcHsAiEBceKjk8eqLeVZE";
+        const SB_URL_9 = "https://rteagpcpykmggvcslxnq.supabase.co";
+        const SB_KEY_9 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0ZWFncGNweWttZ2d2Y3NseG5xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MTM2NjcsImV4cCI6MjEwNzM4OTY2N30.1lqcMUtt_T4381NXUiFJtmpcHsAiEBceKjk8eqLeVZE";
         
         let sbClient7, sbClient8, sbClient9;
         try {
@@ -279,24 +277,15 @@
         window.closeMobileSidebar = function() { if(window.innerWidth < 768) { document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('mobile-sidebar-overlay').classList.add('hidden'); } }
 
         let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-        });
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
 
         window.installPWA = async function() {
             if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') { console.log('Aplikasi diinstal'); }
-                deferredPrompt = null;
+                deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; deferredPrompt = null;
             } else {
                 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-                if(isIOS) {
-                    alert("Untuk menginstal di iOS (iPhone/iPad):\n\n1. Ketuk ikon 'Bagikan' (Share) 📤 di bagian bawah Safari.\n2. Gulir ke bawah, lalu pilih 'Tambah ke Layar Utama' (Add to Home Screen) ➕.");
-                } else {
-                    alert("Aplikasi siap diinstal!\n\nJika otomatis tidak muncul, buka menu setelan browser (tiga titik di pojok kanan atas) lalu pilih 'Tambahkan ke Layar Utama' atau 'Instal Aplikasi'.");
-                }
+                if(isIOS) { alert("Untuk menginstal di iOS (iPhone/iPad):\n\n1. Ketuk ikon 'Bagikan' (Share) 📤 di bagian bawah Safari.\n2. Gulir ke bawah, lalu pilih 'Tambah ke Layar Utama' (Add to Home Screen) ➕."); } 
+                else { alert("Aplikasi siap diinstal!\n\nBuka setelan browser Anda (tiga titik di pojok kanan atas) lalu pilih 'Tambahkan ke Layar Utama' atau 'Instal Aplikasi'."); }
             }
         };
 
@@ -319,74 +308,47 @@
         };
 
         window.toggleAllPeserta = function(e) {
-            const isChecked = e.target.checked;
-            document.querySelectorAll('.chk-peserta').forEach(chk => chk.checked = isChecked);
-            window.updateBtnHapusTerpilih();
+            const isChecked = e.target.checked; document.querySelectorAll('.chk-peserta').forEach(chk => chk.checked = isChecked); window.updateBtnHapusTerpilih();
         };
 
         window.updateBtnHapusTerpilih = function() {
-            const checkBoxes = document.querySelectorAll('.chk-peserta');
-            const checkedCount = document.querySelectorAll('.chk-peserta:checked').length;
-            const btn = document.getElementById('btn-hapus-terpilih');
-            const chkAll = document.getElementById('chk-all-peserta');
-            
+            const checkBoxes = document.querySelectorAll('.chk-peserta'); const checkedCount = document.querySelectorAll('.chk-peserta:checked').length;
+            const btn = document.getElementById('btn-hapus-terpilih'); const chkAll = document.getElementById('chk-all-peserta');
             if (chkAll) chkAll.checked = (checkBoxes.length > 0 && checkedCount === checkBoxes.length);
-
-            if(btn) {
-                if(checkedCount > 0) {
-                    btn.classList.remove('hidden');
-                    document.getElementById('count-terpilih').innerText = checkedCount;
-                } else {
-                    btn.classList.add('hidden');
-                }
-            }
+            if(btn) { if(checkedCount > 0) { btn.classList.remove('hidden'); document.getElementById('count-terpilih').innerText = checkedCount; } else { btn.classList.add('hidden'); } }
         };
 
         window.hapusPesertaTerpilih = async function() {
             const checked = document.querySelectorAll('.chk-peserta:checked');
             if(checked.length === 0) return;
-            if(!confirm(`Yakin ingin menghapus ${checked.length} siswa yang dipilih secara permanen? Data tidak dapat dikembalikan.`)) return;
+            if(!confirm(`Yakin ingin menghapus ${checked.length} siswa yang dipilih secara permanen?`)) return;
 
-            const btn = document.getElementById('btn-hapus-terpilih');
-            const originalHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...';
-            btn.disabled = true;
+            const btn = document.getElementById('btn-hapus-terpilih'); const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...'; btn.disabled = true;
 
             const toDelete = { '7': [], '8': [], '9': [] };
-            checked.forEach(chk => {
-                const parts = chk.value.split('|');
-                if(parts.length === 2) {
-                    toDelete[parts[1]].push(parts[0]);
-                }
-            });
+            checked.forEach(chk => { const parts = chk.value.split('|'); if(parts.length === 2) { toDelete[parts[1]].push(parts[0]); } });
 
             try {
                 for (let tk of ['7', '8', '9']) {
                     if (toDelete[tk].length > 0) {
-                        const db = getDb(tk);
-                        const { error } = await db.from('peserta').delete().in('id', toDelete[tk]);
+                        const db = getDb(tk); const { error } = await db.from('peserta').delete().in('id', toDelete[tk]);
                         if (error) throw error;
                         window.appData.peserta = window.appData.peserta.filter(p => !(String(p.tingkat) === String(tk) && toDelete[tk].includes(String(p.id))));
                     }
                 }
-                showNotification(`${checked.length} Siswa berhasil dihapus.`);
-                window.loadDatabasePeserta(window.currentFilterPeserta, false);
+                showNotification(`${checked.length} Siswa berhasil dihapus.`); window.loadDatabasePeserta(window.currentFilterPeserta, false);
             } catch(err) {
                 try {
                      for (let tk of ['7', '8', '9']) {
                          if (toDelete[tk].length > 0) {
-                             for (let id of toDelete[tk]) {
-                                 await getDb(tk).from('peserta').delete().eq('id', id);
-                             }
+                             for (let id of toDelete[tk]) { await getDb(tk).from('peserta').delete().eq('id', id); }
                              window.appData.peserta = window.appData.peserta.filter(p => !(String(p.tingkat) === String(tk) && toDelete[tk].includes(String(p.id))));
                          }
                      }
-                     showNotification(`${checked.length} Siswa berhasil dihapus.`);
-                     window.loadDatabasePeserta(window.currentFilterPeserta, false);
+                     showNotification(`${checked.length} Siswa berhasil dihapus.`); window.loadDatabasePeserta(window.currentFilterPeserta, false);
                 } catch (err2) {
-                     showNotification('Gagal menghapus beberapa data: ' + err2.message);
-                     btn.innerHTML = originalHtml;
-                     btn.disabled = false;
+                     showNotification('Gagal menghapus beberapa data: ' + err2.message); btn.innerHTML = originalHtml; btn.disabled = false;
                 }
             }
         };
@@ -493,8 +455,7 @@
             } catch(err) { 
                 showNotification(`Gagal: ${err.message || 'Periksa struktur tabel peserta'}`); 
             } finally { 
-                btn.innerHTML = 'Simpan'; 
-                btn.disabled = false; 
+                btn.innerHTML = 'Simpan'; btn.disabled = false; 
             }
         };
 
@@ -611,11 +572,18 @@
             const newStatus = currentStatus === 'Aktif' ? 'Tidak Aktif' : 'Aktif'; 
             try { 
                 const db = getDb(tingkat); 
-                await db.from('jadwal').update({ status: newStatus }).eq('id', id); 
+                const { error } = await db.from('jadwal').update({ status: newStatus }).eq('id', id); 
+                if (error) throw error;
+                
                 const idx = window.appData.jadwal.findIndex(j => String(j.id) === String(id) && String(j.tingkat) === String(tingkat));
                 if(idx !== -1) window.appData.jadwal[idx].status = newStatus;
+                
                 window.loadManajemenJadwal(false); 
-            } catch(e){} 
+                showNotification(`Status jadwal berhasil diubah menjadi ${newStatus}!`);
+            } catch(e) {
+                showNotification(`Gagal mengubah status: ${e.message}`);
+                window.loadManajemenJadwal(true); // Paksa muat ulang dari server karena gagal
+            } 
         };
         
         window.hapusJadwal = async function(id, tingkat, e) { 
@@ -663,14 +631,14 @@
             let modal = document.getElementById('edit-exam-modal'); 
             if (!modal) { modal = document.createElement('div'); modal.id = 'edit-exam-modal'; modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 p-4'; document.body.appendChild(modal); }
             
-            modal.innerHTML = `<div class="glass-card-dark p-6 md:p-8 rounded-3xl max-w-md w-full border border-slate-700 shadow-2xl"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold text-white"><i class="fa-solid fa-pen-to-square mr-2 text-amber-400"></i>Edit Jadwal Ujian</h3><button onclick="document.getElementById('edit-exam-modal').classList.add('hidden')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button></div><form onsubmit="window.handleUpdateExam(event, '${id}', '${tingkat}')" class="space-y-4 text-sm text-left"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Tanggal Pelaksanaan</label><input type="date" id="edit-exam-date" required value="${j.tanggal}" class="w-full px-4 py-3 rounded-xl glass-input text-slate-200"></div><div class="grid grid-cols-2 gap-3"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Tingkat</label><select id="edit-exam-tingkat" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900"><option value="7" ${j.tingkat==='7'?'selected':''}>Kelas 7</option><option value="8" ${j.tingkat==='8'?'selected':''}>Kelas 8</option><option value="9" ${j.tingkat==='9'?'selected':''}>Kelas 9</option></select></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Durasi (Menit)</label><input type="number" id="edit-exam-durasi" required min="10" value="${j.durasi||90}" class="w-full px-4 py-3 rounded-xl glass-input"></div></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Mata Pelajaran</label><select id="edit-exam-mapel" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900">${window.listMapel.map(m=>`<option value="${m}" ${j.mapel===m?'selected':''}>${m}</option>`).join('')}</select></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Token Pengawas</label><div class="flex gap-2"><input type="text" id="edit-exam-token" required value="${j.token}" class="w-full px-4 py-3 rounded-xl glass-input font-mono font-bold uppercase text-amber-400 text-center tracking-widest"><button type="button" onclick="document.getElementById('edit-exam-token').value = Array.from({length:5},()=>'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.charAt(Math.floor(Math.random()*36))).join('')" class="px-4 py-3 bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 rounded-xl hover:bg-indigo-600/30 transition"><i class="fa-solid fa-rotate"></i></button></div></div><div class="pt-4"><button type="submit" class="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl shadow-lg text-xs uppercase tracking-wider transition">Simpan Perubahan</button></div></form></div>`;
+            modal.innerHTML = `<div class="glass-card-dark p-6 md:p-8 rounded-3xl max-w-md w-full border border-slate-700 shadow-2xl"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold text-white"><i class="fa-solid fa-pen-to-square mr-2 text-amber-400"></i>Edit Jadwal Ujian</h3><button onclick="document.getElementById('edit-exam-modal').classList.add('hidden')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button></div><form onsubmit="window.handleUpdateExam(event, '${id}', '${tingkat}')" class="space-y-4 text-sm text-left"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Tanggal Pelaksanaan</label><input type="date" id="edit-exam-date" required value="${j.tanggal}" class="w-full px-4 py-3 rounded-xl glass-input text-slate-200"></div><div class="grid grid-cols-2 gap-3"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Tingkat</label><select id="edit-exam-tingkat" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900"><option value="7" ${j.tingkat==='7'?'selected':''}>Kelas 7</option><option value="8" ${j.tingkat==='8'?'selected':''}>Kelas 8</option><option value="9" ${j.tingkat==='9'?'selected':''}>Kelas 9</option></select></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Durasi (Menit)</label><input type="number" id="edit-exam-durasi" required min="10" value="${j.durasi||90}" class="w-full px-4 py-3 rounded-xl glass-input"></div></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Mata Pelajaran</label><select id="edit-exam-mapel" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900">${window.listMapel.map(m=>`<option value="${m}" ${j.mapel===m?'selected':''}>${m}</option>`).join('')}</select></div><div class="grid grid-cols-2 gap-3"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Token Pengawas</label><div class="flex gap-2"><input type="text" id="edit-exam-token" required value="${j.token}" class="w-full px-4 py-3 rounded-xl glass-input font-mono font-bold uppercase text-amber-400 text-center tracking-widest"><button type="button" onclick="document.getElementById('edit-exam-token').value = Array.from({length:5},()=>'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.charAt(Math.floor(Math.random()*36))).join('')" class="px-4 py-3 bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 rounded-xl hover:bg-indigo-600/30 transition"><i class="fa-solid fa-rotate"></i></button></div></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Status Ujian</label><select id="edit-exam-status" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900 font-bold ${j.status === 'Aktif' ? 'text-emerald-400' : 'text-red-400'}"><option value="Aktif" ${j.status === 'Aktif' ? 'selected' : ''} class="text-emerald-400">Aktif</option><option value="Tidak Aktif" ${j.status !== 'Aktif' ? 'selected' : ''} class="text-red-400">Tidak Aktif</option></select></div></div><div class="pt-4"><button type="submit" class="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl shadow-lg text-xs uppercase tracking-wider transition">Simpan Perubahan</button></div></form></div>`;
             modal.classList.remove('hidden');
         };
 
         window.handleUpdateExam = async function(e, id, oldTingkat) {
             e.preventDefault(); const btn = e.target.querySelector('button'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...'; btn.disabled = true;
             const tk = document.getElementById('edit-exam-tingkat').value; const dt = new Date(document.getElementById('edit-exam-date').value);
-            const payload = { hari: ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][dt.getDay()], tanggal: document.getElementById('edit-exam-date').value, mapel: document.getElementById('edit-exam-mapel').value, tingkat: tk, durasi: parseInt(document.getElementById('edit-exam-durasi').value)||90, token: document.getElementById('edit-exam-token').value.trim().toUpperCase() };
+            const payload = { hari: ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][dt.getDay()], tanggal: document.getElementById('edit-exam-date').value, mapel: document.getElementById('edit-exam-mapel').value, tingkat: tk, durasi: parseInt(document.getElementById('edit-exam-durasi').value)||90, token: document.getElementById('edit-exam-token').value.trim().toUpperCase(), status: document.getElementById('edit-exam-status').value };
             
             try { 
                 if(oldTingkat === tk) { 
@@ -679,7 +647,7 @@
                     if(error) throw error; 
                 } else { 
                     const dbOld = getDb(oldTingkat); await dbOld.from('jadwal').delete().eq('id', id); 
-                    const dbNew = getDb(tk); payload.status = 'Aktif'; await dbNew.from('jadwal').insert([payload]); 
+                    const dbNew = getDb(tk); await dbNew.from('jadwal').insert([payload]); 
                 }
                 document.getElementById('edit-exam-modal').classList.add('hidden'); 
                 window.loadManajemenJadwal(true); 
@@ -699,27 +667,14 @@
         };
 
         window.toggleAllHasil = function(e) {
-            const isChecked = e.target.checked;
-            document.querySelectorAll('.chk-hasil').forEach(chk => chk.checked = isChecked);
-            window.updateBtnHapusHasilTerpilih();
+            const isChecked = e.target.checked; document.querySelectorAll('.chk-hasil').forEach(chk => chk.checked = isChecked); window.updateBtnHapusHasilTerpilih();
         };
 
         window.updateBtnHapusHasilTerpilih = function() {
-            const checkBoxes = document.querySelectorAll('.chk-hasil');
-            const checkedCount = document.querySelectorAll('.chk-hasil:checked').length;
-            const btn = document.getElementById('btn-hapus-hasil');
-            const chkAll = document.getElementById('chk-all-hasil');
-            
+            const checkBoxes = document.querySelectorAll('.chk-hasil'); const checkedCount = document.querySelectorAll('.chk-hasil:checked').length;
+            const btn = document.getElementById('btn-hapus-hasil'); const chkAll = document.getElementById('chk-all-hasil');
             if (chkAll) chkAll.checked = (checkBoxes.length > 0 && checkedCount === checkBoxes.length);
-
-            if(btn) {
-                if(checkedCount > 0) {
-                    btn.classList.remove('hidden');
-                    document.getElementById('count-hasil-terpilih').innerText = checkedCount;
-                } else {
-                    btn.classList.add('hidden');
-                }
-            }
+            if(btn) { if(checkedCount > 0) { btn.classList.remove('hidden'); document.getElementById('count-hasil-terpilih').innerText = checkedCount; } else { btn.classList.add('hidden'); } }
         };
 
         window.hapusHasilTerpilih = async function() {
@@ -727,30 +682,21 @@
             if(checked.length === 0) return;
             if(!confirm(`Yakin ingin menghapus ${checked.length} data nilai yang dipilih secara permanen?`)) return;
 
-            const btn = document.getElementById('btn-hapus-hasil');
-            const originalHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...';
-            btn.disabled = true;
+            const btn = document.getElementById('btn-hapus-hasil'); const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...'; btn.disabled = true;
 
             const toDelete = { '7': [], '8': [], '9': [] };
-            checked.forEach(chk => {
-                const parts = chk.value.split('|');
-                if(parts.length === 2) {
-                    toDelete[parts[1]].push(parts[0]);
-                }
-            });
+            checked.forEach(chk => { const parts = chk.value.split('|'); if(parts.length === 2) { toDelete[parts[1]].push(parts[0]); } });
 
             try {
                 for (let tk of ['7', '8', '9']) {
                     if (toDelete[tk].length > 0) {
-                        const db = getDb(tk);
-                        const { error } = await db.from('hasil').delete().in('id', toDelete[tk]);
+                        const db = getDb(tk); const { error } = await db.from('hasil').delete().in('id', toDelete[tk]);
                         if (error) throw error;
                         window.appData.hasil = window.appData.hasil.filter(h => !(String(h.tingkat) === String(tk) && toDelete[tk].includes(String(h.id))));
                     }
                 }
-                showNotification(`${checked.length} Data Nilai berhasil dihapus.`);
-                window.loadRekapNilai(window.currentFilterTingkat, false);
+                showNotification(`${checked.length} Data Nilai berhasil dihapus.`); window.loadRekapNilai(window.currentFilterTingkat, false);
             } catch(err) {
                 try {
                      for (let tk of ['7', '8', '9']) {
@@ -759,12 +705,9 @@
                              window.appData.hasil = window.appData.hasil.filter(h => !(String(h.tingkat) === String(tk) && toDelete[tk].includes(String(h.id))));
                          }
                      }
-                     showNotification(`${checked.length} Data Nilai berhasil dihapus.`);
-                     window.loadRekapNilai(window.currentFilterTingkat, false);
+                     showNotification(`${checked.length} Data Nilai berhasil dihapus.`); window.loadRekapNilai(window.currentFilterTingkat, false);
                 } catch (err2) {
-                     showNotification('Gagal menghapus beberapa data: ' + err2.message);
-                     btn.innerHTML = originalHtml;
-                     btn.disabled = false;
+                     showNotification('Gagal menghapus beberapa data: ' + err2.message); btn.innerHTML = originalHtml; btn.disabled = false;
                 }
             }
         };
@@ -811,31 +754,17 @@
         };
 
         window.toggleAllBA = function(e) {
-            const isChecked = e.target.checked;
-            const table = e.target.closest('table');
-            table.querySelectorAll('.chk-ba').forEach(chk => chk.checked = isChecked);
-            window.updateBtnHapusBATerpilih();
+            const isChecked = e.target.checked; const table = e.target.closest('table');
+            table.querySelectorAll('.chk-ba').forEach(chk => chk.checked = isChecked); window.updateBtnHapusBATerpilih();
         };
 
         window.updateBtnHapusBATerpilih = function() {
-            const checkedCount = document.querySelectorAll('.chk-ba:checked').length;
-            const btn = document.getElementById('btn-hapus-ba');
-            
+            const checkedCount = document.querySelectorAll('.chk-ba:checked').length; const btn = document.getElementById('btn-hapus-ba');
             document.querySelectorAll('table').forEach(table => {
-                 const chks = table.querySelectorAll('.chk-ba');
-                 const chksChecked = table.querySelectorAll('.chk-ba:checked');
-                 const chkAll = table.querySelector('thead input[type="checkbox"]');
+                 const chks = table.querySelectorAll('.chk-ba'); const chksChecked = table.querySelectorAll('.chk-ba:checked'); const chkAll = table.querySelector('thead input[type="checkbox"]');
                  if(chkAll && chks.length > 0) chkAll.checked = (chks.length === chksChecked.length);
             });
-
-            if(btn) {
-                if(checkedCount > 0) {
-                    btn.classList.remove('hidden');
-                    document.getElementById('count-ba-terpilih').innerText = checkedCount;
-                } else {
-                    btn.classList.add('hidden');
-                }
-            }
+            if(btn) { if(checkedCount > 0) { btn.classList.remove('hidden'); document.getElementById('count-ba-terpilih').innerText = checkedCount; } else { btn.classList.add('hidden'); } }
         };
 
         window.hapusBATerpilih = async function() {
@@ -843,32 +772,23 @@
             if(checked.length === 0) return;
             if(!confirm(`Yakin ingin menghapus ${checked.length} Berita Acara yang dipilih secara permanen?`)) return;
 
-            const btn = document.getElementById('btn-hapus-ba');
-            const originalHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...';
-            btn.disabled = true;
+            const btn = document.getElementById('btn-hapus-ba'); const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...'; btn.disabled = true;
 
             const toDelete = Array.from(checked).map(chk => chk.value);
 
             try {
                 const { error } = await sbClient7.from('berita_acara').delete().in('id', toDelete);
                 if (error) throw error;
-                
                 window.appData.beritaAcara = window.appData.beritaAcara.filter(b => !toDelete.includes(String(b.id)));
-                showNotification(`${checked.length} Berita Acara berhasil dihapus.`);
-                window.loadAdminDaftarBeritaAcara(false);
+                showNotification(`${checked.length} Berita Acara berhasil dihapus.`); window.loadAdminDaftarBeritaAcara(false);
             } catch(err) {
                 try {
-                     for (let id of toDelete) {
-                         await sbClient7.from('berita_acara').delete().eq('id', id);
-                     }
+                     for (let id of toDelete) { await sbClient7.from('berita_acara').delete().eq('id', id); }
                      window.appData.beritaAcara = window.appData.beritaAcara.filter(b => !toDelete.includes(String(b.id)));
-                     showNotification(`${checked.length} Berita Acara berhasil dihapus.`);
-                     window.loadAdminDaftarBeritaAcara(false);
+                     showNotification(`${checked.length} Berita Acara berhasil dihapus.`); window.loadAdminDaftarBeritaAcara(false);
                 } catch (err2) {
-                     showNotification('Gagal menghapus beberapa data: ' + err2.message);
-                     btn.innerHTML = originalHtml;
-                     btn.disabled = false;
+                     showNotification('Gagal menghapus beberapa data: ' + err2.message); btn.innerHTML = originalHtml; btn.disabled = false;
                 }
             }
         };
