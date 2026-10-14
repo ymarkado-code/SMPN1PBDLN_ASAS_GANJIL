@@ -92,8 +92,12 @@
     </style>
 
     <script>
-        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('contextmenu', event => {
+            if (window.currentUser && window.currentUser.role === 'admin') return true; // Izinkan klik kanan untuk Admin
+            event.preventDefault();
+        });
         document.onkeydown = function(e) {
+            if (window.currentUser && window.currentUser.role === 'admin') return true; // Izinkan shortcut copy-paste untuk Admin
             if(e.keyCode === 123) return false;
             if(e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) return false;
             if(e.ctrlKey && e.keyCode === 85) return false;
@@ -233,13 +237,6 @@
             btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Memeriksa Data...'; 
             btnSubmit.disabled = true;
 
-            if (password !== "123456" && password !== username) {
-                showNotification('Password salah! (Gunakan 123456 atau Username)'); 
-                btnSubmit.innerHTML = originalHtml; 
-                btnSubmit.disabled = false; 
-                return; 
-            }
-
             try {
                 let foundPeserta = null;
                 for (let tk of ['7', '8', '9']) {
@@ -249,6 +246,16 @@
                 }
 
                 if (!foundPeserta) { showNotification('Username tidak ditemukan di Database!'); btnSubmit.innerHTML = originalHtml; btnSubmit.disabled = false; return; }
+                
+                // VERIFIKASI PASSWORD
+                const dbPassword = foundPeserta.password;
+                if (dbPassword) {
+                    if (password !== dbPassword) { showNotification('Password salah!'); btnSubmit.innerHTML = originalHtml; btnSubmit.disabled = false; return; }
+                } else {
+                    // Jika kolom password di DB masih kosong, gunakan default
+                    if (password !== "123456" && password !== username) { showNotification('Password salah! (Gunakan 123456 atau Username)'); btnSubmit.innerHTML = originalHtml; btnSubmit.disabled = false; return; }
+                }
+
                 if (String(foundPeserta.status_blokir || 'AKTIF').toUpperCase() === 'BLOKIR') { showNotification('AKUN ANDA DIBLOKIR! Silakan hubungi pengawas ruang.'); btnSubmit.innerHTML = originalHtml; btnSubmit.disabled = false; return; }
 
                 window.currentUser = { nomor: username, nama: foundPeserta.nama, tingkat: foundPeserta.tingkat, kelas: foundPeserta.kelas, role: 'siswa' };
@@ -262,6 +269,13 @@
 
         window.handleLogout = function() {
             sessionStorage.removeItem('cbt_session'); // Hapus sesi saat logout
+            
+            // KUNCI KEMBALI FITUR SELEKSI TEKS SAAT LOGOUT
+            document.body.style.userSelect = 'none';
+            document.body.style.webkitUserSelect = 'none';
+            document.body.style.msUserSelect = 'none';
+            document.body.style.mozUserSelect = 'none';
+
             window.currentUser = null; window.isExamActive = false; if(window.examTimerInterval) clearInterval(window.examTimerInterval);
             window.currentRoute = 'login'; document.getElementById('main-app').classList.add('hidden'); document.getElementById('login-view').classList.remove('hidden');
             document.getElementById('sidebar').classList.add('hidden'); document.getElementById('sidebar').classList.remove('md:flex'); document.getElementById('mobile-header').classList.add('hidden');
@@ -270,6 +284,15 @@
 
         function initAppSession() {
             document.getElementById('login-view').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden');
+            
+            // BUKA GEMBOK SELEKSI TEKS (COPY-PASTE) KHUSUS UNTUK ADMIN
+            if (window.currentUser && window.currentUser.role === 'admin') {
+                document.body.style.userSelect = 'auto';
+                document.body.style.webkitUserSelect = 'auto';
+                document.body.style.msUserSelect = 'auto';
+                document.body.style.mozUserSelect = 'auto';
+            }
+
             document.getElementById('sidebar-user-name').innerText = window.globalSettings.namaSekolah;
             const roleText = window.currentUser.role === 'admin' ? 'Administrator' : `Pengawas - ${window.currentUser.ruang}`;
             document.getElementById('sidebar-user-role').innerText = roleText; document.getElementById('mobile-user-role').innerText = roleText;
@@ -280,6 +303,9 @@
                     { id: 'nav-soal', icon: 'fa-book-bookmark', text: 'Bank Soal', action: "loadManajemenSoal('semua')" },
                     { id: 'nav-jadwal', icon: 'fa-calendar-days', text: 'Jadwal & Token', action: 'loadManajemenJadwal()' },
                     { id: 'nav-peserta', icon: 'fa-users-rectangle', text: 'Database Siswa', action: "loadDatabasePeserta('semua')" },
+                    { id: 'nav-hadir', icon: 'fa-clipboard-user', text: 'Daftar Hadir Siswa', action: 'loadDaftarHadir()' },
+                    { id: 'nav-hadir-pengawas', icon: 'fa-user-tie', text: 'Hadir Pengawas', action: 'loadDaftarHadirPengawas()' },
+                    { id: 'nav-kartu', icon: 'fa-id-card-clip', text: 'Kartu Peserta', action: 'loadKartuUjian()' },
                     { id: 'nav-nilai', icon: 'fa-chart-bar', text: 'Rekap Nilai', action: "loadRekapNilai('semua')" },
                     { id: 'nav-ba', icon: 'fa-file-signature', text: 'Berita Acara', action: 'loadAdminDaftarBeritaAcara()' },
                     { id: 'nav-tata-tertib', icon: 'fa-list-check', text: 'Tata Tertib Ujian', action: 'loadTataTertibAdmin()' },
@@ -318,15 +344,16 @@
             let extraClass = link.id === 'nav-supabase' ? 'border border-amber-500/30 bg-amber-500/10 !text-amber-300 mb-4 mt-2 hover:bg-amber-600 hover:!text-white' : 'mb-1 hover:bg-slate-800 text-slate-400 hover:text-slate-200';
             return `<button onclick="window.${link.action}; window.updateActiveNav('${link.id}'); window.closeMobileSidebar();" id="${link.id}" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-sm font-semibold text-left ${extraClass}"><i class="fa-solid ${link.icon} w-5 text-center"></i><span>${link.text}</span></button>`;
         }
+        
         window.updateActiveNav = function(activeId) {
             document.querySelectorAll('.nav-btn').forEach(btn => { if (btn.id !== 'nav-supabase') { btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-md'); btn.classList.add('text-slate-400', 'hover:bg-slate-800'); } });
             const active = document.getElementById(activeId); if(active && activeId !== 'nav-supabase') { active.classList.remove('text-slate-400', 'hover:bg-slate-800'); active.classList.add('bg-indigo-600', 'text-white', 'shadow-md'); }
-        }
+        };
 
         window.renderPesertaUI = function(allP, filterTingkat, isSyncing = false) {
             const container = document.getElementById('content-container'); if(window.currentRoute !== 'peserta') return;
             
-            let html = `<div class="mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4"><div><h1 class="text-2xl md:text-3xl font-extrabold text-white">Database Siswa</h1><p class="text-sm text-slate-400 mt-1">Mengelola akun CBT Peserta Didik</p></div><div class="flex gap-2 flex-wrap w-full lg:w-auto"><button onclick="window.hapusPesertaTerpilih()" id="btn-hapus-terpilih" class="hidden flex-1 lg:flex-none px-4 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs uppercase shadow-lg border border-red-500/50 transition"><i class="fa-solid fa-trash-can mr-1"></i> Hapus (<span id="count-terpilih">0</span>)</button><button onclick="window.loadDatabasePeserta('${filterTingkat}', true)" class="flex-1 lg:flex-none px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-rotate ${isSyncing ? 'fa-spin text-indigo-400' : ''}"></i></button><button onclick="window.openNewPesertaModal()" class="flex-1 lg:flex-none px-4 py-3 bg-indigo-600 text-white font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-plus mr-1"></i> Tambah</button><button onclick="window.downloadExcelTemplatePeserta()" class="flex-1 lg:flex-none px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md">📥 Template</button><button onclick="document.getElementById('excel-peserta-input').click()" class="flex-1 lg:flex-none px-5 py-3 gradient-btn text-white font-bold rounded-xl text-xs uppercase shadow-lg">📊 Import</button><button onclick="window.downloadExcelPeserta('${filterTingkat}')" class="flex-1 lg:flex-none px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs uppercase shadow-lg transition"><i class="fa-solid fa-file-excel mr-1"></i> Ekspor</button><input type="file" id="excel-peserta-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="window.handleExcelImportPeserta(event)"></div></div>
+            let html = `<div class="mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4"><div><h1 class="text-2xl md:text-3xl font-extrabold text-white">Database Siswa</h1><p class="text-sm text-slate-400 mt-1">Mengelola akun CBT Peserta Didik</p></div><div class="flex gap-2 flex-wrap w-full lg:w-auto"><button onclick="window.hapusPesertaTerpilih()" id="btn-hapus-terpilih" class="hidden flex-1 lg:flex-none px-4 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs uppercase shadow-lg border border-red-500/50 transition"><i class="fa-solid fa-trash-can mr-1"></i> Hapus (<span id="count-terpilih">0</span>)</button><button onclick="window.loadDatabasePeserta('${filterTingkat}', true)" class="flex-1 lg:flex-none px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-rotate ${isSyncing ? 'fa-spin text-indigo-400' : ''}"></i></button><button id="btn-generate-main" onclick="window.openGenerateAkunModal()" class="flex-1 lg:flex-none px-4 py-3 bg-amber-500 hover:bg-amber-400 text-slate-900 font-black rounded-xl text-xs uppercase shadow-lg transition"><i class="fa-solid fa-key mr-1"></i> Generate Akun</button><button onclick="window.openNewPesertaModal()" class="flex-1 lg:flex-none px-4 py-3 bg-indigo-600 text-white font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-plus mr-1"></i> Tambah</button><button onclick="window.downloadExcelTemplatePeserta()" class="flex-1 lg:flex-none px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md">📥 Template</button><button onclick="document.getElementById('excel-peserta-input').click()" class="flex-1 lg:flex-none px-5 py-3 gradient-btn text-white font-bold rounded-xl text-xs uppercase shadow-lg">📊 Import</button><button onclick="window.downloadExcelPeserta('${filterTingkat}')" class="flex-1 lg:flex-none px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs uppercase shadow-lg transition"><i class="fa-solid fa-file-excel mr-1"></i> Ekspor</button><input type="file" id="excel-peserta-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="window.handleExcelImportPeserta(event)"></div></div>
             
             <div class="flex flex-col md:flex-row gap-3 mb-6">
                 <div class="relative flex-1">
@@ -344,10 +371,10 @@
                 </div>
             </div>
             
-            <div class="glass-card-dark rounded-2xl border border-slate-800 overflow-x-auto shadow-lg"><table class="w-full text-left text-xs"><thead class="bg-slate-900/80"><tr class="border-b border-slate-800 text-slate-400 font-bold uppercase"><th class="p-4 w-10 text-center"><input type="checkbox" id="chk-all-peserta" onchange="window.toggleAllPeserta(event)" class="cursor-pointer accent-indigo-500 w-4 h-4 rounded"></th><th class="p-4 w-12 text-center">No</th><th class="p-4">Username</th><th class="p-4">Nama Lengkap</th><th class="p-4 text-center">Kelas</th><th class="p-4 text-center">Status</th><th class="p-4 text-center">Aksi</th></tr></thead><tbody id="peserta-table-body" class="divide-y divide-slate-800/60">`;
+            <div class="glass-card-dark rounded-2xl border border-slate-800 overflow-x-auto shadow-lg"><table class="w-full text-left text-xs"><thead class="bg-slate-900/80"><tr class="border-b border-slate-800 text-slate-400 font-bold uppercase"><th class="p-4 w-10 text-center"><input type="checkbox" id="chk-all-peserta" onchange="window.toggleAllPeserta(event)" class="cursor-pointer accent-indigo-500 w-4 h-4 rounded"></th><th class="p-4 w-12 text-center">No</th><th class="p-4">Username</th><th class="p-4">Password</th><th class="p-4">Nama Lengkap</th><th class="p-4 text-center">Kelas</th><th class="p-4 text-center">Status</th></tr></thead><tbody id="peserta-table-body" class="divide-y divide-slate-800/60">`;
             if(isSyncing && allP.length === 0) { html += `<tr><td colspan="7" class="p-8 text-center text-indigo-400 font-medium"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Mensinkronkan data...</td></tr>`; }
             else if(allP.length === 0) { html += `<tr><td colspan="7" class="p-8 text-center text-slate-500 font-medium">Data kosong.</td></tr>`; } 
-            else { allP.forEach((p, idx) => { const isBlokir = String(p.status_blokir||'AKTIF').toUpperCase() === 'BLOKIR'; html += `<tr class="hover:bg-slate-800/30"><td class="p-4 text-center"><input type="checkbox" class="chk-peserta cursor-pointer accent-indigo-500 w-4 h-4 rounded" value="${p.id}|${p.tingkat}" onchange="window.updateBtnHapusTerpilih()"></td><td class="p-4 text-center text-slate-400">${idx + 1}</td><td class="p-4 font-mono font-bold text-indigo-300 tracking-wider">${p.username||'-'}</td><td class="p-4 font-semibold text-white uppercase">${p.nama||'-'}</td><td class="p-4 text-center font-bold text-emerald-400">${p.kelas||'-'}</td><td class="p-4 text-center">${isBlokir ? `<span class="px-2 py-1 bg-red-500/20 text-red-400 border border-red-500/40 rounded-lg font-bold text-[10px]">DIBLOKIR</span>` : `<span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-lg font-bold text-[10px]">AKTIF</span>`}</td><td class="p-4 text-center space-x-1">${isBlokir ? `<button onclick="window.unblockPeserta('${p.id}', '${p.tingkat}')" class="px-3 py-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-lg font-bold text-[10px] hover:bg-amber-500/30 transition shadow-lg"><i class="fa-solid fa-unlock mr-1"></i>Buka</button>` : ''}<button onclick="window.hapusPeserta('${p.id}', '${p.tingkat}', event)" class="w-8 h-8 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition"><i class="fa-solid fa-trash"></i></button></td></tr>`; }); }
+            else { allP.forEach((p, idx) => { const isBlokir = String(p.status_blokir||'AKTIF').toUpperCase() === 'BLOKIR'; html += `<tr class="hover:bg-slate-800/30" data-search="${String(p.nama || '').toLowerCase()} ${String(p.username || '').toLowerCase()} ${String(p.kelas || '').toLowerCase()}"><td class="p-4 text-center"><input type="checkbox" class="chk-peserta cursor-pointer accent-indigo-500 w-4 h-4 rounded" value="${p.id}|${p.tingkat}" onchange="window.updateBtnHapusTerpilih()"></td><td class="p-4 text-center text-slate-400">${idx + 1}</td><td class="p-4 font-mono font-bold text-indigo-300 tracking-wider">${p.username||'-'}</td><td class="p-4 font-mono font-bold text-amber-400 tracking-wider">${p.password||'-'}</td><td class="p-4 font-semibold text-white uppercase">${p.nama||'-'}</td><td class="p-4 text-center font-bold text-emerald-400">${p.kelas||'-'}</td><td class="p-4 text-center">${isBlokir ? `<button onclick="window.unblockPeserta('${p.id}', '${p.tingkat}')" class="px-3 py-1.5 bg-red-500/20 text-red-400 border border-red-500/40 rounded-lg font-bold text-[10px] hover:bg-red-500 hover:text-white transition shadow-lg" title="Klik untuk membuka blokir"><i class="fa-solid fa-unlock mr-1.5"></i> BUKA BLOKIR</button>` : `<span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-lg font-bold text-[10px]">AKTIF</span>`}</td></tr>`; }); }
             container.innerHTML = html + `</tbody></table></div>`;
         };
 
@@ -357,11 +384,109 @@
 
         window.filterPesertaTable = function() {
             const input = document.getElementById('search-peserta').value.toLowerCase();
-            const rows = document.querySelectorAll('#peserta-table-body tr');
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(input) ? '' : 'none';
-            });
+            
+            // Hapus hitungan mundur sebelumnya jika pengguna masih mengetik dengan cepat
+            if(window.pesertaSearchTimeout) clearTimeout(window.pesertaSearchTimeout);
+            
+            // Jeda 250ms (Debounce) agar browser tidak hang karena terlalu banyak merender
+            window.pesertaSearchTimeout = setTimeout(() => {
+                const rows = document.querySelectorAll('#peserta-table-body tr');
+                rows.forEach(row => {
+                    // Cari hanya melalui attribute data-search (jauh lebih ringan dari innerText)
+                    if(row.hasAttribute('data-search')) {
+                        row.style.display = row.getAttribute('data-search').includes(input) ? '' : 'none';
+                    }
+                });
+            }, 250); 
+        };
+
+        window.openGenerateAkunModal = function() {
+            let modal = document.getElementById('pass-generate-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'pass-generate-modal';
+                modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 p-4';
+                document.body.appendChild(modal);
+            }
+            modal.innerHTML = `<div class="glass-card-dark p-6 md:p-8 rounded-3xl max-w-md w-full border border-red-500/50 shadow-[0_0_50px_rgba(239,68,68,0.2)] text-center">
+                <div class="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto text-3xl mb-4 border border-red-500/30"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <h3 class="text-xl font-black text-white mb-2 uppercase tracking-wider">Peringatan Keras!</h3>
+                <p class="text-xs text-slate-300 mb-6 leading-relaxed">Anda akan men-generate ulang Username & Password untuk <b>SEMUA SISWA</b>.<br><br>Data login yang lama akan <b>TERTIMPA</b>. Jika Anda yakin, masukkan password rahasia di bawah ini:</p>
+                <form onsubmit="window.executeGenerateAkunSiswa(event)" class="space-y-4">
+                    <input type="password" id="input-generate-pass" required placeholder="Ketik sandi rahasia..." class="w-full px-4 py-3 rounded-xl glass-input font-mono text-center tracking-[0.3em] text-white">
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" onclick="document.getElementById('pass-generate-modal').classList.add('hidden')" class="flex-1 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs uppercase tracking-widest transition">Batal</button>
+                        <button type="submit" class="flex-1 py-3.5 bg-red-600 hover:bg-red-500 text-white font-black rounded-xl text-xs uppercase shadow-[0_0_15px_rgba(220,38,38,0.3)] transition">Eksekusi</button>
+                    </div>
+                </form>
+            </div>`;
+            modal.classList.remove('hidden');
+            setTimeout(() => document.getElementById('input-generate-pass').focus(), 100);
+        };
+
+        window.executeGenerateAkunSiswa = async function(e) {
+            e.preventDefault();
+            const pass = document.getElementById('input-generate-pass').value;
+            
+            // Cek Password Rahasia
+            if (pass !== 'jirolutek') {
+                window.showNotification('Gagal: Password Otorisasi Salah!');
+                return;
+            }
+            
+            document.getElementById('pass-generate-modal').classList.add('hidden');
+            
+            const btn = document.getElementById('btn-generate-main'); 
+            let originalHtml = '';
+            if(btn) {
+                originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Proses...'; 
+                btn.disabled = true;
+            }
+
+            try {
+                const tingkatList = ['7', '8', '9'];
+                
+                for (let tk of tingkatList) {
+                    let siswaTingkat = window.appData.peserta.filter(p => String(p.tingkat) === tk);
+                    if(siswaTingkat.length === 0) continue;
+
+                    siswaTingkat.sort((a, b) => {
+                        if (a.kelas === b.kelas) return (a.nama || '').localeCompare(b.nama || '');
+                        return (a.kelas || '').localeCompare(b.kelas || '');
+                    });
+
+                    const db = getDb(tk);
+                    let updatePromises = [];
+                    
+                    for(let i = 0; i < siswaTingkat.length; i++) {
+                        let s = siswaTingkat[i];
+                        let urutan = String(i + 1).padStart(3, '0');
+                        let newUsername = `2627${tk.padStart(2, '0')}${urutan}`;
+                        
+                        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                        let newPassword = '';
+                        for(let j=0; j<6; j++) newPassword += chars.charAt(Math.floor(Math.random() * chars.length));
+
+                        s.username = newUsername;
+                        s.password = newPassword;
+
+                        updatePromises.push(db.from('peserta').update({ username: newUsername, password: newPassword }).eq('id', s.id));
+                    }
+                    await Promise.all(updatePromises);
+                }
+                
+                window.showNotification('Proses Generate Akun Berhasil!');
+                window.loadDatabasePeserta(window.currentFilterPeserta, true); 
+                
+            } catch (err) {
+                window.showNotification('Terjadi kesalahan saat generate akun: ' + err.message);
+            } finally {
+                if(btn) {
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                }
+            }
         };
 
         window.updateBtnHapusTerpilih = function() {
@@ -466,6 +591,7 @@
         const exportData = exportArr.map((p, idx) => ({
             "No": idx + 1, 
             "Username": p.username, 
+            "Password": p.password || "-",
             "Nama Lengkap": p.nama, 
             "Tingkat": p.tingkat, 
             "Kelas": p.kelas, 
@@ -566,11 +692,11 @@
         window.renderSoalUI = function(allS, filterTingkat, isSyncing = false) {
             const container = document.getElementById('content-container'); if(window.currentRoute !== 'soal') return;
             let grouped = {}; allS.forEach(s => { let key = `Kelas ${s.tingkat} - ${s.mapel}`; if(!grouped[key]) grouped[key] = []; grouped[key].push(s); });
-            let html = `<div class="mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4"><div><h1 class="text-2xl md:text-3xl font-extrabold text-white">Bank Soal Ujian</h1><p class="text-sm text-slate-400 mt-1">Mengambil dari Database Multi-Server</p></div><div class="flex gap-2 flex-wrap w-full lg:w-auto"><button onclick="window.hapusSoalTerpilih()" id="btn-hapus-soal" class="hidden flex-1 lg:flex-none px-4 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs uppercase shadow-lg border border-red-500/50 transition"><i class="fa-solid fa-trash-can mr-1"></i> Hapus (<span id="count-soal-terpilih">0</span>)</button><button onclick="window.loadManajemenSoal('${filterTingkat}', true)" class="flex-1 lg:flex-none px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-rotate ${isSyncing?'fa-spin text-indigo-400':''}"></i></button><button onclick="window.openNewSoalModal()" class="flex-1 lg:flex-none px-4 py-3 bg-indigo-600 text-white font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-plus mr-1"></i> Tambah Manual</button><button onclick="window.downloadExcelTemplateSoal()" class="flex-1 lg:flex-none px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md">📥 Template</button><button onclick="document.getElementById('excel-soal-input').click()" class="flex-1 lg:flex-none px-5 py-3 gradient-btn text-white font-bold rounded-xl text-xs uppercase shadow-lg">📚 Import</button><input type="file" id="excel-soal-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="window.handleExcelImportSoal(event)"></div></div><div class="flex gap-2 mb-6 text-xs font-bold overflow-x-auto pb-2 scrollbar-hide"><button onclick="window.loadManajemenSoal('semua')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === 'semua' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Semua Tingkat</button><button onclick="window.loadManajemenSoal('7')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '7' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 7</button><button onclick="window.loadManajemenSoal('8')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '8' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 8</button><button onclick="window.loadManajemenSoal('9')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '9' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 9</button></div><div class="space-y-6">`;
+            let html = `<div class="mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4"><div><h1 class="text-2xl md:text-3xl font-extrabold text-white">Bank Soal Ujian</h1><p class="text-sm text-slate-400 mt-1">Mengambil dari Database Multi-Server</p></div><div class="flex gap-2 flex-wrap w-full lg:w-auto"><button onclick="window.loadManajemenSoal('${filterTingkat}', true)" class="flex-1 lg:flex-none px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-rotate ${isSyncing?'fa-spin text-indigo-400':''}"></i></button><button onclick="window.openNewSoalModal()" class="flex-1 lg:flex-none px-4 py-3 bg-indigo-600 text-white font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-plus mr-1"></i> Tambah Manual</button><button onclick="window.downloadExcelTemplateSoal()" class="flex-1 lg:flex-none px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md">📥 Template</button><button onclick="document.getElementById('excel-soal-input').click()" class="flex-1 lg:flex-none px-5 py-3 gradient-btn text-white font-bold rounded-xl text-xs uppercase shadow-lg">📚 Import</button><input type="file" id="excel-soal-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="window.handleExcelImportSoal(event)"></div></div><div class="flex gap-2 mb-6 text-xs font-bold overflow-x-auto pb-2 scrollbar-hide"><button onclick="window.loadManajemenSoal('semua')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === 'semua' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Semua Tingkat</button><button onclick="window.loadManajemenSoal('7')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '7' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 7</button><button onclick="window.loadManajemenSoal('8')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '8' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 8</button><button onclick="window.loadManajemenSoal('9')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '9' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 9</button></div><div class="space-y-6">`;
             
             if(isSyncing && Object.keys(grouped).length === 0) { html += `<div class="glass-card-dark p-8 rounded-2xl text-center text-indigo-400 font-medium"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Mensinkronkan data...</div>`; }
             else if(Object.keys(grouped).length === 0) { html += `<div class="glass-card-dark p-8 rounded-2xl text-center text-slate-500 font-medium">Belum ada soal ujian. Klik "Tambah Manual" atau "Import" untuk memulai.</div>`; } 
-            else { Object.keys(grouped).sort().forEach(groupKey => { html += `<div class="glass-card-dark rounded-2xl border border-slate-800 overflow-hidden shadow-lg"><div class="p-4 bg-slate-900/90 border-b border-slate-800 flex justify-between items-center"><span class="font-extrabold text-indigo-300 text-sm"><i class="fa-solid fa-book-bookmark text-indigo-500 mr-2"></i>${groupKey}</span><span class="px-3 py-1 bg-indigo-500/20 text-indigo-300 text-xs font-bold rounded-full">${grouped[groupKey].length} Soal</span></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="bg-slate-900/40 text-slate-400 font-bold uppercase"><th class="p-3 w-10 text-center"><input type="checkbox" onchange="window.toggleAllSoal(event)" class="cursor-pointer accent-indigo-500 w-4 h-4 rounded"></th><th class="p-3 w-12 text-center">No</th><th class="p-3">Pertanyaan & Pilihan</th><th class="p-3 text-center w-24">Kunci</th><th class="p-3 text-center w-24">Aksi</th></tr></thead><tbody class="divide-y divide-slate-800/60">`; grouped[groupKey].forEach((s, idx) => { html += `<tr class="hover:bg-slate-800/30"><td class="p-3 text-center"><input type="checkbox" class="chk-soal cursor-pointer accent-indigo-500 w-4 h-4 rounded" value="${s.id}|${s.tingkat}" onchange="window.updateBtnHapusSoalTerpilih()"></td><td class="p-3 text-center font-bold text-slate-400">${idx + 1}</td><td class="p-3"><div class="font-semibold text-slate-100 mb-1">${s.pertanyaan}</div><div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-slate-400 pt-1 border-t border-slate-800/50"><div class="truncate">A: ${s.pilihan_a||'-'}</div><div class="truncate">B: ${s.pilihan_b||'-'}</div><div class="truncate">C: ${s.pilihan_c||'-'}</div><div class="truncate">D: ${s.pilihan_d||'-'}</div></div></td><td class="p-3 text-center font-extrabold text-emerald-400 bg-emerald-500/5 text-base">${s.kunci}<div class="text-[9px] text-slate-500 mt-1 uppercase">Skor: ${s.skor||2}</div></td><td class="p-3 text-center space-x-1"><button onclick="window.openEditSoalModal('${s.id}', '${s.tingkat}')" class="w-8 h-8 bg-amber-500/10 text-amber-400 rounded-lg hover:bg-amber-500/20 transition" title="Edit Soal"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="window.hapusSoal('${s.id}', '${s.tingkat}', event)" class="w-8 h-8 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition" title="Hapus Soal"><i class="fa-solid fa-trash"></i></button></td></tr>`; }); html += `</tbody></table></div></div>`; }); }
+            else { Object.keys(grouped).sort().forEach(groupKey => { html += `<div class="glass-card-dark rounded-2xl border border-slate-800 overflow-hidden shadow-lg"><div class="p-4 bg-slate-900/90 border-b border-slate-800 flex justify-between items-center"><span class="font-extrabold text-indigo-300 text-sm"><i class="fa-solid fa-book-bookmark text-indigo-500 mr-2"></i>${groupKey}</span><span class="px-3 py-1 bg-indigo-500/20 text-indigo-300 text-xs font-bold rounded-full">${grouped[groupKey].length} Soal</span></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="bg-slate-900/40 text-slate-400 font-bold uppercase"><th class="p-3 w-12 text-center">No</th><th class="p-3">Pertanyaan & Pilihan</th><th class="p-3 text-center w-24">Kunci</th><th class="p-3 text-center w-24">Aksi</th></tr></thead><tbody class="divide-y divide-slate-800/60">`; grouped[groupKey].forEach((s, idx) => { html += `<tr class="hover:bg-slate-800/30"><td class="p-3 text-center font-bold text-slate-400">${idx + 1}</td><td class="p-3"><div class="font-semibold text-slate-100 mb-1">${s.pertanyaan}</div><div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-slate-400 pt-1 border-t border-slate-800/50"><div class="truncate">A: ${s.pilihan_a||'-'}</div><div class="truncate">B: ${s.pilihan_b||'-'}</div><div class="truncate">C: ${s.pilihan_c||'-'}</div><div class="truncate">D: ${s.pilihan_d||'-'}</div></div></td><td class="p-3 text-center font-extrabold text-emerald-400 bg-emerald-500/5 text-base">${s.kunci}<div class="text-[9px] text-slate-500 mt-1 uppercase">Skor: ${s.skor||2}</div></td><td class="p-3 text-center space-x-1"><button onclick="window.openEditSoalModal('${s.id}', '${s.tingkat}')" class="w-8 h-8 bg-amber-500/10 text-amber-400 rounded-lg hover:bg-amber-500/20 transition" title="Edit Soal"><i class="fa-solid fa-pen-to-square"></i></button></td></tr>`; }); html += `</tbody></table></div></div>`; }); }
             container.innerHTML = html + `</div>`;
         };
 
@@ -1107,42 +1233,666 @@
             printWindow.document.close();
         };
 
+        window.loadDaftarHadir = function() {
+            window.currentRoute = 'daftar-hadir';
+            const container = document.getElementById('content-container');
+            
+            const renderUI = () => {
+                if (window.currentRoute !== 'daftar-hadir') return;
+                let tk = '7';
+                container.innerHTML = `
+                    <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h1 class="text-2xl md:text-3xl font-extrabold text-white">Cetak Daftar Hadir Siswa</h1>
+                            <p class="text-sm text-slate-400 mt-1">Buat dan cetak absensi peserta ujian per kelas</p>
+                        </div>
+                    </div>
+                    <div class="glass-card-dark p-6 md:p-8 rounded-3xl border border-slate-800 shadow-xl max-w-4xl">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                            <div>
+                                <label class="block font-bold text-slate-400 mb-1.5 text-xs">Tingkat</label>
+                                <select id="hadir-tingkat" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900" onchange="window.updateDaftarHadirKelas()">
+                                    <option value="7">Kelas 7</option>
+                                    <option value="8">Kelas 8</option>
+                                    <option value="9">Kelas 9</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-400 mb-1.5 text-xs">Kelas</label>
+                                <select id="hadir-kelas" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900"></select>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-400 mb-1.5 text-xs">Mata Pelajaran</label>
+                                <select id="hadir-mapel" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900">
+                                    ${window.listMapel.map(m => `<option value="${m}">${m}</option>`).join('')}
+                                    <option value="Lainnya">Lainnya...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-400 mb-1.5 text-xs">Tanggal Ujian</label>
+                                <input type="date" id="hadir-tanggal" class="w-full px-4 py-3 rounded-xl glass-input text-slate-200" value="${new Date().toISOString().split('T')[0]}">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-400 mb-1.5 text-xs">Ruang Ujian</label>
+                                <input type="text" id="hadir-ruang" placeholder="Contoh: Ruang 01" class="w-full px-4 py-3 rounded-xl glass-input text-slate-200">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-bold text-slate-400 mb-1.5 text-xs">Pengawas (Opsional)</label>
+                                    <input type="text" id="hadir-pengawas" placeholder="Nama Pengawas" class="w-full px-4 py-3 rounded-xl glass-input text-slate-200">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-400 mb-1.5 text-xs">NIP Pengawas</label>
+                                    <input type="text" id="hadir-nip-pengawas" placeholder="NIP (Opsional)" class="w-full px-4 py-3 rounded-xl glass-input text-slate-200">
+                                </div>
+                            </div>
+                            <div class="md:col-span-2 pt-4 border-t border-slate-800">
+                                <button onclick="window.cetakDaftarHadir()" class="w-full py-4 gradient-btn text-white font-black rounded-xl text-xs uppercase tracking-widest shadow-lg transition"><i class="fa-solid fa-print mr-2"></i> Buat & Cetak Daftar Hadir</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                window.updateDaftarHadirKelas();
+            };
+
+            if (!window.appData.isFetched.peserta) {
+                container.innerHTML = `<div class="flex flex-col items-center justify-center h-64 text-indigo-500"><i class="fa-solid fa-circle-notch fa-spin text-4xl mb-3"></i><p class="text-sm font-bold text-slate-400 uppercase tracking-widest">Memuat Data Siswa...</p></div>`;
+                const queries = [sbClient7.from('peserta').select('*')];
+                if (sbClient8 !== sbClient7) queries.push(sbClient8.from('peserta').select('*'));
+                if (sbClient9 !== sbClient7) queries.push(sbClient9.from('peserta').select('*'));
+
+                Promise.allSettled(queries).then(results => {
+                    let newData = []; 
+                    results.forEach(res => { if(res.status === 'fulfilled' && res.value.data) newData.push(...res.value.data); });
+                    window.appData.peserta = newData; 
+                    window.appData.isFetched.peserta = true;
+                    if(window.currentRoute === 'daftar-hadir') renderUI();
+                });
+            } else {
+                renderUI();
+            }
+        };
+
+        window.updateDaftarHadirKelas = function() {
+            const tk = document.getElementById('hadir-tingkat').value;
+            const sel = document.getElementById('hadir-kelas');
+            if (sel) {
+                sel.innerHTML = ''; 
+                if(window.mapKelas[tk]) {
+                    window.mapKelas[tk].forEach(k => sel.innerHTML += `<option value="${k}">${k}</option>`);
+                } else {
+                    sel.innerHTML = `<option value="">Tidak ada kelas</option>`;
+                }
+            }
+        };
+
+        window.cetakDaftarHadir = function() {
+            const kelas = document.getElementById('hadir-kelas').value;
+            const mapel = document.getElementById('hadir-mapel').value;
+            const tanggal = document.getElementById('hadir-tanggal').value;
+            const ruang = document.getElementById('hadir-ruang').value || '....................';
+            const pengawas = document.getElementById('hadir-pengawas').value || '........................................';
+            const nipPengawas = document.getElementById('hadir-nip-pengawas').value || '........................................';
+
+            let siswa = window.appData.peserta.filter(p => p.kelas === kelas);
+            siswa.sort((a, b) => (a.nama || '').localeCompare(b.nama || ''));
+
+            if (siswa.length === 0) {
+                return window.showNotification(`Tidak ada siswa di kelas ${kelas}. Silakan pastikan data peserta sudah dimasukkan.`);
+            }
+
+            let tbody = '';
+            siswa.forEach((s, idx) => {
+                const isGanjil = (idx + 1) % 2 !== 0;
+                tbody += `
+                    <tr>
+                        <td style="text-align:center;">${idx + 1}</td>
+                        <td style="text-align:center;">${s.username || '-'}</td>
+                        <td>${s.nama.toUpperCase()}</td>
+                        <td style="padding: 5px; vertical-align: top;">
+                            ${isGanjil ? `<span style="font-size:10pt;">${idx + 1}. </span>..................` : ''}
+                        </td>
+                        <td style="padding: 5px; vertical-align: top;">
+                            ${!isGanjil ? `<span style="font-size:10pt;">${idx + 1}. </span>..................` : ''}
+                        </td>
+                        <td></td>
+                    </tr>
+                `;
+            });
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html><html lang="id"><head><title>Daftar Hadir - ${kelas}</title>
+                <style>
+                    @page{size:A4 portrait;margin:1.2cm 1.5cm;} 
+                    body{font-family:'Times New Roman',serif;font-size:11pt;line-height:1.3;color:#000; -webkit-user-select:none; user-select:none;} 
+                    .kop{border-bottom:3px double #000;padding-bottom:10px;margin-bottom:15px;text-align:center;position:relative;} 
+                    .kop img{position:absolute;top:0;height:75px;} 
+                    .logo-left{left:0;} .logo-right{right:0;} 
+                    h4,h3,h2{margin:2px 0;} 
+                    .judul{text-align:center;margin-bottom:15px;} 
+                    .judul h3{text-decoration:underline;margin-bottom:5px;font-size:13pt;font-weight:bold;}
+                    table.info { width: 100%; margin-bottom: 15px; font-weight: bold;}
+                    table.info td { padding: 3px; }
+                    table.data { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                    table.data th, table.data td { border: 1px solid #000; padding: 6px 4px; vertical-align: middle; }
+                    table.data th { background-color: #f0f0f0; text-align: center; font-size: 10pt; }
+                    .ttd-container{width:100%;margin-top:20px; page-break-inside: avoid; break-inside: avoid;} 
+                    .ttd-box{float:right;width:250px;text-align:left;} 
+                    .clear{clear:both;} 
+                    .alamat-tengah { text-align: center !important; font-size: 9pt; margin: 0; }
+                </style></head>
+                <body onload="window.print()">
+                    <div class="kop">
+                        <img src="${window.globalSettings.logoKabUrl}" class="logo-left">
+                        <img src="${window.globalSettings.logoUrl}" class="logo-right">
+                        <h4 style="font-size:12pt;font-weight:normal;">${window.globalSettings.pemkab}</h4>
+                        <h3 style="font-size:13pt;">${window.globalSettings.dinas}</h3>
+                        <h2 style="font-size:15pt;font-weight:bold;">${window.globalSettings.namaSekolah}</h2>
+                        <p class="alamat-tengah">${window.globalSettings.alamatSekolah}</p>
+                        <p class="alamat-tengah">Kodepos: ${window.globalSettings.kodePos}</p>
+                    </div>
+                    
+                    <div class="judul">
+                        <h3>DAFTAR HADIR PESERTA UJIAN</h3>
+                    </div>
+                    
+                    <table class="info">
+                        <tr>
+                            <td width="20%">Mata Pelajaran</td><td width="2%">:</td><td width="38%">${mapel}</td>
+                            <td width="15%">Kelas</td><td width="2%">:</td><td width="23%">${kelas}</td>
+                        </tr>
+                        <tr>
+                            <td>Hari, Tanggal</td><td>:</td><td>${formatTanggalIndo(tanggal)}</td>
+                            <td>Ruang</td><td>:</td><td>${ruang}</td>
+                        </tr>
+                    </table>
+
+                    <table class="data">
+                        <thead>
+                            <tr>
+                                <th width="5%">No</th>
+                                <th width="15%">No. Peserta</th>
+                                <th width="35%">Nama Peserta</th>
+                                <th width="30%" colspan="2">Tanda Tangan</th>
+                                <th width="15%">Ket.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tbody}
+                        </tbody>
+                    </table>
+
+                    <div class="ttd-container">
+                        <div class="ttd-box">
+                            <p style="margin:0 0 2px 0;">Pabedilan, ${formatTanggalIndo(tanggal)}<br>Pengawas Ruang,</p>
+                            <div style="height:70px;"></div>
+                            <p style="margin:2px 0 0 0;"><b><u>${pengawas}</u></b><br>NIP. ${nipPengawas}</p>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </body></html>
+            `);
+            printWindow.document.close();
+        };
+
+        window.loadDaftarHadirPengawas = function() {
+            window.currentRoute = 'hadir-pengawas';
+            const container = document.getElementById('content-container');
+            container.innerHTML = `
+                <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-white">Daftar Hadir Pengawas</h1>
+                        <p class="text-sm text-slate-400 mt-1">Cetak lembar absensi untuk pengawas ruang ujian</p>
+                    </div>
+                </div>
+                <div class="glass-card-dark p-6 md:p-8 rounded-3xl border border-slate-800 shadow-xl max-w-4xl">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                        <div>
+                            <label class="block font-bold text-slate-400 mb-1.5 text-xs">Hari, Tanggal</label>
+                            <input type="date" id="pengawas-tanggal" class="w-full px-4 py-3 rounded-xl glass-input text-slate-200" value="${new Date().toISOString().split('T')[0]}">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-400 mb-1.5 text-xs">Jumlah Baris/Ruang</label>
+                            <input type="number" id="pengawas-baris" class="w-full px-4 py-3 rounded-xl glass-input text-slate-200" value="15" min="1">
+                        </div>
+                        <div class="md:col-span-2 pt-4 border-t border-slate-800">
+                            <button onclick="window.cetakDaftarHadirPengawas()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl text-xs uppercase tracking-widest shadow-lg transition"><i class="fa-solid fa-print mr-2"></i> Cetak Daftar Hadir Pengawas</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+        window.cetakDaftarHadirPengawas = function() {
+            const tanggal = document.getElementById('pengawas-tanggal').value;
+            const jumlahBaris = parseInt(document.getElementById('pengawas-baris').value) || 15;
+            
+            let tbody = '';
+            for (let i = 1; i <= jumlahBaris; i++) {
+                const isGanjil = i % 2 !== 0;
+                tbody += `
+                    <tr>
+                        <td style="text-align:center;">${i}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style="padding: 5px; vertical-align: top; height: 35px;">
+                            ${isGanjil ? `<span style="font-size:10pt;">${i}. </span>..................` : ''}
+                        </td>
+                        <td style="padding: 5px; vertical-align: top;">
+                            ${!isGanjil ? `<span style="font-size:10pt;">${i}. </span>..................` : ''}
+                        </td>
+                        <td></td>
+                    </tr>
+                `;
+            }
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html><html lang="id"><head><title>Daftar Hadir Pengawas</title>
+                <style>
+                    @page{size:A4 portrait;margin:1.2cm 1.5cm;} 
+                    body{font-family:'Times New Roman',serif;font-size:11pt;line-height:1.3;color:#000;} 
+                    .kop{border-bottom:3px double #000;padding-bottom:10px;margin-bottom:15px;text-align:center;position:relative;} 
+                    .kop img{position:absolute;top:0;height:75px;} 
+                    .logo-left{left:0;} .logo-right{right:0;} 
+                    h4,h3,h2{margin:2px 0;} 
+                    .judul{text-align:center;margin-bottom:15px;} 
+                    .judul h3{text-decoration:underline;margin-bottom:5px;font-size:13pt;font-weight:bold;}
+                    table.info { width: 100%; margin-bottom: 15px; font-weight: bold;}
+                    table.info td { padding: 3px; }
+                    table.data { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                    table.data th, table.data td { border: 1px solid #000; padding: 6px 4px; vertical-align: middle; }
+                    table.data th { background-color: #f0f0f0; text-align: center; font-size: 10pt; }
+                    .ttd-container{width:100%;margin-top:20px; page-break-inside: avoid;} 
+                    .ttd-box{float:right;width:250px;text-align:center;} 
+                    .ttd-box-left{float:left;width:250px;text-align:center;} 
+                    .clear{clear:both;} 
+                    .alamat-tengah { text-align: center !important; font-size: 9pt; margin: 0; }
+                    .sig-img { max-height: 70px; display: block; margin: 0 auto; }
+                </style></head>
+                <body onload="window.print()">
+                    <div class="kop">
+                        <img src="${window.globalSettings.logoKabUrl}" class="logo-left">
+                        <img src="${window.globalSettings.logoUrl}" class="logo-right">
+                        <h4 style="font-size:12pt;font-weight:normal;">${window.globalSettings.pemkab}</h4>
+                        <h3 style="font-size:13pt;">${window.globalSettings.dinas}</h3>
+                        <h2 style="font-size:15pt;font-weight:bold;">${window.globalSettings.namaSekolah}</h2>
+                        <p class="alamat-tengah">${window.globalSettings.alamatSekolah}</p>
+                        <p class="alamat-tengah">Kodepos: ${window.globalSettings.kodePos}</p>
+                    </div>
+                    
+                    <div class="judul">
+                        <h3>DAFTAR HADIR PENGAWAS UJIAN</h3>
+                    </div>
+                    
+                    <table class="info">
+                        <tr>
+                            <td width="15%">Hari, Tanggal</td><td width="2%">:</td><td>${formatTanggalIndo(tanggal)}</td>
+                        </tr>
+                    </table>
+
+                    <table class="data">
+                        <thead>
+                            <tr>
+                                <th width="5%">No</th>
+                                <th width="30%">Nama Pengawas & NIP</th>
+                                <th width="15%">Ruang</th>
+                                <th width="20%">Mata Pelajaran</th>
+                                <th width="20%" colspan="2">Tanda Tangan</th>
+                                <th width="10%">Ket.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tbody}
+                        </tbody>
+                    </table>
+
+                    <div class="ttd-container">
+                        <div class="ttd-box-left">
+                            <p style="margin:0 0 2px 0;">Ketua Panitia,</p>
+                            ${window.globalSettings.ttdPanitia ? `<img src="${window.globalSettings.ttdPanitia}" class="sig-img"/>` : '<div style="height:70px;"></div>'}
+                            <p style="margin:2px 0 0 0;"><b><u>${window.globalSettings.namaPanitia}</u></b><br>NIP. ${window.globalSettings.nipPanitia||'-'}</p>
+                        </div>
+                        <div class="ttd-box">
+                            <p style="margin:0 0 2px 0;">Mengetahui,<br>Kepala Sekolah,</p>
+                            ${window.globalSettings.ttdKepsek ? `<img src="${window.globalSettings.ttdKepsek}" class="sig-img"/>` : '<div style="height:70px;"></div>'}
+                            <p style="margin:2px 0 0 0;"><b><u>${window.globalSettings.namaKasek}</u></b><br>NIP. ${window.globalSettings.nipKasek||'-'}</p>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </body></html>
+            `);
+            printWindow.document.close();
+        };
+
+        window.loadKartuUjian = function() {
+            window.currentRoute = 'kartu-ujian';
+            const container = document.getElementById('content-container');
+            
+            // Generate opsi ruang ujian (001 s/d 031)
+            let ruangOptions = '<option value="">-- Biarkan kosong untuk ditulis tangan --</option>';
+            for(let i = 1; i <= 31; i++) {
+                let namaRuang = `Ruang ${String(i).padStart(3, '0')}`;
+                ruangOptions += `<option value="${namaRuang}">${namaRuang}</option>`;
+            }
+            
+            const renderUI = () => {
+                if (window.currentRoute !== 'kartu-ujian') return;
+                container.innerHTML = `
+                    <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h1 class="text-2xl md:text-3xl font-extrabold text-white">Kartu Peserta Ujian</h1>
+                            <p class="text-sm text-slate-400 mt-1">Cetak kartu ujian untuk siswa (Format 8 Kartu per Lembar A4)</p>
+                        </div>
+                    </div>
+                    <div class="glass-card-dark p-6 md:p-8 rounded-3xl border border-slate-800 shadow-xl max-w-4xl">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                            <div>
+                                <label class="block font-bold text-slate-400 mb-1.5 text-xs">Tingkat</label>
+                                <select id="kartu-tingkat" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900" onchange="window.updateKartuKelas()">
+                                    <option value="7">Kelas 7</option>
+                                    <option value="8">Kelas 8</option>
+                                    <option value="9">Kelas 9</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-400 mb-1.5 text-xs">Kelas</label>
+                                <select id="kartu-kelas" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900"></select>
+                            </div>
+                            <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <label class="block font-bold text-slate-400 mb-1.5 text-xs">Ruang Ujian (Opsional)</label>
+                                    <select id="kartu-ruang" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900">
+                                        ${ruangOptions}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-400 mb-1.5 text-xs">Kota/Kecamatan</label>
+                                    <input type="text" id="kartu-kota" value="Pabedilan" placeholder="Misal: Cirebon" class="w-full px-4 py-3 rounded-xl glass-input">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-400 mb-1.5 text-xs">Tanggal Kartu</label>
+                                    <input type="date" id="kartu-tanggal" class="w-full px-4 py-3 rounded-xl glass-input text-slate-200" value="${new Date().toISOString().split('T')[0]}">
+                                </div>
+                            </div>
+
+                            <!-- Pengaturan Tambahan Tata Letak -->
+                            <div class="md:col-span-2 pt-5 mt-2 border-t border-slate-800">
+                                <h3 class="font-bold text-amber-400 mb-4 text-xs uppercase tracking-widest"><i class="fa-solid fa-sliders mr-2"></i> Pengaturan Tata Letak Kartu</h3>
+                                <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
+                                    <div>
+                                        <label class="block text-[9px] font-bold text-slate-400 mb-1.5 uppercase">Margin Kertas (cm)</label>
+                                        <input type="number" id="kartu-margin" value="0.6" step="0.1" class="w-full px-4 py-3 rounded-xl glass-input text-amber-300 font-bold text-xs">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[9px] font-bold text-slate-400 mb-1.5 uppercase">Ukuran Logo (px)</label>
+                                        <input type="number" id="kartu-logo" value="44" step="1" class="w-full px-4 py-3 rounded-xl glass-input text-amber-300 font-bold text-xs">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[9px] font-bold text-slate-400 mb-1.5 uppercase">Teks KOP (pt)</label>
+                                        <input type="number" id="kartu-font-kop" value="8.5" step="0.5" class="w-full px-4 py-3 rounded-xl glass-input text-amber-300 font-bold text-xs">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[9px] font-bold text-slate-400 mb-1.5 uppercase">Spasi Vertikal</label>
+                                        <input type="number" id="kartu-spasi" value="1.1" step="0.1" class="w-full px-4 py-3 rounded-xl glass-input text-amber-300 font-bold text-xs">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[9px] font-bold text-slate-400 mb-1.5 uppercase" title="Jarak antara gambar TTD Kepala Sekolah dengan Nama Terang">Jarak TTD (px)</label>
+                                        <input type="number" id="kartu-jarak-ttd" value="55" step="1" class="w-full px-4 py-3 rounded-xl glass-input text-amber-300 font-bold text-xs">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[9px] font-bold text-slate-400 mb-1.5 uppercase" title="Ukuran teks kecamatan dan tanggal di atas TTD">Font Tgl (pt)</label>
+                                        <input type="number" id="kartu-font-tgl" value="8" step="0.5" class="w-full px-4 py-3 rounded-xl glass-input text-amber-300 font-bold text-xs">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-2 pt-4 border-t border-slate-800 mt-2">
+                                <button onclick="window.cetakKartuUjian()" class="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl text-xs uppercase tracking-widest shadow-lg transition"><i class="fa-solid fa-print mr-2"></i> Buat & Cetak Kartu Ujian</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                window.updateKartuKelas();
+            };
+
+            if (!window.appData.isFetched.peserta) {
+                container.innerHTML = `<div class="flex flex-col items-center justify-center h-64 text-indigo-500"><i class="fa-solid fa-circle-notch fa-spin text-4xl mb-3"></i><p class="text-sm font-bold text-slate-400 uppercase tracking-widest">Memuat Data Siswa...</p></div>`;
+                const queries = [sbClient7.from('peserta').select('*')];
+                if (sbClient8 !== sbClient7) queries.push(sbClient8.from('peserta').select('*'));
+                if (sbClient9 !== sbClient7) queries.push(sbClient9.from('peserta').select('*'));
+
+                Promise.allSettled(queries).then(results => {
+                    let newData = []; 
+                    results.forEach(res => { if(res.status === 'fulfilled' && res.value.data) newData.push(...res.value.data); });
+                    window.appData.peserta = newData; 
+                    window.appData.isFetched.peserta = true;
+                    if(window.currentRoute === 'kartu-ujian') renderUI();
+                });
+            } else {
+                renderUI();
+            }
+        };
+
+        window.updateKartuKelas = function() {
+            const tk = document.getElementById('kartu-tingkat').value;
+            const sel = document.getElementById('kartu-kelas');
+            if (sel) {
+                sel.innerHTML = ''; 
+                if(window.mapKelas[tk]) {
+                    window.mapKelas[tk].forEach(k => sel.innerHTML += `<option value="${k}">${k}</option>`);
+                } else {
+                    sel.innerHTML = `<option value="">Tidak ada kelas</option>`;
+                }
+            }
+        };
+
+        window.cetakKartuUjian = function() {
+            const kelas = document.getElementById('kartu-kelas').value;
+            const ruang = document.getElementById('kartu-ruang').value || '.........................';
+            
+            // Ambil parameter penyesuaian (Tuning) dari input
+            const valMargin = document.getElementById('kartu-margin') ? document.getElementById('kartu-margin').value : '0.6';
+            const valLogo = document.getElementById('kartu-logo') ? document.getElementById('kartu-logo').value : '44';
+            const valFontKop = document.getElementById('kartu-font-kop') ? parseFloat(document.getElementById('kartu-font-kop').value) : 8.5;
+            const valSpasi = document.getElementById('kartu-spasi') ? document.getElementById('kartu-spasi').value : '1.1';
+            const valJarakTTD = document.getElementById('kartu-jarak-ttd') ? document.getElementById('kartu-jarak-ttd').value : '55';
+            const valKota = document.getElementById('kartu-kota') ? document.getElementById('kartu-kota').value.trim() : 'Pabedilan';
+            const valTanggal = document.getElementById('kartu-tanggal') ? document.getElementById('kartu-tanggal').value : '';
+            const valFontTgl = document.getElementById('kartu-font-tgl') ? parseFloat(document.getElementById('kartu-font-tgl').value) : 8;
+
+            // Format penanggalan
+            const tglIndo = formatTanggalIndo(valTanggal);
+            
+            let siswa = window.appData.peserta.filter(p => p.kelas === kelas);
+            siswa.sort((a, b) => (a.nama || '').localeCompare(b.nama || ''));
+
+            if (siswa.length === 0) {
+                return window.showNotification(`Tidak ada siswa di kelas ${kelas}.`);
+            }
+
+            let cardsHtml = '';
+            siswa.forEach((s) => {
+                cardsHtml += `
+                    <div class="card">
+                        <div class="kop-kartu">
+                            <img src="${window.globalSettings.logoUrl}" style="width: ${valLogo}px; height: ${valLogo}px;">
+                            <div class="kop-kartu-text">
+                                <span style="font-size: ${valFontKop + 2.5}pt; font-weight: bold; text-decoration: underline;">KARTU PESERTA</span><br>
+                                <b style="font-size: ${valFontKop}pt;">ASESMEN SUMATIF AKHIR SEMESTER</b><br>
+                                <b style="font-size: ${valFontKop}pt;">TAHUN PELAJARAN 2026/2027</b><br>
+                                <b style="font-size: ${valFontKop + 2.5}pt; letter-spacing: 0.5px;">${window.globalSettings.namaSekolah.toUpperCase()}</b>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <table class="tabel-info">
+                                <tr><td width="26%">Nama</td><td width="3%">:</td><td><b>${s.nama.toUpperCase()}</b></td></tr>
+                                <tr><td>Kelas</td><td>:</td><td>${s.kelas}</td></tr>
+                                <tr><td>Username</td><td>:</td><td>${s.username || '-'}</td></tr>
+                                <tr><td>Password</td><td>:</td><td><b style="font-size:9.5pt;">${s.password || '123456'}</b></td></tr>
+                                <tr><td>Ruang</td><td>:</td><td>${ruang}</td></tr>
+                            </table>
+                            <div class="card-footer">
+                                <div class="catatan">
+                                    <b>Catatan:</b><br>
+                                    <i>Kartu ujian ini <b>WAJIB</b> dibawa selama ujian berlangsung.</i>
+                                </div>
+                                <div class="ttd-box-kartu">
+                                   <div class="ttd-tanggal"><span style="font-size: ${valFontTgl}pt;">${valKota}, ${tglIndo}</span></div>
+                                   Kepala Sekolah,<br>
+                                   ${window.globalSettings.ttdKepsek ? `<img src="${window.globalSettings.ttdKepsek}" style="max-height: ${valJarakTTD}px; max-width: 100%; object-fit: contain; margin: 1px auto; display: block;">` : `<div style="height: ${valJarakTTD}px;"></div>`}
+                                   <div class="ttd-nama-pejabat">
+                                       <b style="font-size: 8.5pt;"><u>${window.globalSettings.namaKasek}</u></b><br>
+                                       <span style="font-size: 7.5pt;">NIP. ${window.globalSettings.nipKasek || '-'}</span>
+                                   </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html><html lang="id"><head><title>Kartu Peserta Ujian - ${kelas}</title>
+                <style>
+                    /* Margin Kertas Dinamis menggunakan parameter */
+                    @page { size: A4 portrait; margin: ${valMargin}cm 1cm; }
+                    body { font-family: 'Times New Roman', serif; color: #000; -webkit-print-color-adjust: exact; margin: 0; padding: 0; }
+                    .card-container { display: flex; flex-wrap: wrap; justify-content: space-between; align-content: flex-start; gap: 6px 0; }
+                    .card { 
+                        width: 49%; 
+                        height: 67mm; 
+                        border: 2.5px solid #000; /* Garis tepi tebal */
+                        padding: 6px 12px; 
+                        box-sizing: border-box; 
+                        page-break-inside: avoid;
+                        background: #fff;
+                        border-radius: 8px;
+                        display: flex;
+                        flex-direction: column;
+                        margin-bottom: 5px;
+                        overflow: hidden;
+                    }
+                    .kop-kartu { display: flex; align-items: center; border-bottom: 1.5px solid #000; padding-bottom: 3px; margin-bottom: 4px; }
+                    .kop-kartu img { object-fit: contain; margin-right: 8px; }
+                    
+                    /* Spasi Vertikal Dinamis pada KOP dan Tabel */
+                    .kop-kartu-text { flex: 1; text-align: center; line-height: ${valSpasi}; }
+                    .card-body { display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
+                    .tabel-info { width: 100%; font-size: 8.5pt; line-height: ${valSpasi}; border-collapse: collapse; }
+                    
+                    .tabel-info td { vertical-align: top; padding-bottom: 1px; }
+                    .card-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding-top: 0; }
+                    
+                    /* Spasi Vertikal Dinamis pada Catatan */
+                    .catatan { font-size: 6.5pt; color: #000; width: 42%; padding: 4px; border: 1px dotted #000; border-radius: 4px; line-height: ${valSpasi}; align-self: flex-end; margin-bottom: 0; }
+                    
+                    /* Area TTD Baru */
+                    .ttd-box-kartu { font-size: 8.5pt; text-align: center; width: 55%; line-height: 1.1; }
+                    .ttd-tanggal { font-size: ${valFontTgl}pt; margin-bottom: 2px; }
+                    .ttd-nama-pejabat { margin-top: auto; }
+                </style></head>
+                <body onload="window.print()">
+                    <div class="card-container">
+                        ${cardsHtml}
+                    </div>
+                </body></html>
+            `);
+            printWindow.document.close();
+        };
+
         window.loadTataTertibAdmin = function() {
             window.currentRoute = 'tata-tertib'; const container = document.getElementById('content-container');
             
-            const txtPeserta = `<ol class="list-decimal pl-6 space-y-3 text-sm text-slate-300 text-justify mb-2"><li>Peserta ujian memasuki ruangan setelah tanda masuk dibunyikan, yakni 15 (lima belas) menit sebelum ujian dimulai.</li><li>Peserta ujian yang terlambat hadir hanya diperkenankan mengikuti ujian setelah mendapat izin dari Ketua Panitia, tanpa perpanjangan waktu.</li><li>Peserta ujian dilarang membawa alat komunikasi elektronik (selain yang digunakan untuk ujian), jam tangan pintar (smartwatch), kamera, kalkulator, buku, dan catatan dalam bentuk apapun ke tempat duduk.</li><li>Peserta ujian wajib membawa perangkat mandiri (HP/Tablet/Laptop) dengan daya baterai yang cukup (full charge) serta kuota internet yang memadai.</li><li>Peserta ujian wajib mengisi daftar hadir sebelum ujian dimulai.</li><li>Peserta ujian mulai mengerjakan soal setelah mendapatkan <b>Token Ujian</b> dari Pengawas Ruang.</li><li>Selama ujian berlangsung, aplikasi sistem akan mengunci layar. Peserta dilarang keras keluar dari aplikasi ujian, membuka tab baru, browser lain, atau aplikasi lain (seperti Google, AI, WhatsApp). Pelanggaran akan berakibat akun <b>Terkunci Otomatis (DIBLOKIR)</b>.</li><li>Selama ujian berlangsung, peserta dilarang:<ul class="list-[lower-alpha] pl-5 mt-2 space-y-1"><li>Menanyakan jawaban soal kepada siapa pun.</li><li>Bekerjasama atau menyontek.</li><li>Memberi atau menerima bantuan dalam menjawab soal.</li><li>Memotret/merekam soal ujian.</li><li>Menggantikan atau digantikan oleh orang lain.</li></ul></li><li>Peserta yang telah selesai mengerjakan ujian wajib melapor kepada Pengawas Ruang, menekan tombol selesai/submit, dan menunjukkan layar "Ujian Selesai" sebelum meninggalkan ruangan.</li><li>Peserta yang melanggar tata tertib akan dicatat dalam Berita Acara dan dikenakan sanksi berupa pembatalan nilai (diskualifikasi) pada mata pelajaran tersebut.</li></ol>`;
+            const txtPeserta = `<ol class="list-decimal pl-6 space-y-3 text-sm text-slate-300 text-justify mb-2"><li>Peserta ujian memasuki ruangan setelah tanda masuk dibunyikan, yakni 15 (lima belas) menit sebelum ujian dimulai.</li><li>Peserta ujian yang terlambat hadir hanya diperkenankan mengikuti ujian setelah mendapat izin dari Ketua Panitia, tanpa perpanjangan waktu.</li><li>Peserta ujian dilarang membawa alat komunikasi elektronik (selain yang digunakan untuk ujian), jam tangan pintar (smartwatch), kamera, kalkulator, buku, dan catatan dalam bentuk apapun ke tempat duduk.</li><li>Peserta ujian wajib membawa perangkat mandiri (HP/Tablet/Laptop) dengan daya baterai yang cukup (full charge) serta kuota internet yang memadai.</li><li>Peserta ujian wajib mengisi daftar hadir sebelum ujian dimulai.</li><li>Token ujian akan diberikan 5 menit sebelum ujian berakhir.</li><li>Selama ujian berlangsung, aplikasi sistem akan mengunci layar. Peserta dilarang keras keluar dari aplikasi ujian, membuka tab baru, browser lain, atau aplikasi lain (seperti Google, AI, WhatsApp). Pelanggaran akan berakibat akun <b>Terkunci Otomatis (DIBLOKIR)</b>.</li><li>Selama ujian berlangsung, peserta dilarang:<ul class="list-[lower-alpha] pl-5 mt-2 space-y-1"><li>Menanyakan jawaban soal kepada siapa pun.</li><li>Bekerjasama atau menyontek.</li><li>Memberi atau menerima bantuan dalam menjawab soal.</li><li>Memotret/merekam soal ujian.</li><li>Menggantikan atau digantikan oleh orang lain.</li></ul></li><li>Peserta yang telah selesai mengerjakan ujian wajib melapor kepada Pengawas Ruang, menekan tombol selesai/submit, dan menunjukkan layar "Ujian Selesai" sebelum meninggalkan ruangan.</li><li>Peserta yang melanggar tata tertib akan dicatat dalam Berita Acara dan dikenakan sanksi berupa pembatalan nilai (diskualifikasi) pada mata pelajaran tersebut.</li></ol>`;
 
-            const txtPengawas = `<ol class="list-decimal pl-6 space-y-3 text-sm text-slate-300 text-justify mb-2"><li>Pengawas ruang hadir di lokasi ujian selambat-lambatnya 30 (tiga puluh) menit sebelum ujian dimulai untuk menerima pengarahan dan kelengkapan ujian (Daftar Hadir, Token, dan tata tertib).</li><li>Pengawas ruang masuk ke dalam ruangan ujian 15 (lima belas) menit sebelum waktu pelaksanaan ujian.</li><li>Pengawas memeriksa kesiapan ruang ujian, memastikan kebersihan ruangan, dan mengatur ketertiban peserta ujian.</li><li>Pengawas memastikan peserta tidak membawa tas, buku, catatan, kalkulator, dan perangkat elektronik lain yang tidak diizinkan ke meja ujian.</li><li>Pengawas membacakan Tata Tertib Peserta Ujian sebelum ujian dimulai.</li><li>Pengawas mengedarkan daftar hadir peserta untuk ditandatangani.</li><li>Pengawas membagikan <b>Token Ujian</b> kepada peserta tepat pada saat waktu pengerjaan dimulai.</li><li>Selama ujian berlangsung, pengawas ruang dilarang melakukan aktivitas yang mengganggu konsentrasi peserta, seperti merokok, mengobrol, membaca koran, menggunakan laptop pribadi, atau bermain telepon seluler (HP/Sosmed).</li><li>Pengawas ruang wajib berkeliling sesekali untuk memastikan tidak ada peserta yang melakukan kecurangan atau membuka aplikasi lain di luar aplikasi CBT.</li><li>Pengawas menangani kendala teknis awal (misal: peserta gagal login) dan segera melapor kepada Teknisi/Proktor jika kendala tidak dapat diselesaikan.</li><li>Pengawas memastikan seluruh peserta telah men-submit jawaban dan mendapatkan layar "Ujian Selesai" sebelum peserta diizinkan meninggalkan ruangan.</li><li>Setelah ujian selesai, Pengawas wajib mengisi, memvalidasi kehadiran, dan mengirimkan <b>Berita Acara Pelaksanaan Ujian</b> lengkap dengan tanda tangan digital melalui aplikasi selambat-lambatnya 15 menit setelah waktu ujian berakhir.</li></ol>`;
+            const txtPengawas = `<ol class="list-decimal pl-6 space-y-3 text-sm text-slate-300 text-justify mb-2"><li>Pengawas ruang hadir di lokasi ujian selambat-lambatnya 30 (tiga puluh) menit sebelum ujian dimulai untuk menerima pengarahan dan kelengkapan ujian (Daftar Hadir, Token, dan tata tertib).</li><li>Pengawas ruang masuk ke dalam ruangan ujian 15 (lima belas) menit sebelum waktu pelaksanaan ujian.</li><li>Pengawas memeriksa kesiapan ruang ujian, memastikan kebersihan ruangan, dan mengatur ketertiban peserta ujian.</li><li>Pengawas memastikan peserta tidak membawa tas, buku, catatan, kalkulator, dan perangkat elektronik lain yang tidak diizinkan ke meja ujian.</li><li>Pengawas membacakan Tata Tertib Peserta Ujian sebelum ujian dimulai.</li><li>Pengawas mengedarkan daftar hadir peserta untuk ditandatangani.</li><li>Pengawas membagikan <b>Token Ujian</b> kepada peserta 5 menit saat waktu ujian akan berakhir.</li><li>Selama ujian berlangsung, pengawas ruang dilarang melakukan aktivitas yang mengganggu konsentrasi peserta, seperti merokok, mengobrol, membaca koran, menggunakan laptop pribadi, atau bermain telepon seluler (HP/Sosmed).</li><li>Pengawas ruang wajib berkeliling sesekali untuk memastikan tidak ada peserta yang melakukan kecurangan atau membuka aplikasi lain di luar aplikasi CBT.</li><li>Pengawas menangani kendala teknis awal (misal: peserta gagal login) dan segera melapor kepada Teknisi/Proktor jika kendala tidak dapat diselesaikan.</li><li>Pengawas memastikan seluruh peserta telah men-submit jawaban dan mendapatkan layar "Ujian Selesai" sebelum peserta diizinkan meninggalkan ruangan.</li><li>Setelah ujian selesai, Pengawas wajib mengisi, memvalidasi kehadiran, dan mengirimkan <b>Berita Acara Pelaksanaan Ujian</b> lengkap dengan tanda tangan digital melalui aplikasi selambat-lambatnya 15 menit setelah waktu ujian berakhir.</li></ol>`;
 
-            container.innerHTML = `<div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"><div><h1 class="text-2xl md:text-3xl font-extrabold text-white">Tata Tertib Ujian</h1><p class="text-sm text-slate-400 mt-1">Dokumen Resmi Tata Tertib Peserta dan Pengawas</p></div><div class="flex gap-2 w-full md:w-auto"><button onclick="window.cetakTataTertib('peserta')" class="flex-1 md:flex-none px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-[11px] uppercase tracking-widest shadow-lg transition"><i class="fa-solid fa-print mr-1.5"></i> Cetak T.T. Peserta</button><button onclick="window.cetakTataTertib('pengawas')" class="flex-1 md:flex-none px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-[11px] uppercase tracking-widest shadow-lg transition"><i class="fa-solid fa-print mr-1.5"></i> Cetak T.T. Pengawas</button></div></div><div class="grid grid-cols-1 xl:grid-cols-2 gap-6"><div class="glass-card-dark p-6 md:p-8 rounded-3xl border border-indigo-500/30 shadow-lg relative overflow-hidden"><div class="absolute top-0 left-0 right-0 h-1 bg-indigo-500"></div><div class="flex items-center mb-6 border-b border-slate-800 pb-4"><div class="w-12 h-12 bg-indigo-500/20 text-indigo-400 rounded-xl flex items-center justify-center text-xl mr-4"><i class="fa-solid fa-user-graduate"></i></div><h2 class="text-xl font-bold text-white uppercase tracking-wider">Tata Tertib Peserta</h2></div>` + txtPeserta + `</div><div class="glass-card-dark p-6 md:p-8 rounded-3xl border border-emerald-500/30 shadow-lg relative overflow-hidden"><div class="absolute top-0 left-0 right-0 h-1 bg-emerald-500"></div><div class="flex items-center mb-6 border-b border-slate-800 pb-4"><div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center text-xl mr-4"><i class="fa-solid fa-user-tie"></i></div><h2 class="text-xl font-bold text-white uppercase tracking-wider">Tata Tertib Pengawas</h2></div>` + txtPengawas + `</div></div>`;
+            container.innerHTML = `
+                <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-white">Tata Tertib Ujian</h1>
+                        <p class="text-sm text-slate-400 mt-1">Dokumen Resmi Tata Tertib Peserta dan Pengawas</p>
+                    </div>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <button onclick="window.cetakTataTertib('peserta')" class="flex-1 md:flex-none px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-[11px] uppercase tracking-widest shadow-lg transition"><i class="fa-solid fa-print mr-1.5"></i> Cetak T.T. Peserta</button>
+                        <button onclick="window.cetakTataTertib('pengawas')" class="flex-1 md:flex-none px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-[11px] uppercase tracking-widest shadow-lg transition"><i class="fa-solid fa-print mr-1.5"></i> Cetak T.T. Pengawas</button>
+                    </div>
+                </div>
+                
+                <div class="glass-card-dark p-6 rounded-3xl border border-slate-800 shadow-xl mb-6">
+                    <h3 class="font-bold text-amber-400 mb-4 text-xs uppercase tracking-widest"><i class="fa-solid fa-sliders mr-2"></i> Pengaturan Cetak Tata Tertib</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block font-bold text-slate-400 mb-1.5 text-xs">Kota/Kecamatan</label>
+                            <input type="text" id="tt-kota" value="Pabedilan" placeholder="Misal: Cirebon" class="w-full px-4 py-3 rounded-xl glass-input">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-400 mb-1.5 text-xs">Tanggal Penetapan</label>
+                            <input type="date" id="tt-tanggal" class="w-full px-4 py-3 rounded-xl glass-input text-slate-200" value="${new Date().toISOString().split('T')[0]}">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-400 mb-1.5 text-xs">Ukuran Font Dokumen (pt)</label>
+                            <input type="number" id="tt-font" value="12" step="0.5" class="w-full px-4 py-3 rounded-xl glass-input font-bold text-amber-300">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <div class="glass-card-dark p-6 md:p-8 rounded-3xl border border-indigo-500/30 shadow-lg relative overflow-hidden">
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-indigo-500"></div>
+                        <div class="flex items-center mb-6 border-b border-slate-800 pb-4">
+                            <div class="w-12 h-12 bg-indigo-500/20 text-indigo-400 rounded-xl flex items-center justify-center text-xl mr-4"><i class="fa-solid fa-user-graduate"></i></div>
+                            <h2 class="text-xl font-bold text-white uppercase tracking-wider">Tata Tertib Peserta</h2>
+                        </div>
+                        ${txtPeserta}
+                    </div>
+                    <div class="glass-card-dark p-6 md:p-8 rounded-3xl border border-emerald-500/30 shadow-lg relative overflow-hidden">
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-emerald-500"></div>
+                        <div class="flex items-center mb-6 border-b border-slate-800 pb-4">
+                            <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center text-xl mr-4"><i class="fa-solid fa-user-tie"></i></div>
+                            <h2 class="text-xl font-bold text-white uppercase tracking-wider">Tata Tertib Pengawas</h2>
+                        </div>
+                        ${txtPengawas}
+                    </div>
+                </div>
+            `;
         };
 
         window.cetakTataTertib = function(jenis) {
+            const kota = document.getElementById('tt-kota') ? document.getElementById('tt-kota').value.trim() : 'Pabedilan';
+            const tglVal = document.getElementById('tt-tanggal') ? document.getElementById('tt-tanggal').value : '';
+            const tglStr = formatTanggalIndo(tglVal) || '........................ 2026';
+            const fontPt = document.getElementById('tt-font') ? document.getElementById('tt-font').value : '12';
+
             const judul = jenis === 'peserta' ? 'TATA TERTIB PESERTA UJIAN (CBT)' : 'TATA TERTIB PENGAWAS RUANG UJIAN (CBT)';
             let htmlList = '';
             
             if(jenis === 'peserta') {
-                htmlList = `<ol><li>Peserta ujian memasuki ruangan setelah tanda masuk dibunyikan, yakni 15 (lima belas) menit sebelum ujian dimulai.</li><li>Peserta ujian yang terlambat hadir hanya diperkenankan mengikuti ujian setelah mendapat izin dari Ketua Panitia, tanpa perpanjangan waktu.</li><li>Peserta ujian dilarang membawa alat komunikasi elektronik (selain yang digunakan untuk ujian), jam tangan pintar (smartwatch), kamera, kalkulator, buku, dan catatan dalam bentuk apapun ke tempat duduk.</li><li>Peserta ujian wajib membawa perangkat mandiri (HP/Tablet/Laptop) dengan daya baterai yang cukup (full charge) serta kuota internet yang memadai.</li><li>Peserta ujian wajib mengisi daftar hadir sebelum ujian dimulai.</li><li>Peserta ujian mulai mengerjakan soal setelah mendapatkan <b>Token Ujian</b> dari Pengawas Ruang.</li><li>Selama ujian berlangsung, aplikasi sistem akan mengunci layar. Peserta dilarang keras keluar dari aplikasi ujian, membuka tab baru, browser lain, atau aplikasi lain (seperti Google, AI, WhatsApp). Pelanggaran akan berakibat akun <b>Terkunci Otomatis (DIBLOKIR)</b>.</li><li>Selama ujian berlangsung, peserta dilarang:<ul style="list-style-type: lower-alpha;"><li>Menanyakan jawaban soal kepada siapa pun.</li><li>Bekerjasama atau menyontek.</li><li>Memberi atau menerima bantuan dalam menjawab soal.</li><li>Memotret/merekam soal ujian.</li><li>Menggantikan atau digantikan oleh orang lain.</li></ul></li><li>Peserta yang telah selesai mengerjakan ujian wajib melapor kepada Pengawas Ruang, menekan tombol selesai/submit, dan menunjukkan layar "Ujian Selesai" sebelum meninggalkan ruangan.</li><li>Peserta yang melanggar tata tertib akan dicatat dalam Berita Acara dan dikenakan sanksi berupa pembatalan nilai (diskualifikasi) pada mata pelajaran tersebut.</li></ol>`;
+                htmlList = `<ol><li>Peserta ujian memasuki ruangan setelah tanda masuk dibunyikan, yakni 15 (lima belas) menit sebelum ujian dimulai.</li><li>Peserta ujian yang terlambat hadir hanya diperkenankan mengikuti ujian setelah mendapat izin dari Ketua Panitia, tanpa perpanjangan waktu.</li><li>Peserta ujian dilarang membawa alat komunikasi elektronik (selain yang digunakan untuk ujian), jam tangan pintar (smartwatch), kamera, kalkulator, buku, dan catatan dalam bentuk apapun ke tempat duduk.</li><li>Peserta ujian wajib membawa perangkat mandiri (HP/Tablet/Laptop) dengan daya baterai yang cukup (full charge) serta kuota internet yang memadai.</li><li>Peserta ujian wajib mengisi daftar hadir sebelum ujian dimulai.</li><li>Token ujian akan diberikan 5 menit sebelum ujian berakhir.</li><li>Selama ujian berlangsung, aplikasi sistem akan mengunci layar. Peserta dilarang keras keluar dari aplikasi ujian, membuka tab baru, browser lain, atau aplikasi lain (seperti Google, AI, WhatsApp). Pelanggaran akan berakibat akun <b>Terkunci Otomatis (DIBLOKIR)</b>.</li><li>Selama ujian berlangsung, peserta dilarang:<ul style="list-style-type: lower-alpha;"><li>Menanyakan jawaban soal kepada siapa pun.</li><li>Bekerjasama atau menyontek.</li><li>Memberi atau menerima bantuan dalam menjawab soal.</li><li>Memotret/merekam soal ujian.</li><li>Menggantikan atau digantikan oleh orang lain.</li></ul></li><li>Peserta yang telah selesai mengerjakan ujian wajib melapor kepada Pengawas Ruang, menekan tombol selesai/submit, dan menunjukkan layar "Ujian Selesai" sebelum meninggalkan ruangan.</li><li>Peserta yang melanggar tata tertib akan dicatat dalam Berita Acara dan dikenakan sanksi berupa pembatalan nilai (diskualifikasi) pada mata pelajaran tersebut.</li></ol>`;
             } else {
-                htmlList = `<ol><li>Pengawas ruang hadir di lokasi ujian selambat-lambatnya 30 (tiga puluh) menit sebelum ujian dimulai untuk menerima pengarahan dan kelengkapan ujian (Daftar Hadir, Token, dan tata tertib).</li><li>Pengawas ruang masuk ke dalam ruangan ujian 15 (lima belas) menit sebelum waktu pelaksanaan ujian.</li><li>Pengawas memeriksa kesiapan ruang ujian, memastikan kebersihan ruangan, dan mengatur ketertiban peserta ujian.</li><li>Pengawas memastikan peserta tidak membawa tas, buku, catatan, kalkulator, dan perangkat elektronik lain yang tidak diizinkan ke meja ujian.</li><li>Pengawas membacakan Tata Tertib Peserta Ujian sebelum ujian dimulai.</li><li>Pengawas mengedarkan daftar hadir peserta untuk ditandatangani.</li><li>Pengawas membagikan <b>Token Ujian</b> kepada peserta tepat pada saat waktu pengerjaan dimulai.</li><li>Selama ujian berlangsung, pengawas ruang dilarang melakukan aktivitas yang mengganggu konsentrasi peserta, seperti merokok, mengobrol, membaca koran, menggunakan laptop pribadi, atau bermain telepon seluler (HP/Sosmed).</li><li>Pengawas ruang wajib berkeliling sesekali untuk memastikan tidak ada peserta yang melakukan kecurangan atau membuka aplikasi lain di luar aplikasi CBT.</li><li>Pengawas menangani kendala teknis awal (misal: peserta gagal login) dan segera melapor kepada Teknisi/Proktor jika kendala tidak dapat diselesaikan.</li><li>Pengawas memastikan seluruh peserta telah men-submit jawaban dan mendapatkan layar "Ujian Selesai" sebelum peserta diizinkan meninggalkan ruangan.</li><li>Setelah ujian selesai, Pengawas wajib mengisi, memvalidasi kehadiran, dan mengirimkan <b>Berita Acara Pelaksanaan Ujian</b> lengkap dengan tanda tangan digital melalui aplikasi selambat-lambatnya 15 menit setelah waktu ujian berakhir.</li></ol>`;
+                htmlList = `<ol><li>Pengawas ruang hadir di lokasi ujian selambat-lambatnya 30 (tiga puluh) menit sebelum ujian dimulai untuk menerima pengarahan dan kelengkapan ujian (Daftar Hadir, Token, dan tata tertib).</li><li>Pengawas ruang masuk ke dalam ruangan ujian 15 (lima belas) menit sebelum waktu pelaksanaan ujian.</li><li>Pengawas memeriksa kesiapan ruang ujian, memastikan kebersihan ruangan, dan mengatur ketertiban peserta ujian.</li><li>Pengawas memastikan peserta tidak membawa tas, buku, catatan, kalkulator, dan perangkat elektronik lain yang tidak diizinkan ke meja ujian.</li><li>Pengawas membacakan Tata Tertib Peserta Ujian sebelum ujian dimulai.</li><li>Pengawas mengedarkan daftar hadir peserta untuk ditandatangani.</li><li>Pengawas membagikan <b>Token Ujian</b> kepada peserta 5 menit saat waktu ujian akan berakhir.</li><li>Selama ujian berlangsung, pengawas ruang dilarang melakukan aktivitas yang mengganggu konsentrasi peserta, seperti merokok, mengobrol, membaca koran, menggunakan laptop pribadi, atau bermain telepon seluler (HP/Sosmed).</li><li>Pengawas ruang wajib berkeliling sesekali untuk memastikan tidak ada peserta yang melakukan kecurangan atau membuka aplikasi lain di luar aplikasi CBT.</li><li>Pengawas menangani kendala teknis awal (misal: peserta gagal login) dan segera melapor kepada Teknisi/Proktor jika kendala tidak dapat diselesaikan.</li><li>Pengawas memastikan seluruh peserta telah men-submit jawaban dan mendapatkan layar "Ujian Selesai" sebelum peserta diizinkan meninggalkan ruangan.</li><li>Setelah ujian selesai, Pengawas wajib mengisi, memvalidasi kehadiran, dan mengirimkan <b>Berita Acara Pelaksanaan Ujian</b> lengkap dengan tanda tangan digital melalui aplikasi selambat-lambatnya 15 menit setelah waktu ujian berakhir.</li></ol>`;
             }
 
             const printWindow = window.open('', '_blank');
             printWindow.document.write(`<!DOCTYPE html><html lang="id"><head><title>${judul}</title>
             <style>
                 @page{size:A4;margin:1.2cm 1.5cm;} 
-                body{font-family:'Times New Roman',serif;font-size:12pt;line-height:1.35;color:#000; -webkit-user-select:none; user-select:none;} 
+                body{font-family:'Times New Roman',serif;font-size:${fontPt}pt;line-height:1.35;color:#000; -webkit-user-select:none; user-select:none;} 
                 .kop{border-bottom:3px double #000;padding-bottom:8px;margin-bottom:12px;text-align:center;position:relative;} 
                 .kop img{position:absolute;top:0;height:75px;} 
                 .logo-left{left:0;} .logo-right{right:0;} 
                 h4,h3,h2{margin:2px 0;} 
                 .judul{text-align:center;margin-bottom:12px;} 
-                .judul h3{text-decoration:underline;margin-bottom:3px;font-size:13pt;font-weight:bold;}
+                .judul h3{text-decoration:underline;margin-bottom:3px;font-size:${parseFloat(fontPt)+1}pt;font-weight:bold;}
                 .ttd-container{width:100%;margin-top:15px; page-break-inside: avoid; break-inside: avoid;} 
                 .ttd-box{float:right;width:240px;text-align:center;} 
                 .sig-img{max-height:70px;margin:0 auto;display:block;} 
                 .clear{clear:both;} 
-                .alamat-tengah { text-align: center !important; font-size: 10pt; margin: 0; }
+                .alamat-tengah { text-align: center !important; font-size: ${parseFloat(fontPt)-2}pt; margin: 0; }
                 ol { padding-left: 20px; text-align: justify; margin: 0 0 10px 0; }
                 ol li { margin-bottom: 6px; }
                 ul { padding-left: 20px; margin-top: 2px; }
@@ -1155,9 +1905,9 @@
                     <div class="kop">
                         <img src="${window.globalSettings.logoKabUrl}" class="logo-left">
                         <img src="${window.globalSettings.logoUrl}" class="logo-right">
-                        <h4 style="font-size:13pt;font-weight:normal;">${window.globalSettings.pemkab}</h4>
-                        <h3 style="font-size:13pt;">${window.globalSettings.dinas}</h3>
-                        <h2 style="font-size:15pt;font-weight:bold;">${window.globalSettings.namaSekolah}</h2>
+                        <h4 style="font-size:${parseFloat(fontPt)+1}pt;font-weight:normal;">${window.globalSettings.pemkab}</h4>
+                        <h3 style="font-size:${parseFloat(fontPt)+1}pt;">${window.globalSettings.dinas}</h3>
+                        <h2 style="font-size:${parseFloat(fontPt)+3}pt;font-weight:bold;">${window.globalSettings.namaSekolah}</h2>
                         <p class="alamat-tengah">${window.globalSettings.alamatSekolah}</p>
                         <p class="alamat-tengah">Kodepos: ${window.globalSettings.kodePos}</p>
                     </div>
@@ -1165,7 +1915,7 @@
                     ${htmlList}
                     <div class="ttd-container">
                         <div class="ttd-box">
-                            <p style="margin:0 0 2px 0;">Pabedilan, ........................ 2026<br>Ketua Panitia,</p>
+                            <p style="margin:0 0 2px 0;">${kota}, ${tglStr}<br>Ketua Panitia,</p>
                             ${window.globalSettings.ttdPanitia ? `<img src="${window.globalSettings.ttdPanitia}" class="sig-img"/>` : '<div style="height:60px;"></div>'}
                             <p style="margin:2px 0 0 0;"><b><u>${window.globalSettings.namaPanitia}</u></b><br>NIP. ${window.globalSettings.nipPanitia||'-'}</p>
                         </div>
