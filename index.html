@@ -346,8 +346,16 @@
             for (let tk of ['7', '8', '9']) {
                 if (toDelete[tk].length > 0) {
                     const db = getDb(tk); 
-                    const { data, error } = await db.from('peserta').delete().in('id', toDelete[tk]).select();
+                    let { data, error } = await db.from('peserta').delete().in('id', toDelete[tk]).select();
                     if (error) throw error;
+                    
+                    // PENCARIAN CERDAS (Data Nyasar di Server 7)
+                    if ((!data || data.length < toDelete[tk].length) && db !== sbClient7) {
+                        const fallback = await sbClient7.from('peserta').delete().in('id', toDelete[tk]).eq('tingkat', tk).select();
+                        if (fallback.error) throw fallback.error;
+                        if (fallback.data) data = data ? [...data, ...fallback.data] : fallback.data;
+                    }
+                    
                     if (!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS belum dinonaktifkan).");
                 }
             }
@@ -398,9 +406,16 @@
         if(confirm("Yakin ingin menghapus siswa ini secara permanen?")) { 
             const btn = e ? e.currentTarget : null; const ori = btn ? btn.innerHTML : ''; if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
             try { 
-                const db = getDb(tingkat); 
-                const { data, error } = await db.from('peserta').delete().eq('id', id).select(); 
+                let db = getDb(tingkat); 
+                let { data, error } = await db.from('peserta').delete().eq('id', id).select(); 
                 if(error) throw error; 
+                
+                // PENCARIAN CERDAS
+                if ((!data || data.length === 0) && db !== sbClient7) {
+                    const fallback = await sbClient7.from('peserta').delete().eq('id', id).eq('tingkat', tingkat).select();
+                    data = fallback.data; error = fallback.error; if (error) throw error;
+                }
+                
                 if(!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS).");
                 window.loadDatabasePeserta(window.currentFilterPeserta, true); 
                 showNotification('Data Siswa berhasil dihapus.'); 
@@ -498,8 +513,16 @@
                 for (let tk of ['7', '8', '9']) {
                     if (toDelete[tk].length > 0) {
                         const db = getDb(tk); 
-                        const { data, error } = await db.from('soal').delete().in('id', toDelete[tk]).select();
+                        let { data, error } = await db.from('soal').delete().in('id', toDelete[tk]).select();
                         if (error) throw error;
+                        
+                        // PENCARIAN CERDAS (Data Nyasar di Server 7)
+                        if ((!data || data.length < toDelete[tk].length) && db !== sbClient7) {
+                            const fallback = await sbClient7.from('soal').delete().in('id', toDelete[tk]).eq('tingkat', tk).select();
+                            if (fallback.error) throw fallback.error;
+                            if (fallback.data) data = data ? [...data, ...fallback.data] : fallback.data;
+                        }
+
                         if (!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS belum dinonaktifkan).");
                     }
                 }
@@ -535,9 +558,16 @@
         if(confirm("Hapus soal ini?")) { 
             const btn = e ? e.currentTarget : null; const ori = btn ? btn.innerHTML : ''; if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
             try { 
-                const db = getDb(tingkat); 
-                const { data, error } = await db.from('soal').delete().eq('id', id).select(); 
+                let db = getDb(tingkat); 
+                let { data, error } = await db.from('soal').delete().eq('id', id).select(); 
                 if(error) throw error; 
+                
+                // PENCARIAN CERDAS
+                if ((!data || data.length === 0) && db !== sbClient7) {
+                    const fallback = await sbClient7.from('soal').delete().eq('id', id).eq('tingkat', tingkat).select();
+                    data = fallback.data; error = fallback.error; if (error) throw error;
+                }
+
                 if(!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS).");
                 window.loadManajemenSoal(window.currentFilterTingkat, true); 
                 showNotification('Soal berhasil dihapus.'); 
@@ -745,8 +775,16 @@
             for (let tk of ['7', '8', '9']) {
                 if (toDelete[tk].length > 0) {
                     const db = getDb(tk); 
-                    const { data, error } = await db.from('hasil').delete().in('id', toDelete[tk]).select();
+                    let { data, error } = await db.from('hasil').delete().in('id', toDelete[tk]).select();
                     if (error) throw error;
+                    
+                    // PENCARIAN CERDAS (Data Nyasar di Server 7)
+                    if ((!data || data.length < toDelete[tk].length) && db !== sbClient7) {
+                        const fallback = await sbClient7.from('hasil').delete().in('id', toDelete[tk]).eq('tingkat', tk).select();
+                        if (fallback.error) throw fallback.error;
+                        if (fallback.data) data = data ? [...data, ...fallback.data] : fallback.data;
+                    }
+
                     if (!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS).");
                 }
             }
