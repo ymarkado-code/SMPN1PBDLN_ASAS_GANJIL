@@ -480,7 +480,7 @@
             
             if(isSyncing && Object.keys(grouped).length === 0) { html += `<div class="glass-card-dark p-8 rounded-2xl text-center text-indigo-400 font-medium"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Mensinkronkan data...</div>`; }
             else if(Object.keys(grouped).length === 0) { html += `<div class="glass-card-dark p-8 rounded-2xl text-center text-slate-500 font-medium">Belum ada soal ujian. Klik "Tambah Manual" atau "Import" untuk memulai.</div>`; } 
-            else { Object.keys(grouped).sort().forEach(groupKey => { html += `<div class="glass-card-dark rounded-2xl border border-slate-800 overflow-hidden shadow-lg"><div class="p-4 bg-slate-900/90 border-b border-slate-800 flex justify-between items-center"><span class="font-extrabold text-indigo-300 text-sm"><i class="fa-solid fa-book-bookmark text-indigo-500 mr-2"></i>${groupKey}</span><span class="px-3 py-1 bg-indigo-500/20 text-indigo-300 text-xs font-bold rounded-full">${grouped[groupKey].length} Soal</span></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="bg-slate-900/40 text-slate-400 font-bold uppercase"><th class="p-3 w-10 text-center"><input type="checkbox" onchange="window.toggleAllSoal(event)" class="cursor-pointer accent-indigo-500 w-4 h-4 rounded"></th><th class="p-3 w-12 text-center">No</th><th class="p-3">Pertanyaan & Pilihan</th><th class="p-3 text-center w-24">Kunci</th><th class="p-3 text-center w-20">Aksi</th></tr></thead><tbody class="divide-y divide-slate-800/60">`; grouped[groupKey].forEach((s, idx) => { html += `<tr class="hover:bg-slate-800/30"><td class="p-3 text-center"><input type="checkbox" class="chk-soal cursor-pointer accent-indigo-500 w-4 h-4 rounded" value="${s.id}|${s.tingkat}" onchange="window.updateBtnHapusSoalTerpilih()"></td><td class="p-3 text-center font-bold text-slate-400">${idx + 1}</td><td class="p-3"><div class="font-semibold text-slate-100 mb-1">${s.pertanyaan}</div><div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-slate-400 pt-1 border-t border-slate-800/50"><div class="truncate">A: ${s.pilihan_a||'-'}</div><div class="truncate">B: ${s.pilihan_b||'-'}</div><div class="truncate">C: ${s.pilihan_c||'-'}</div><div class="truncate">D: ${s.pilihan_d||'-'}</div></div></td><td class="p-3 text-center font-extrabold text-emerald-400 bg-emerald-500/5 text-base">${s.kunci}<div class="text-[9px] text-slate-500 mt-1 uppercase">Skor: ${s.skor||2}</div></td><td class="p-3 text-center"><button onclick="window.hapusSoal('${s.id}', '${s.tingkat}', event)" class="w-8 h-8 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition"><i class="fa-solid fa-trash"></i></button></td></tr>`; }); html += `</tbody></table></div></div>`; }); }
+            else { Object.keys(grouped).sort().forEach(groupKey => { html += `<div class="glass-card-dark rounded-2xl border border-slate-800 overflow-hidden shadow-lg"><div class="p-4 bg-slate-900/90 border-b border-slate-800 flex justify-between items-center"><span class="font-extrabold text-indigo-300 text-sm"><i class="fa-solid fa-book-bookmark text-indigo-500 mr-2"></i>${groupKey}</span><span class="px-3 py-1 bg-indigo-500/20 text-indigo-300 text-xs font-bold rounded-full">${grouped[groupKey].length} Soal</span></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="bg-slate-900/40 text-slate-400 font-bold uppercase"><th class="p-3 w-10 text-center"><input type="checkbox" onchange="window.toggleAllSoal(event)" class="cursor-pointer accent-indigo-500 w-4 h-4 rounded"></th><th class="p-3 w-12 text-center">No</th><th class="p-3">Pertanyaan & Pilihan</th><th class="p-3 text-center w-24">Kunci</th><th class="p-3 text-center w-24">Aksi</th></tr></thead><tbody class="divide-y divide-slate-800/60">`; grouped[groupKey].forEach((s, idx) => { html += `<tr class="hover:bg-slate-800/30"><td class="p-3 text-center"><input type="checkbox" class="chk-soal cursor-pointer accent-indigo-500 w-4 h-4 rounded" value="${s.id}|${s.tingkat}" onchange="window.updateBtnHapusSoalTerpilih()"></td><td class="p-3 text-center font-bold text-slate-400">${idx + 1}</td><td class="p-3"><div class="font-semibold text-slate-100 mb-1">${s.pertanyaan}</div><div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-slate-400 pt-1 border-t border-slate-800/50"><div class="truncate">A: ${s.pilihan_a||'-'}</div><div class="truncate">B: ${s.pilihan_b||'-'}</div><div class="truncate">C: ${s.pilihan_c||'-'}</div><div class="truncate">D: ${s.pilihan_d||'-'}</div></div></td><td class="p-3 text-center font-extrabold text-emerald-400 bg-emerald-500/5 text-base">${s.kunci}<div class="text-[9px] text-slate-500 mt-1 uppercase">Skor: ${s.skor||2}</div></td><td class="p-3 text-center space-x-1"><button onclick="window.openEditSoalModal('${s.id}', '${s.tingkat}')" class="w-8 h-8 bg-amber-500/10 text-amber-400 rounded-lg hover:bg-amber-500/20 transition" title="Edit Soal"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="window.hapusSoal('${s.id}', '${s.tingkat}', event)" class="w-8 h-8 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition" title="Hapus Soal"><i class="fa-solid fa-trash"></i></button></td></tr>`; }); html += `</tbody></table></div></div>`; }); }
             container.innerHTML = html + `</div>`;
         };
 
@@ -593,91 +593,200 @@
             try { const db = getDb(tk); const { error } = await db.from('soal').insert([payload]); if (error) throw error; document.getElementById('new-soal-modal').classList.add('hidden'); window.loadManajemenSoal(window.currentFilterTingkat, true); showNotification('Soal ditambahkan!'); } catch(err) { showNotification(`Gagal: ${err.message}`); } finally { btn.innerHTML = 'Simpan Soal'; btn.disabled = false; }
         };
 
-        window.downloadExcelTemplateSoal = function() { const ws = XLSX.utils.json_to_sheet([{ tingkat: "7", mapel: "Matematika", pertanyaan: "1+1?", pilihan_a: "1", pilihan_b: "2", pilihan_c: "3", pilihan_d: "4", kunci: "B", skor: 2 }]); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Template"); XLSX.writeFile(wb, "Template_Soal.xlsx"); };
+        window.openEditSoalModal = function(id, tingkat) {
+            const s = window.appData.soal.find(x => String(x.id) === String(id) && String(x.tingkat) === String(tingkat));
+            if(!s) return showNotification("Data soal tidak ditemukan");
+            
+            let modal = document.getElementById('edit-soal-modal');
+            if (!modal) { 
+                modal = document.createElement('div'); modal.id = 'edit-soal-modal'; modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/90 p-4 overflow-y-auto'; document.body.appendChild(modal); 
+            }
+            
+            modal.innerHTML = `<div class="glass-card-dark p-6 md:p-8 rounded-3xl max-w-2xl w-full border border-slate-700 shadow-2xl my-auto max-h-[90vh] overflow-y-auto"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold text-white"><i class="fa-solid fa-pen-to-square mr-2 text-amber-400"></i> Edit Soal</h3><button onclick="document.getElementById('edit-soal-modal').classList.add('hidden')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button></div><form onsubmit="window.handleUpdateSoal(event, '${id}', '${tingkat}')" class="space-y-4 text-sm text-left"><div class="grid grid-cols-2 gap-3"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Tingkat Kelas</label><select id="edit-soal-tingkat" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900"><option value="7" ${s.tingkat==='7'?'selected':''}>Kelas 7</option><option value="8" ${s.tingkat==='8'?'selected':''}>Kelas 8</option><option value="9" ${s.tingkat==='9'?'selected':''}>Kelas 9</option></select></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Mata Pelajaran</label><select id="edit-soal-mapel" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900">${window.listMapel.map(m=>`<option value="${m}" ${s.mapel===m?'selected':''}>${m}</option>`).join('')}</select></div></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Teks Pertanyaan (Dapat Menggunakan HTML)</label><textarea id="edit-soal-tanya" required rows="4" class="w-full px-4 py-3 rounded-xl glass-input"></textarea></div><div class="grid grid-cols-1 md:grid-cols-2 gap-3"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Pilihan A</label><input type="text" id="edit-soal-a" required class="w-full px-4 py-2.5 rounded-xl glass-input"></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Pilihan B</label><input type="text" id="edit-soal-b" required class="w-full px-4 py-2.5 rounded-xl glass-input"></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Pilihan C</label><input type="text" id="edit-soal-c" required class="w-full px-4 py-2.5 rounded-xl glass-input"></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Pilihan D</label><input type="text" id="edit-soal-d" required class="w-full px-4 py-2.5 rounded-xl glass-input"></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-3"><div><label class="block font-bold text-emerald-400 mb-1.5 text-xs">Kunci Jawaban Benar</label><select id="edit-soal-kunci" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900 font-bold text-emerald-400"><option value="A" ${s.kunci==='A'?'selected':''}>A</option><option value="B" ${s.kunci==='B'?'selected':''}>B</option><option value="C" ${s.kunci==='C'?'selected':''}>C</option><option value="D" ${s.kunci==='D'?'selected':''}>D</option></select></div><div><label class="block font-bold text-amber-400 mb-1.5 text-xs">Skor Soal</label><input type="number" id="edit-soal-skor" required min="1" value="${s.skor||2}" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900 font-bold text-amber-400"></div></div><div class="pt-4"><button type="submit" class="w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl shadow-lg text-xs uppercase tracking-wider transition">Simpan Perubahan</button></div></form></div>`;
+            
+            // Masukkan data melalui JS agar tidak merusak tag HTML jika soal mengandung kode gambar
+            document.getElementById('edit-soal-tanya').value = s.pertanyaan || '';
+            document.getElementById('edit-soal-a').value = s.pilihan_a || '';
+            document.getElementById('edit-soal-b').value = s.pilihan_b || '';
+            document.getElementById('edit-soal-c').value = s.pilihan_c || '';
+            document.getElementById('edit-soal-d').value = s.pilihan_d || '';
+
+            modal.classList.remove('hidden');
+        };
+
+        window.handleUpdateSoal = async function(e, id, oldTingkat) {
+            e.preventDefault(); 
+            const btn = e.target.querySelector('button'); btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...'; btn.disabled = true;
+            const tk = document.getElementById('edit-soal-tingkat').value;
+            const payload = { tingkat: tk, mapel: document.getElementById('edit-soal-mapel').value, pertanyaan: document.getElementById('edit-soal-tanya').value, pilihan_a: document.getElementById('edit-soal-a').value, pilihan_b: document.getElementById('edit-soal-b').value, pilihan_c: document.getElementById('edit-soal-c').value, pilihan_d: document.getElementById('edit-soal-d').value, kunci: document.getElementById('edit-soal-kunci').value, skor: parseInt(document.getElementById('edit-soal-skor').value) || 2 };
+            
+            try { 
+                if(oldTingkat === tk) { 
+                    let db = getDb(tk); 
+                    let { data, error } = await db.from('soal').update(payload).eq('id', id).select(); 
+                    if(error) throw error; 
+                    
+                    // Fallback (Pencarian Cerdas) jika data nyasar di Server 7
+                    if((!data || data.length === 0) && db !== sbClient7) {
+                        const fb = await sbClient7.from('soal').update(payload).eq('id', id).select();
+                        data = fb.data; error = fb.error; if(error) throw error;
+                    }
+                    if(!data || data.length === 0) throw new Error("Akses ditolak (RLS).");
+                } else { 
+                    // Menghapus data di server lama dan memindahkannya ke server baru
+                    let dbOld = getDb(oldTingkat); 
+                    let { data: dataOld, error: errOld } = await dbOld.from('soal').delete().eq('id', id).select(); 
+                    if(errOld) throw errOld;
+                    
+                    if((!dataOld || dataOld.length === 0) && dbOld !== sbClient7) {
+                        const fb = await sbClient7.from('soal').delete().eq('id', id).select();
+                        dataOld = fb.data; errOld = fb.error; if(errOld) throw errOld;
+                    }
+                    if(!dataOld || dataOld.length === 0) throw new Error("Gagal menghapus soal lama.");
+                    
+                    const dbNew = getDb(tk); 
+                    const { error: errNew } = await dbNew.from('soal').insert([payload]); 
+                    if (errNew) throw errNew;
+                }
+                document.getElementById('edit-soal-modal').classList.add('hidden'); 
+                window.loadManajemenSoal(window.currentFilterTingkat, true); 
+                showNotification("Soal berhasil diperbarui!");
+            } catch(err) { 
+                showNotification(`Gagal: ${err.message}`); window.loadManajemenSoal(window.currentFilterTingkat, true); 
+            } finally { 
+                btn.innerHTML = 'Simpan Perubahan'; btn.disabled = false; 
+            }
+        };
+
+        window.downloadExcelTemplateSoal = function() {
+            const ws = XLSX.utils.json_to_sheet([{ tingkat: "7", mapel: "Matematika", pertanyaan: "1 + 1 = ...", pilihan_a: "1", pilihan_b: "2", pilihan_c: "3", pilihan_d: "4", kunci: "B", skor: 2 }]);
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Template_Soal"); XLSX.writeFile(wb, "Template_Soal.xlsx");
+        };
+
         window.handleExcelImportSoal = function(e) {
             const file = e.target.files[0]; if (!file) return; showNotification('Mengimpor ke Server...'); const reader = new FileReader();
             reader.onload = async function(evt) {
                 try {
                     const json = XLSX.utils.sheet_to_json(XLSX.read(new Uint8Array(evt.target.result), { type: 'array' }).Sheets[XLSX.read(new Uint8Array(evt.target.result), { type: 'array' }).SheetNames[0]]);
                     const inserts = { '7': [], '8': [], '9': [] };
-                    for(let r of json) { let tk = String(r.tingkat||"7").trim(); if(!['7','8','9'].includes(tk)) tk='7'; if(r.pertanyaan && r.kunci) { inserts[tk].push({ tingkat: tk, mapel: String(r.mapel||"").trim(), pertanyaan: String(r.pertanyaan||"").trim(), pilihan_a: String(r.pilihan_a||""), pilihan_b: String(r.pilihan_b||""), pilihan_c: String(r.pilihan_c||""), pilihan_d: String(r.pilihan_d||""), kunci: String(r.kunci||"A").trim().toUpperCase(), skor: parseInt(r.skor) || 2 }); } }
-                    if(inserts['7'].length) await sbClient7.from('soal').insert(inserts['7']); if(inserts['8'].length) await sbClient8.from('soal').insert(inserts['8']); if(inserts['9'].length) await sbClient9.from('soal').insert(inserts['9']);
-                    window.loadManajemenSoal(window.currentFilterTingkat, true); showNotification(`Import Soal Sukses!`);
-                } catch(err) { showNotification('Gagal memproses file Excel.'); }
+                    for(let r of json) { 
+                        const tk = String(r.tingkat||"7").trim(); 
+                        if (['7','8','9'].includes(tk) && r.pertanyaan && r.kunci) { 
+                            inserts[tk].push({ tingkat: tk, mapel: r.mapel||'Umum', pertanyaan: r.pertanyaan, pilihan_a: r.pilihan_a||'', pilihan_b: r.pilihan_b||'', pilihan_c: r.pilihan_c||'', pilihan_d: r.pilihan_d||'', kunci: r.kunci, skor: parseInt(r.skor)||2 }); 
+                        } 
+                    }
+                    if(inserts['7'].length) await sbClient7.from('soal').insert(inserts['7']); 
+                    if(inserts['8'].length) await sbClient8.from('soal').insert(inserts['8']); 
+                    if(inserts['9'].length) await sbClient9.from('soal').insert(inserts['9']);
+                    window.loadManajemenSoal(window.currentFilterTingkat, true); showNotification(`Import soal sukses!`);
+                } catch(err) { showNotification('Gagal import. Periksa format Excel.'); }
             }; reader.readAsArrayBuffer(file);
         };
 
-        window.renderJadwalUI = function(allJ, isSyncing = false) {
-            const container = document.getElementById('content-container'); if (window.currentRoute !== 'jadwal') return;
-            let html = `<div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"><div><h1 class="text-2xl md:text-3xl font-extrabold text-white">Jadwal Ujian</h1><p class="text-sm text-slate-400 mt-1">Mengaktifkan/Menonaktifkan Akses Siswa</p></div><div class="flex gap-2 w-full md:w-auto"><button onclick="window.loadManajemenJadwal(true)" class="px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-rotate ${isSyncing?'fa-spin text-indigo-400':''}"></i></button><button onclick="window.openNewExamModal()" class="w-full md:w-auto px-5 py-3 gradient-btn text-white font-bold rounded-xl text-xs uppercase shadow-lg flex-1"><i class="fa-solid fa-plus mr-2"></i> Tambah Jadwal Baru</button></div></div><div class="glass-card-dark rounded-2xl border border-slate-800 overflow-x-auto shadow-lg"><table class="w-full text-left text-xs"><thead class="bg-slate-900/80"><tr class="border-b border-slate-800 text-slate-400 font-bold uppercase"><th class="p-4">Tanggal</th><th class="p-4 text-center">Tingkat</th><th class="p-4">Mapel</th><th class="p-4 text-center">Durasi</th><th class="p-4 text-center">Token</th><th class="p-4 text-center">Status</th><th class="p-4 text-center">Aksi</th></tr></thead><tbody class="divide-y divide-slate-800/60">`;
-            if(isSyncing && allJ.length === 0) { html += `<tr><td colspan="7" class="p-8 text-center text-indigo-400 font-medium"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Mensinkronkan data...</td></tr>`; }
-            else if(allJ.length === 0) { html += `<tr><td colspan="7" class="p-8 text-center text-slate-500 font-medium">Belum ada jadwal.</td></tr>`; } 
-            else { allJ.forEach(j => { const isActive = j.status === 'Aktif'; html += `<tr class="hover:bg-slate-800/30"><td class="p-4 text-slate-300 font-medium whitespace-nowrap">${j.hari}, ${j.tanggal}</td><td class="p-4 font-bold text-white text-center">Kelas ${j.tingkat}</td><td class="p-4 text-indigo-300 font-bold">${j.mapel}</td><td class="p-4 text-center text-slate-400">${j.durasi||90} Mnt</td><td class="p-4 font-mono font-bold text-amber-400 text-center tracking-widest">${j.token}</td><td class="p-4 text-center"><button onclick="window.toggleStatusJadwal('${j.id}', '${j.status}', '${j.tingkat}')" class="px-3 py-1.5 rounded-lg border text-[10px] uppercase tracking-wider font-bold transition ${isActive ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 hover:bg-emerald-500/30' : 'bg-red-500/10 text-red-400 border-red-500/40 hover:bg-red-500/20'}"><i class="fa-solid ${isActive?'fa-toggle-on':'fa-toggle-off'} mr-1"></i> ${j.status}</button></td><td class="p-4 text-center space-x-1"><button onclick="window.openEditExamModal('${j.id}', '${j.tingkat}')" class="w-8 h-8 bg-amber-500/10 text-amber-400 rounded-lg hover:bg-amber-500/20 transition" title="Edit Jadwal"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="window.hapusJadwal('${j.id}', '${j.tingkat}', event)" class="w-8 h-8 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition" title="Hapus Jadwal"><i class="fa-solid fa-trash"></i></button></td></tr>`; }); }
-            container.innerHTML = html + `</tbody></table></div>`;
+        window.renderJadwalUI = function(isSyncing = false) {
+            const container = document.getElementById('content-container'); if(window.currentRoute !== 'jadwal') return;
+            let html = `<div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"><div><h1 class="text-2xl md:text-3xl font-extrabold text-white">Jadwal & Token Ujian</h1><p class="text-sm text-slate-400 mt-1">Mengatur Sesi, Waktu, dan Token Pengawas</p></div><div class="flex gap-2 flex-wrap w-full md:w-auto"><button onclick="window.hapusJadwalTerpilih()" id="btn-hapus-jadwal" class="hidden flex-1 md:flex-none px-4 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs uppercase shadow-lg border border-red-500/50 transition"><i class="fa-solid fa-trash-can mr-1"></i> Hapus (<span id="count-jadwal-terpilih">0</span>)</button><button onclick="window.loadManajemenJadwal(true)" class="px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-rotate ${isSyncing?'fa-spin text-indigo-400':''}"></i></button><button onclick="window.openNewExamModal()" class="flex-1 md:flex-none px-5 py-3 gradient-btn text-white font-bold rounded-xl text-xs uppercase shadow-lg"><i class="fa-solid fa-plus mr-2"></i> Jadwal Baru</button></div></div>`;
+            
+            if(isSyncing && window.appData.jadwal.length === 0) { html += `<div class="glass-card-dark p-8 rounded-2xl text-center text-indigo-400 font-medium"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Mensinkronkan data...</div>`; }
+            else if(window.appData.jadwal.length === 0) { html += `<div class="glass-card-dark p-8 rounded-2xl text-center text-slate-500 font-medium">Belum ada jadwal ujian yang dibuat.</div>`; }
+            else {
+                html += `<div class="glass-card-dark rounded-2xl border border-slate-800 overflow-x-auto shadow-lg"><table class="w-full text-left text-xs"><thead class="bg-slate-900/80"><tr class="border-b border-slate-800 text-slate-400 font-bold uppercase"><th class="p-4 w-10 text-center"><input type="checkbox" id="chk-all-jadwal" onchange="window.toggleAllJadwal(event)" class="cursor-pointer accent-indigo-500 w-4 h-4 rounded"></th><th class="p-4">Tanggal & Kelas</th><th class="p-4">Mata Pelajaran</th><th class="p-4 text-center">Durasi</th><th class="p-4 text-center">Token</th><th class="p-4 text-center">Status</th><th class="p-4 text-center w-24">Aksi</th></tr></thead><tbody class="divide-y divide-slate-800/60">`;
+                window.appData.jadwal.forEach(j => {
+                    const isAktif = j.status === 'Aktif';
+                    html += `<tr class="hover:bg-slate-800/30"><td class="p-4 text-center"><input type="checkbox" class="chk-jadwal cursor-pointer accent-indigo-500 w-4 h-4 rounded" value="${j.id}|${j.tingkat}" onchange="window.updateBtnHapusJadwalTerpilih()"></td><td class="p-4"><div class="font-bold text-white whitespace-nowrap">${formatTanggalIndo(j.tanggal)}</div><div class="text-[10px] text-slate-400 font-semibold mt-1">KELAS ${j.tingkat}</div></td><td class="p-4 font-bold text-indigo-300">${j.mapel}</td><td class="p-4 text-center font-medium text-slate-300">${j.durasi||90} Menit</td><td class="p-4 text-center"><span class="px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg font-mono font-bold text-amber-400 tracking-widest text-sm shadow-inner">${j.token}</span></td><td class="p-4 text-center"><button onclick="window.toggleStatusJadwal('${j.id}', '${j.tingkat}', '${j.status}')" class="px-3 py-1 text-[10px] font-bold rounded-lg uppercase tracking-wider transition ${isAktif?'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/30':'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30'}"><i class="fa-solid ${isAktif?'fa-check-circle':'fa-power-off'} mr-1"></i>${isAktif?'Aktif':'Tdk Aktif'}</button></td><td class="p-4 text-center space-x-1"><button onclick="window.openEditExamModal('${j.id}', '${j.tingkat}')" class="w-8 h-8 bg-amber-500/10 text-amber-400 rounded-lg hover:bg-amber-500/20 transition" title="Edit Jadwal"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="window.hapusJadwal('${j.id}', '${j.tingkat}', event)" class="w-8 h-8 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+                });
+                html += `</tbody></table></div>`;
+            }
+            container.innerHTML = html;
+        };
+
+        window.toggleAllJadwal = function(e) { 
+            const isChecked = e.target.checked; 
+            document.querySelectorAll('.chk-jadwal').forEach(chk => chk.checked = isChecked); 
+            window.updateBtnHapusJadwalTerpilih(); 
+        };
+
+        window.updateBtnHapusJadwalTerpilih = function() {
+            const checkBoxes = document.querySelectorAll('.chk-jadwal'); const checkedCount = document.querySelectorAll('.chk-jadwal:checked').length;
+            const btn = document.getElementById('btn-hapus-jadwal'); const chkAll = document.getElementById('chk-all-jadwal');
+            if (chkAll) chkAll.checked = (checkBoxes.length > 0 && checkedCount === checkBoxes.length);
+            if(btn) { if(checkedCount > 0) { btn.classList.remove('hidden'); document.getElementById('count-jadwal-terpilih').innerText = checkedCount; } else { btn.classList.add('hidden'); } }
+        };
+
+        window.hapusJadwalTerpilih = async function() {
+            const checked = document.querySelectorAll('.chk-jadwal:checked'); if(checked.length === 0) return;
+            if(!confirm(`Yakin ingin menghapus ${checked.length} jadwal yang dipilih?`)) return;
+            const btn = document.getElementById('btn-hapus-jadwal'); const originalHtml = btn.innerHTML; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...'; btn.disabled = true;
+            const toDelete = { '7': [], '8': [], '9': [] };
+            checked.forEach(chk => { const parts = chk.value.split('|'); if(parts.length === 2) { toDelete[parts[1]].push(parts[0]); } });
+            try {
+                for (let tk of ['7', '8', '9']) {
+                    if (toDelete[tk].length > 0) {
+                        const db = getDb(tk); let { data, error } = await db.from('jadwal').delete().in('id', toDelete[tk]).select();
+                        if (error) throw error;
+                        if ((!data || data.length < toDelete[tk].length) && db !== sbClient7) {
+                            const fallback = await sbClient7.from('jadwal').delete().in('id', toDelete[tk]).eq('tingkat', tk).select();
+                            if (fallback.error) throw fallback.error;
+                            if (fallback.data) data = data ? [...data, ...fallback.data] : fallback.data;
+                        }
+                        if (!data || data.length === 0) throw new Error("Akses ditolak (RLS).");
+                    }
+                }
+                showNotification(`${checked.length} Jadwal berhasil dihapus.`); window.loadManajemenJadwal(true);
+            } catch(err) { showNotification('Gagal menghapus: ' + err.message); btn.innerHTML = originalHtml; btn.disabled = false; window.loadManajemenJadwal(true); }
         };
 
         window.loadManajemenJadwal = function(forceRefresh = false) {
-        window.currentRoute = 'jadwal';
-        window.renderJadwalUI(window.appData.jadwal, !window.appData.isFetched.jadwal || forceRefresh);
-        if (!window.appData.isFetched.jadwal || forceRefresh) {
-            const queries = [sbClient7.from('jadwal').select('*')];
-            if (sbClient8 !== sbClient7) queries.push(sbClient8.from('jadwal').select('*'));
-            if (sbClient9 !== sbClient7) queries.push(sbClient9.from('jadwal').select('*'));
-
-            Promise.allSettled(queries).then(results => {
-            let newData = []; results.forEach(res => { if(res.status === 'fulfilled' && res.value.data) newData.push(...res.value.data); });
-            window.appData.jadwal = newData; window.appData.isFetched.jadwal = true;
-            if(window.currentRoute === 'jadwal') window.renderJadwalUI(window.appData.jadwal, false);
-        });
-    }
-    };
-
-    window.toggleStatusJadwal = async function(id, currentStatus, tingkat) { 
-        const newStatus = currentStatus === 'Aktif' ? 'Tidak Aktif' : 'Aktif'; 
-        try { 
-            let db = getDb(tingkat); 
-            let { data, error } = await db.from('jadwal').update({ status: newStatus }).eq('id', id).select(); 
-            if (error) throw error;
-            // PENCARIAN CERDAS: Jika data tidak ditemukan di Server 8/9, cari di Server 7 (Data Lama)
-            if ((!data || data.length === 0) && db !== sbClient7) {
-                const fallback = await sbClient7.from('jadwal').update({ status: newStatus }).eq('id', id).select();
-                data = fallback.data; error = fallback.error; if (error) throw error;
+            window.currentRoute = 'jadwal'; window.renderJadwalUI(!window.appData.isFetched.jadwal || forceRefresh);
+            if (!window.appData.isFetched.jadwal || forceRefresh) {
+                const queries = [sbClient7.from('jadwal').select('*')];
+                if (sbClient8 !== sbClient7) queries.push(sbClient8.from('jadwal').select('*'));
+                if (sbClient9 !== sbClient7) queries.push(sbClient9.from('jadwal').select('*'));
+                Promise.allSettled(queries).then(results => {
+                    let newData = []; results.forEach(res => { if(res.status === 'fulfilled' && res.value.data) newData.push(...res.value.data); });
+                    window.appData.jadwal = newData; window.appData.isFetched.jadwal = true;
+                    if (window.currentRoute === 'jadwal') window.renderJadwalUI(false);
+                });
             }
-            if (!data || data.length === 0) throw new Error("Akses ditolak (RLS).");
-            
-            window.loadManajemenJadwal(true); 
-            showNotification(`Status jadwal berhasil diubah menjadi ${newStatus}!`);
-        } catch(e) {
-            showNotification(`Gagal mengubah status: ${e.message}`);
-            window.loadManajemenJadwal(true); 
-        } 
-    };
-    
-    window.hapusJadwal = async function(id, tingkat, e) { 
-        if(confirm("Yakin ingin menghapus jadwal ujian ini secara permanen?")) { 
-            const btn = e ? e.currentTarget : null; const ori = btn ? btn.innerHTML : ''; if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
+        };
+
+        window.toggleStatusJadwal = async function(id, tingkat, currentStatus) {
+            const newStatus = currentStatus === 'Aktif' ? 'Tidak Aktif' : 'Aktif';
             try { 
                 let db = getDb(tingkat); 
-                let { data, error } = await db.from('jadwal').delete().eq('id', id).select(); 
+                let { data, error } = await db.from('jadwal').update({ status: newStatus }).eq('id', id).select(); 
                 if(error) throw error; 
-                // PENCARIAN CERDAS: Jika gagal dihapus dari Server 8/9, paksa hapus dari Server 7
-                if ((!data || data.length === 0) && db !== sbClient7) {
-                    const fallback = await sbClient7.from('jadwal').delete().eq('id', id).select();
+                if((!data || data.length === 0) && db !== sbClient7) {
+                    const fallback = await sbClient7.from('jadwal').update({ status: newStatus }).eq('id', id).eq('tingkat', tingkat).select();
                     data = fallback.data; error = fallback.error; if(error) throw error;
                 }
-                if(!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS).");
-                
-                window.loadManajemenJadwal(true); 
-                showNotification('Jadwal Ujian berhasil dihapus.'); 
-            } catch(err){ 
-                showNotification('Gagal Menghapus: ' + err.message); 
-                if(btn) btn.innerHTML = ori; 
-                window.loadManajemenJadwal(true); 
-            } 
-        } 
-    };
+                if(!data || data.length === 0) throw new Error("Akses ditolak (RLS).");
+                window.loadManajemenJadwal(true); showNotification(`Status diubah menjadi ${newStatus}`);
+            } catch(err) { showNotification('Gagal mengubah status: ' + err.message); window.loadManajemenJadwal(true); }
+        };
 
-    window.openNewExamModal = function() {
+        window.hapusJadwal = async function(id, tingkat, e) {
+            if(confirm("Hapus jadwal ini?")) {
+                const btn = e ? e.currentTarget : null; const ori = btn ? btn.innerHTML : ''; if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+                try {
+                    let db = getDb(tingkat); 
+                    let { data, error } = await db.from('jadwal').delete().eq('id', id).select();
+                    if(error) throw error; 
+                    if ((!data || data.length === 0) && db !== sbClient7) {
+                        const fallback = await sbClient7.from('jadwal').delete().eq('id', id).eq('tingkat', tingkat).select();
+                        data = fallback.data; error = fallback.error; if(error) throw error;
+                    }
+                    if(!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS).");
+                    window.loadManajemenJadwal(true); showNotification('Jadwal Ujian berhasil dihapus.');
+                } catch(err){ 
+                    showNotification('Gagal Menghapus: ' + err.message); 
+                    if(btn) btn.innerHTML = ori; 
+                    window.loadManajemenJadwal(true); 
+                }
+            }
+        };
+
+        window.openNewExamModal = function() {
             let modal = document.getElementById('new-exam-modal'); if (!modal) { modal = document.createElement('div'); modal.id = 'new-exam-modal'; modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 p-4'; document.body.appendChild(modal); }
             modal.innerHTML = `<div class="glass-card-dark p-6 md:p-8 rounded-3xl max-w-md w-full border border-slate-700 shadow-2xl"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold text-white">Jadwal Ujian Baru</h3><button onclick="document.getElementById('new-exam-modal').classList.add('hidden')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button></div><form onsubmit="window.handleCreateExam(event)" class="space-y-4 text-sm text-left"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Tanggal Pelaksanaan</label><input type="date" id="modal-exam-date" required class="w-full px-4 py-3 rounded-xl glass-input text-slate-200"></div><div class="grid grid-cols-2 gap-3"><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Tingkat</label><select id="modal-exam-tingkat" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900"><option value="7">Kelas 7</option><option value="8">Kelas 8</option><option value="9">Kelas 9</option></select></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Durasi (Menit)</label><input type="number" id="modal-exam-durasi" required min="10" value="90" class="w-full px-4 py-3 rounded-xl glass-input"></div></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Mata Pelajaran</label><select id="modal-exam-mapel" class="w-full px-4 py-3 rounded-xl glass-input bg-slate-900">${window.listMapel.map(m=>`<option value="${m}">${m}</option>`).join('')}</select></div><div><label class="block font-bold text-slate-400 mb-1.5 text-xs">Token Pengawas</label><div class="flex gap-2"><input type="text" id="modal-exam-token" required class="w-full px-4 py-3 rounded-xl glass-input font-mono font-bold uppercase text-amber-400 text-center tracking-widest"><button type="button" onclick="window.generateNewToken()" class="px-4 py-3 bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 rounded-xl hover:bg-indigo-600/30 transition"><i class="fa-solid fa-rotate"></i></button></div></div><div class="pt-4"><button type="submit" class="w-full py-4 gradient-btn text-white font-bold rounded-xl shadow-lg text-xs uppercase tracking-wider">Simpan Jadwal</button></div></form></div>`;
             modal.classList.remove('hidden'); document.getElementById('modal-exam-date').valueAsDate = new Date();
