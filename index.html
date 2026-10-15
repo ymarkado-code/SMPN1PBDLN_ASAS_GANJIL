@@ -11,9 +11,9 @@
     <meta name="apple-mobile-web-app-title" content="CBT Panesa">
     <meta name="theme-color" content="#070913">
     
-    <!-- PENGATURAN LOGO INSTALASI (Diperbarui ke _2.png) -->
-    <link rel="apple-touch-icon" href="Panesa-removebg-preview_2.png">
-    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22CBT%20Panesa%22%2C%22short_name%22%3A%22CBT%20Panesa%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23070913%22%2C%22theme_color%22%3A%22%23070913%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22Panesa-removebg-preview_2.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22Panesa-removebg-preview_2.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+    <!-- PENGATURAN LOGO INSTALASI (Imgur) -->
+    <link rel="apple-touch-icon" href="https://i.imgur.com/dNnV4XL.png">
+    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22CBT%20Panesa%22%2C%22short_name%22%3A%22CBT%20Panesa%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23070913%22%2C%22theme_color%22%3A%22%23070913%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fi.imgur.com%2FdNnV4XL.png%22%2C%22sizes%22%3A%22192x192%20512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
 
     <!-- TRIK SERVICE WORKER VIRTUAL UNTUK MEMAKSA TOMBOL INSTAL BERFUNGSI -->
     <script>
@@ -146,7 +146,7 @@
             return sbClient7; 
         }
 
-        const DEFAULT_LOGO = "Panesa-removebg-preview_2.png";
+        const DEFAULT_LOGO = "https://i.imgur.com/dNnV4XL.png";
         const DEFAULT_LOGO_KAB = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lambang_Kabupaten_Cirebon.png/400px-Lambang_Kabupaten_Cirebon.png";
 
         window.globalSettings = {
@@ -390,7 +390,7 @@
                 const { outcome } = await deferredPrompt.userChoice; 
                 deferredPrompt = null;
             } else {
-                // Tampilkan Modal Instruksi Manual (Menggantikan alert)
+                // Tampilkan Modal Instruksi Manual
                 let modal = document.getElementById('pwa-install-modal');
                 if (!modal) {
                     modal = document.createElement('div');
@@ -405,7 +405,9 @@
                 if(isIOS) { 
                     instructions = `
                         <div class="space-y-4 text-left text-sm text-slate-300">
-                            <p>Untuk menginstal aplikasi ini di perangkat iOS (iPhone/iPad):</p>
+                            <p class="text-amber-400 text-[11px] leading-relaxed font-bold bg-amber-400/10 p-3 rounded-xl border border-amber-400/30">
+                                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Pastikan aplikasi dibuka dari tautan internet (HTTPS), bukan dari penyimpanan internal HP.
+                            </p>
                             <ol class="list-decimal pl-5 space-y-2 font-medium">
                                 <li>Ketuk ikon <b class="text-white">Bagikan (Share)</b> <i class="fa-solid fa-arrow-up-from-bracket mx-1 text-indigo-400"></i> di menu bawah Safari.</li>
                                 <li>Gulir ke bawah pada menu yang muncul.</li>
@@ -416,8 +418,8 @@
                 } else { 
                     instructions = `
                         <div class="space-y-4 text-left text-sm text-slate-300">
-                            <p class="text-emerald-400 text-[11px] leading-relaxed font-bold bg-emerald-400/10 p-3 rounded-xl border border-emerald-400/30">
-                                <i class="fa-solid fa-check-circle mr-1"></i> Jangan khawatir, cukup ikuti 3 langkah di bawah. Hasilnya 100% SAMA seperti aplikasi biasa (Layar Penuh & Ada Ikon di HP).
+                            <p class="text-amber-400 text-[11px] leading-relaxed font-bold bg-amber-400/10 p-3 rounded-xl border border-amber-400/30">
+                                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Pastikan aplikasi dibuka lewat tautan web (HTTPS). Jika tidak muncul otomatis, gunakan cara manual:
                             </p>
                             <ol class="list-decimal pl-5 space-y-2 font-medium">
                                 <li>Ketuk ikon <b class="text-white">Titik Tiga</b> <i class="fa-solid fa-ellipsis-vertical mx-1 text-indigo-400"></i> di pojok kanan atas Google Chrome.</li>
@@ -431,9 +433,7 @@
                 modal.innerHTML = `
                     <div class="glass-card-dark p-6 md:p-8 rounded-3xl max-w-sm w-full border border-indigo-500/30 shadow-[0_0_50px_rgba(99,102,241,0.2)] text-center relative overflow-hidden">
                         <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
-                        <div class="w-16 h-16 bg-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto text-3xl mb-4 border border-indigo-500/30">
-                            <i class="fa-solid fa-mobile-screen-button"></i>
-                        </div>
+                        <img src="https://i.imgur.com/dNnV4XL.png" class="w-16 h-16 object-contain mx-auto mb-4 drop-shadow-md">
                         <h3 class="text-xl font-black text-white mb-4 uppercase tracking-wider">Instal Aplikasi</h3>
                         ${instructions}
                         <div class="mt-6 pt-4 border-t border-slate-800">
