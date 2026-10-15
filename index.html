@@ -165,6 +165,23 @@
                     };
                 }
             } catch (err) {} finally {
+                
+                // MENGATASI BUG LOGO/NAMA: Timpa dengan pengaturan lokal (LocalStorage) jika ada. 
+                // Ini mencegah data hilang saat di-refresh karena diblokir oleh RLS Supabase.
+                const localSettings = localStorage.getItem('cbt_global_settings');
+                if (localSettings) {
+                    try {
+                        const parsed = JSON.parse(localSettings);
+                        window.globalSettings = { ...window.globalSettings, ...parsed,
+                            logoUrl: parsed.logourl || window.globalSettings.logoUrl, logoKabUrl: parsed.logokaburl || window.globalSettings.logoKabUrl,
+                            namaSekolah: parsed.namasekolah || window.globalSettings.namaSekolah, alamatSekolah: parsed.alamatsekolah || window.globalSettings.alamatSekolah,
+                            kodePos: parsed.kodepos || window.globalSettings.kodePos, namaKasek: parsed.namakasek || window.globalSettings.namaKasek, nipKasek: parsed.nipkasek || window.globalSettings.nipKasek,
+                            namaPanitia: parsed.namapanitia || window.globalSettings.namaPanitia, nipPanitia: parsed.nippanitia || window.globalSettings.nipPanitia,
+                            ttdKepsek: parsed.ttdkepsek || window.globalSettings.ttdKepsek, ttdPanitia: parsed.ttdpanitia || window.globalSettings.ttdPanitia
+                        };
+                    } catch(e) {}
+                }
+
                 document.getElementById('loading-overlay').classList.add('hidden');
                 updateLogoDisplay(); updateAppHeaderTitles();
                 
@@ -231,7 +248,13 @@
             return `${d.getDate()} ${bulanIndo[d.getMonth()]} ${d.getFullYear()}`;
         }
         function updateLogoDisplay() { const logoUrl = window.globalSettings.logoUrl || DEFAULT_LOGO; document.querySelectorAll('#app-logo-display, #sidebar-logo-display, #mobile-logo-display').forEach(img => { if (img) img.src = logoUrl; }); }
-        function updateAppHeaderTitles() { const headerTitle = document.getElementById('app-header-title'); if (headerTitle) headerTitle.innerText = window.globalSettings.namaSekolah.toUpperCase(); }
+        function updateAppHeaderTitles() { 
+            const headerTitle = document.getElementById('app-header-title'); 
+            if (headerTitle) headerTitle.innerText = window.globalSettings.namaSekolah.toUpperCase(); 
+            const sidebarTitle = document.getElementById('sidebar-user-name');
+            if (sidebarTitle) sidebarTitle.innerText = window.globalSettings.namaSekolah.toUpperCase();
+            document.title = window.globalSettings.namaSekolah; // Ubah judul tab browser
+        }
 
         window.switchLoginRole = function(role) {
             ['siswa', 'pengawas', 'admin'].forEach(r => {
@@ -350,8 +373,12 @@
                 deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; deferredPrompt = null;
             } else {
                 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-                if(isIOS) { alert("Untuk menginstal di iOS (iPhone/iPad):\n\n1. Ketuk ikon 'Bagikan' (Share) 📤 di bagian bawah Safari.\n2. Gulir ke bawah, lalu pilih 'Tambah ke Layar Utama' (Add to Home Screen) ➕."); } 
-                else { alert("Aplikasi siap diinstal!\n\nBuka setelan browser Anda (tiga titik di pojok kanan atas) lalu pilih 'Tambahkan ke Layar Utama' atau 'Instal Aplikasi'."); }
+                if(isIOS) { 
+                    alert("Untuk menginstal di iOS (iPhone/iPad):\n\n1. Ketuk ikon 'Bagikan' (Share) 📤 di bagian bawah Safari.\n2. Gulir ke bawah, lalu pilih 'Tambah ke Layar Utama' (Add to Home Screen) ➕."); 
+                } 
+                else { 
+                    alert("Instalasi Otomatis via tombol ini belum tersedia (Membutuhkan HTTPS & Service Worker).\n\nCara Manual di Android (Google Chrome):\n1. Buka menu browser (titik tiga di pojok kanan atas).\n2. Pilih 'Tambahkan ke Layar Utama' (Add to Home screen) atau 'Instal Aplikasi'.\n3. Ikon akan muncul di daftar aplikasi HP Anda."); 
+                }
             }
         };
 
@@ -2131,8 +2158,21 @@
             };
             
             window.globalSettings = { ...window.globalSettings, ...ns };
+            
+            // MENGATASI BUG LOGO/NAMA: Simpan cadangan (Backup) pengaturan ke memori lokal browser.
+            // Langkah ini memastikan meskipun Supabase menolak data, pengaturan akan tetap berfungsi dan muncul dengan baik di perangkat admin.
+            localStorage.setItem('cbt_global_settings', JSON.stringify(ns));
+            
             updateLogoDisplay(); updateAppHeaderTitles();
-            try { await sbClient7.from('settings').upsert([ns]); showNotification('Pengaturan berhasil diperbarui!'); } catch(err){ showNotification('Gagal menyimpan ke server.'); } 
+            
+            try { 
+                const { error } = await sbClient7.from('settings').upsert([ns]); 
+                if (error) throw error;
+                showNotification('Pengaturan berhasil diperbarui ke Server Utama!'); 
+            } catch(err){ 
+                showNotification('Tersimpan secara LOKAL (Gagal dikirim ke Server).'); 
+            } 
+            
             if (window.currentRoute === 'profil') window.loadPengaturanProfil(); else if (window.currentRoute === 'ttd') window.loadPengaturanTTD();
         };
 
