@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAS - SMP Negeri (Multi-Server)</title>
+    <title>CBT Panesa - SMP Negeri (Multi-Server)</title>
     
     <!-- PWA Meta Tags untuk Android & iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="CBT Portal">
+    <meta name="apple-mobile-web-app-title" content="CBT Panesa">
     <meta name="theme-color" content="#070913">
-    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/000000/school.png">
-    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22CBT%20Portal%22%2C%22short_name%22%3A%22CBT%20Portal%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23070913%22%2C%22theme_color%22%3A%22%23070913%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fimg.icons8.com%2Fcolor%2F192%2F000000%2Fschool.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22https%3A%2F%2Fimg.icons8.com%2Fcolor%2F512%2F000000%2Fschool.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+    <link rel="apple-touch-icon" href="Panesa-removebg-preview.png">
+    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22CBT%20Panesa%22%2C%22short_name%22%3A%22CBT%20Panesa%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23070913%22%2C%22theme_color%22%3A%22%23070913%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22Panesa-removebg-preview.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22Panesa-removebg-preview.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -130,7 +130,7 @@
             return sbClient7; 
         }
 
-        const DEFAULT_LOGO = "https://img.icons8.com/color/192/000000/school.png";
+        const DEFAULT_LOGO = "Panesa-removebg-preview.png";
         const DEFAULT_LOGO_KAB = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lambang_Kabupaten_Cirebon.png/400px-Lambang_Kabupaten_Cirebon.png";
 
         window.globalSettings = {
@@ -181,6 +181,21 @@
             }
         }
         document.addEventListener('DOMContentLoaded', initApp);
+
+        // Menangani tombol kembali (back button) pada browser/HP
+        window.addEventListener('popstate', function(event) {
+            if (window.isExamActive) {
+                // Cegah keluar saat ujian berlangsung
+                history.pushState(null, null, location.href);
+                window.showNotification("⚠️ Dilarang menggunakan tombol kembali saat ujian berlangsung!");
+            } else if (window.currentUser && window.currentUser.role === 'siswa') {
+                if (window.currentRoute === 'siswa-konfirmasi') {
+                    window.loadSiswaSelectMapelView();
+                } else if (window.currentRoute === 'siswa-mapel') {
+                    window.handleLogout();
+                }
+            }
+        });
 
         window.addEventListener('blur', function() {
             if (window.isExamActive && window.currentUser && window.currentUser.role === 'siswa') {
@@ -2264,7 +2279,7 @@
                     <div class="w-24 h-24 mx-auto mb-4 bg-gradient-to-tr from-indigo-900/60 to-slate-900 rounded-3xl p-3 border border-indigo-500/30 shadow-2xl flex items-center justify-center transform hover:scale-105 transition duration-300">
                         <img id="app-logo-display" src="" class="max-w-full max-h-full object-contain mx-auto drop-shadow-[0_5px_15px_rgba(99,102,241,0.4)]">
                     </div>
-                    <h1 id="app-header-title" class="text-xl md:text-2xl font-black text-white uppercase tracking-wider bg-gradient-to-r from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent">CBT PORTAL</h1>
+                    <h1 id="app-header-title" class="text-xl md:text-2xl font-black text-white uppercase tracking-wider bg-gradient-to-r from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent">CBT PANESA</h1>
                     <div class="inline-flex items-center px-3 py-1 mt-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-[10px] text-indigo-300 font-extrabold uppercase tracking-[0.25em]">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping mr-2"></span> Computer Based Test System
                     </div>
@@ -2347,7 +2362,7 @@
 
         <div id="main-app" class="hidden flex-1 flex flex-col h-full overflow-hidden bg-[#0b0f19]">
             <div id="mobile-header" class="hidden md:hidden flex justify-between items-center bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-40 shadow-md">
-                <div class="flex items-center space-x-3"><div class="w-10 h-10 bg-slate-800 rounded-lg p-1 border border-slate-700 shadow-inner"><img id="mobile-logo-display" src="" class="max-w-full max-h-full object-contain mx-auto"></div><div><h2 class="font-extrabold text-white text-[11px] tracking-wider">CBT PORTAL</h2><p id="mobile-user-role" class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mt-0.5">Role</p></div></div>
+                <div class="flex items-center space-x-3"><div class="w-10 h-10 bg-slate-800 rounded-lg p-1 border border-slate-700 shadow-inner"><img id="mobile-logo-display" src="" class="max-w-full max-h-full object-contain mx-auto"></div><div><h2 class="font-extrabold text-white text-[11px] tracking-wider">CBT PANESA</h2><p id="mobile-user-role" class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mt-0.5">Role</p></div></div>
                 <button onclick="window.toggleMobileSidebar()" class="text-slate-300 hover:text-white text-2xl transition"><i class="fa-solid fa-bars"></i></button>
             </div>
             
