@@ -2142,15 +2142,18 @@
         window.proceedToConfirmation = function(mapel) { window.currentUser.mapel = mapel; window.loadSiswaUjianView(); };
         window.loadSiswaUjianView = function() {
             window.currentRoute = 'siswa-konfirmasi'; window.isExamActive = false; const container = document.getElementById('content-container');
+            history.pushState({ page: 'exam-konfirmasi' }, '', '#exam-konfirmasi');
             container.innerHTML = `<div class="max-w-3xl mx-auto space-y-6 mt-4 md:mt-10"><div class="glass-card-dark p-6 md:p-10 rounded-3xl border border-slate-800 text-center shadow-2xl relative"><div class="w-20 h-20 bg-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto text-4xl mb-4"><i class="fa-solid fa-laptop-code"></i></div><h2 class="text-2xl md:text-3xl font-extrabold text-white">Konfirmasi Identitas</h2><div class="bg-slate-900 p-6 rounded-2xl border border-slate-700 text-left text-sm space-y-4 max-w-md mx-auto my-8 shadow-inner"><div class="flex flex-col sm:flex-row sm:justify-between border-b border-slate-800 pb-3 gap-1"><span class="text-slate-400 font-bold uppercase text-[10px] sm:text-xs">Username</span> <span class="font-bold text-indigo-400 font-mono text-base">${window.currentUser.nomor}</span></div><div class="flex flex-col sm:flex-row sm:justify-between border-b border-slate-800 pb-3 gap-1"><span class="text-slate-400 font-bold uppercase text-[10px] sm:text-xs">Nama Lengkap</span> <span class="font-extrabold text-white text-base">${window.currentUser.nama}</span></div><div class="flex flex-col sm:flex-row sm:justify-between border-b border-slate-800 pb-3 gap-1"><span class="text-slate-400 font-bold uppercase text-[10px] sm:text-xs">Kelas & Tingkat</span> <span class="font-bold text-slate-200 text-base">${window.currentUser.kelas} (Tk. ${window.currentUser.tingkat})</span></div><div class="flex flex-col sm:flex-row sm:justify-between gap-1"><span class="text-slate-400 font-bold uppercase text-[10px] sm:text-xs">Mata Pelajaran</span> <span class="font-black text-emerald-400 text-base">${window.currentUser.mapel}</span></div></div><div class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"><button onclick="window.loadSiswaSelectMapelView()" class="w-full sm:w-1/3 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition">Kembali</button><button onclick="window.mulaiKerjakanUjian(this)" class="w-full sm:w-2/3 py-4 gradient-btn text-white font-extrabold rounded-xl uppercase tracking-widest text-xs shadow-xl"><i class="fa-solid fa-play mr-2"></i> Mulai Kerjakan</button></div></div></div>`;
         };
 
         window.mulaiKerjakanUjian = async function(btn) {
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Memuat Soal...'; btn.disabled = true;
+            history.pushState({ page: 'exam' }, '', '#exam');
             try {
-                const db = getDb(window.currentUser.tingkat); const { data } = await db.from('soal').select('*').eq('tingkat', window.currentUser.tingkat).eq('mapel', window.currentUser.mapel); window.appData.soal = data || [];
                 if (window.appData.soal.length === 0) { showNotification('Soal ujian belum tersedia di Server.'); btn.innerHTML='<i class="fa-solid fa-play mr-2"></i> Mulai Kerjakan'; btn.disabled=false; return; }
-            } catch(e) { showNotification('Gagal mengunduh soal dari Server Supabase.'); btn.innerHTML='<i class="fa-solid fa-play mr-2"></i> Mulai Kerjakan'; btn.disabled=false; return; }
+            } catch(e) { 
+                showNotification('Gagal memuat soal dari Server.'); btn.innerHTML='<i class="fa-solid fa-play mr-2"></i> Mulai Kerjakan'; btn.disabled=false; return; 
+            }
 
             window.currentQuestionIndex = 0; window.studentAnswers = {}; window.studentRagu = {}; window.violationCount = 0; window.isExamActive = true;
             const container = document.getElementById('content-container');
