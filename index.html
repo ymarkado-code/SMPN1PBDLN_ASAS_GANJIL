@@ -203,23 +203,13 @@
         window.addEventListener('popstate', function(event) {
             if (window.isExamActive) {
                 // Cegah keluar saat ujian berlangsung
-                history.pushState({ route: 'exam' }, null, location.href);
+                history.pushState(null, null, location.href);
                 window.showNotification("⚠️ Dilarang menggunakan tombol kembali saat ujian berlangsung!");
             } else if (window.currentUser && window.currentUser.role === 'siswa') {
                 if (window.currentRoute === 'siswa-konfirmasi') {
                     window.loadSiswaSelectMapelView();
                 } else if (window.currentRoute === 'siswa-mapel') {
-                    if (confirm("Apakah Anda yakin ingin keluar/logout dari CBT Panesa?")) {
-                        window.handleLogout();
-                    } else {
-                        // Tahan agar tidak terlogout otomatis
-                        history.pushState({ route: 'siswa-mapel' }, null, location.href);
-                    }
-                }
-            } else if (window.currentUser && window.currentUser.role !== 'siswa') {
-                if (window.currentRoute !== 'login') {
-                    history.pushState({ route: window.currentRoute }, null, location.href);
-                    window.showNotification("Gunakan menu navigasi untuk berpindah halaman.");
+                    window.handleLogout();
                 }
             }
         });
@@ -257,18 +247,13 @@
             const d = new Date(tglStr); if(isNaN(d.getTime())) return tglStr;
             return `${d.getDate()} ${bulanIndo[d.getMonth()]} ${d.getFullYear()}`;
         }
-        
-        function updateLogoDisplay() { 
-            const logoUrl = "Panesa-removebg-preview.png"; // FIX MUTLAK: Paksa selalu pakai logo sekolah
-            document.querySelectorAll('#app-logo-display, #sidebar-logo-display, #mobile-logo-display').forEach(img => { if (img) img.src = logoUrl; }); 
-        }
-        
+        function updateLogoDisplay() { const logoUrl = window.globalSettings.logoUrl || DEFAULT_LOGO; document.querySelectorAll('#app-logo-display, #sidebar-logo-display, #mobile-logo-display').forEach(img => { if (img) img.src = logoUrl; }); }
         function updateAppHeaderTitles() { 
             const headerTitle = document.getElementById('app-header-title'); 
-            if (headerTitle) headerTitle.innerText = "CBT PANESA"; // FIX MUTLAK: Paksa nama aplikasi
+            if (headerTitle) headerTitle.innerText = window.globalSettings.namaSekolah.toUpperCase(); 
             const sidebarTitle = document.getElementById('sidebar-user-name');
-            if (sidebarTitle) sidebarTitle.innerText = "CBT PANESA"; // FIX MUTLAK: Paksa nama sidebar
-            document.title = "CBT Panesa"; // FIX MUTLAK: Paksa judul tab browser
+            if (sidebarTitle) sidebarTitle.innerText = window.globalSettings.namaSekolah.toUpperCase();
+            document.title = window.globalSettings.namaSekolah; // Ubah judul tab browser
         }
 
         window.switchLoginRole = function(role) {
@@ -431,12 +416,12 @@
                     <div class="glass-card-dark p-6 md:p-8 rounded-3xl max-w-sm w-full border border-indigo-500/30 shadow-[0_0_50px_rgba(99,102,241,0.2)] text-center relative overflow-hidden">
                         <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
                         <div class="w-16 h-16 bg-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto text-3xl mb-4 border border-indigo-500/30">
-                            <img src="Panesa-removebg-preview.png" class="max-w-full max-h-full object-contain p-2">
+                            <i class="fa-solid fa-mobile-screen-button"></i>
                         </div>
-                        <h3 class="text-xl font-black text-white mb-4 uppercase tracking-wider">Instal CBT Panesa</h3>
+                        <h3 class="text-xl font-black text-white mb-4 uppercase tracking-wider">Instal Aplikasi</h3>
                         ${instructions}
                         <div class="mt-6 pt-4 border-t border-slate-800">
-                            <button onclick="document.getElementById('pwa-install-modal').classList.add('hidden')" class="w-full py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs uppercase tracking-widest transition shadow-md">Saya Mengerti</button>
+                            <button onclick="document.getElementById('pwa-install-modal').classList.add('hidden')" class="w-full py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs uppercase tracking-widest transition shadow-md">Tutup Panduan</button>
                         </div>
                     </div>
                 `;
@@ -2243,10 +2228,9 @@
             container.innerHTML = `<div class="mb-8"><h1 class="text-2xl md:text-3xl font-extrabold text-white">Konfigurasi Server</h1><p class="text-sm text-slate-400 mt-1">Sistem 3 Server Supabase (High-Concurrency Load Balancing)</p></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="glass-card-dark p-6 rounded-2xl border border-indigo-500/50 shadow-[0_0_20px_rgba(99,102,241,0.2)] space-y-4"><div class="border-b border-slate-800 pb-3"><h3 class="text-sm font-bold text-indigo-300 uppercase"><i class="fa-solid fa-server mr-2"></i>Server Utama (Kelas 7 & Master)</h3></div><div><label class="block font-bold uppercase text-slate-400 mb-1.5 text-[10px]">Supabase URL</label><input type="text" id="config-url-7" value="${SB_URL_7}" class="w-full px-4 py-3 rounded-xl glass-input text-xs font-mono" readonly></div><div><label class="block font-bold uppercase text-slate-400 mb-1.5 text-[10px]">Supabase Key</label><input type="text" id="config-key-7" value="${SB_KEY_7}" class="w-full px-4 py-3 rounded-xl glass-input text-xs font-mono truncate" readonly></div></div><div class="glass-card-dark p-6 rounded-2xl border border-emerald-500/30 shadow-lg space-y-4"><div class="border-b border-slate-800 pb-3"><h3 class="text-sm font-bold text-emerald-400 uppercase"><i class="fa-solid fa-server mr-2"></i>Server Kelas 8</h3></div><div><label class="block font-bold uppercase text-slate-400 mb-1.5 text-[10px]">Supabase URL</label><input type="text" id="config-url-8" value="${SB_URL_8}" class="w-full px-4 py-3 rounded-xl glass-input text-xs font-mono" readonly></div><div><label class="block font-bold uppercase text-slate-400 mb-1.5 text-[10px]">Supabase Key</label><input type="text" id="config-key-8" value="${SB_KEY_8}" class="w-full px-4 py-3 rounded-xl glass-input text-xs font-mono truncate" readonly></div></div><div class="glass-card-dark p-6 rounded-2xl border border-pink-500/30 shadow-lg space-y-4"><div class="border-b border-slate-800 pb-3"><h3 class="text-sm font-bold text-pink-400 uppercase"><i class="fa-solid fa-server mr-2"></i>Server Kelas 9</h3></div><div><label class="block font-bold uppercase text-slate-400 mb-1.5 text-[10px]">Supabase URL</label><input type="text" id="config-url-9" value="${SB_URL_9}" class="w-full px-4 py-3 rounded-xl glass-input text-xs font-mono" readonly></div><div><label class="block font-bold uppercase text-slate-400 mb-1.5 text-[10px]">Supabase Key</label><input type="text" id="config-key-9" value="${SB_KEY_9}" class="w-full px-4 py-3 rounded-xl glass-input text-xs font-mono truncate" readonly></div></div><div class="glass-card-dark p-6 rounded-2xl border border-amber-500/30 shadow-lg space-y-4 text-sm flex flex-col justify-center"><div class="bg-amber-500/10 border border-amber-500/30 p-4 rounded-xl"><div class="flex items-center text-amber-400 font-black tracking-wider uppercase text-xs mb-1"><i class="fa-solid fa-bolt mr-2 text-lg"></i> Server Dipatenkan (Hardcode)</div><p class="text-[11px] text-amber-500/80 font-medium">URL & API Key sudah ditanam permanen ke dalam file HTML ini. Beban 1100 siswa akan dipecah ke 3 server berbeda agar tidak down.</p></div></div></div>`;
         };
 
-        window.loadSiswaSelectMapelView = async function() {
+        window.loadSiswaSelectMapelView = async function(isPopState = false) {
             window.currentRoute = 'siswa-mapel'; window.isExamActive = false; const container = document.getElementById('content-container');
-            // FIX: Tambahkan jejak histori navigasi agar tombol Back HP berfungsi normal
-            if (location.hash !== '#siswa-mapel') history.pushState({ route: 'siswa-mapel' }, '', '#siswa-mapel');
+            if (!isPopState) history.pushState({ page: 'siswa-mapel' }, '', '#siswa-mapel');
             
             document.getElementById('login-view').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden'); document.getElementById('sidebar').classList.add('hidden'); document.getElementById('mobile-header').classList.add('hidden');
             container.innerHTML = `<div class="flex flex-col items-center justify-center h-64 text-indigo-500"><i class="fa-solid fa-circle-notch fa-spin text-4xl mb-3"></i><p class="text-sm font-bold text-slate-400 uppercase tracking-widest">Memuat Jadwal Server...</p></div>`;
@@ -2260,10 +2244,10 @@
         };
 
         window.proceedToConfirmation = function(mapel) { window.currentUser.mapel = mapel; window.loadSiswaUjianView(); };
-        window.loadSiswaUjianView = function() {
+        
+        window.loadSiswaUjianView = function(isPopState = false) {
             window.currentRoute = 'siswa-konfirmasi'; window.isExamActive = false; const container = document.getElementById('content-container');
-            // FIX: Tambahkan jejak histori agar bisa di-back
-            if (location.hash !== '#siswa-konfirmasi') history.pushState({ route: 'siswa-konfirmasi' }, '', '#siswa-konfirmasi');
+            if (!isPopState) history.pushState({ page: 'siswa-konfirmasi' }, '', '#siswa-konfirmasi');
             
             container.innerHTML = `<div class="max-w-3xl mx-auto space-y-6 mt-4 md:mt-10"><div class="glass-card-dark p-6 md:p-10 rounded-3xl border border-slate-800 text-center shadow-2xl relative"><div class="w-20 h-20 bg-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto text-4xl mb-4"><i class="fa-solid fa-laptop-code"></i></div><h2 class="text-2xl md:text-3xl font-extrabold text-white">Konfirmasi Identitas</h2><div class="bg-slate-900 p-6 rounded-2xl border border-slate-700 text-left text-sm space-y-4 max-w-md mx-auto my-8 shadow-inner"><div class="flex flex-col sm:flex-row sm:justify-between border-b border-slate-800 pb-3 gap-1"><span class="text-slate-400 font-bold uppercase text-[10px] sm:text-xs">Username</span> <span class="font-bold text-indigo-400 font-mono text-base">${window.currentUser.nomor}</span></div><div class="flex flex-col sm:flex-row sm:justify-between border-b border-slate-800 pb-3 gap-1"><span class="text-slate-400 font-bold uppercase text-[10px] sm:text-xs">Nama Lengkap</span> <span class="font-extrabold text-white text-base">${window.currentUser.nama}</span></div><div class="flex flex-col sm:flex-row sm:justify-between border-b border-slate-800 pb-3 gap-1"><span class="text-slate-400 font-bold uppercase text-[10px] sm:text-xs">Kelas & Tingkat</span> <span class="font-bold text-slate-200 text-base">${window.currentUser.kelas} (Tk. ${window.currentUser.tingkat})</span></div><div class="flex flex-col sm:flex-row sm:justify-between gap-1"><span class="text-slate-400 font-bold uppercase text-[10px] sm:text-xs">Mata Pelajaran</span> <span class="font-black text-emerald-400 text-base">${window.currentUser.mapel}</span></div></div><div class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"><button onclick="window.loadSiswaSelectMapelView()" class="w-full sm:w-1/3 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition">Kembali</button><button onclick="window.mulaiKerjakanUjian(this)" class="w-full sm:w-2/3 py-4 gradient-btn text-white font-extrabold rounded-xl uppercase tracking-widest text-xs shadow-xl"><i class="fa-solid fa-play mr-2"></i> Mulai Kerjakan</button></div></div></div>`;
         };
