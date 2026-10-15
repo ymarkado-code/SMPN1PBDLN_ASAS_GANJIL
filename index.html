@@ -3,695 +3,698 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CBT Panesa - SMP Negeri 1 Pabedilan</title>
+    <title>CBT PANESA - SMP Negeri 1 Pabedilan</title>
     
-    <!-- PWA Meta Tags untuk Android & iOS -->
+    <!-- Meta untuk PWA & iOS Safari -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="CBT Panesa">
-    <meta name="theme-color" content="#070913">
-    
-    <!-- LOGO SMP NEGERI 1 PABEDILAN (VECTOR DATA URI - BEBAS DESTRUCTIVE/404) -->
-    <script>
-        window.PANESA_LOGO = "data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 350'%3E%3Cpath d='M150 10 L280 50 C280 220 150 330 150 330 C150 330 20 220 20 50 Z' fill='%234ba0e6' stroke='%23000' stroke-width='12'/%3E%3Cpath d='M150 25 L265 62 C265 210 150 310 150 310 C150 310 35 210 35 62 Z' fill='%235cb3f8' stroke='%23fff' stroke-width='4'/%3E%3Ccircle cx='150' cy='165' r='75' fill='%23cbe6ff' stroke='%23000' stroke-width='5'/%3E%3Cpath d='M80 135 A 75 75 0 0 1 220 135' fill='none' id='tpath'/%3E%3Ctext font-family='Arial, sans-serif' font-weight='bold' font-size='15' fill='%23000' text-anchor='middle'%3E%3CtextPath href='%23tpath' startOffset='50%'%3ESMP NEGERI 1 PABEDILAN%3C/textPath%3E%3C/text%3E%3Cg transform='translate(150, 175) scale(0.85)'%3E%3Cpath d='M-12 -25 L0 -60 L12 -25 Z' fill='%23f59e0b'/%3E%3Cpath d='M-8 -60 C-15 -75 0 -90 0 -90 C0 -90 15 -75 8 -60 Z' fill='%23ef4444'/%3E%3Cellipse cx='-30' cy='-20' rx='16' ry='16' fill='none' stroke='%233b82f6' stroke-width='5'/%3E%3Cellipse cx='0' cy='-20' rx='16' ry='16' fill='none' stroke='%23eab308' stroke-width='5'/%3E%3Cellipse cx='30' cy='-20' rx='16' ry='16' fill='none' stroke='%23ef4444' stroke-width='5'/%3E%3Cpath d='M-45 10 Q0 -10 45 10 L45 35 Q0 15 -45 35 Z' fill='%23fff' stroke='%23000' stroke-width='3'/%3E%3Cpath d='M0 5 L0 30' stroke='%23000' stroke-width='3'/%3E%3Cellipse cx='0' cy='22' rx='12' ry='16' fill='%23dc2626'/%3E%3C/g%3E%3Cpath d='M70 295 Q150 280 230 295 L220 315 Q150 300 80 315 Z' fill='%231e3a8a' stroke='%23000' stroke-width='3'/%3E%3Ctext x='150' y='309' font-family='Arial, sans-serif' font-weight='bold' font-size='12' fill='%23fff' text-anchor='middle'%3EKAB. CIREBON%3C/text%3E%3C/svg%3E";
-    </script>
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="CBT PANESA">
+    <link id="appleTouchIcon" rel="apple-touch-icon" href="data:image/png;base64,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
+">
+    <link id="faviconIcon" rel="icon" type="image/png" href="data:image/png;base64,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
+">
 
-    <link id="apple-touch-icon-link" rel="apple-touch-icon" href="">
-    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22CBT%20Panesa%22%2C%22short_name%22%3A%22CBT%20Panesa%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23070913%22%2C%22theme_color%22%3A%22%23070913%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Bcharset%3Dutf-8%2C%253Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20300%20350%27%253E%253Cpath%20d%3D%27M150%2010%20L280%2050%20C280%20220%20150%20330%20150%20330%20C150%20330%2020%20220%2020%2050%20Z%27%20fill%3D%27%25234ba0e6%27%20stroke%3D%27%2523000%27%20stroke-width%3D%2712%27%2F%253E%253Cpath%20d%3D%27M150%2025%20L265%2062%20C265%20210%20150%20310%20150%20310%20C150%20310%2035%20210%2035%2062%20Z%27%20fill%3D%27%25235cb3f8%27%20stroke%3D%27%2523fff%27%20stroke-width%3D%274%27%2F%253E%253Ccircle%20cx%3D%27150%27%20cy%3D%27165%27%20r%3D%2775%27%20fill%3D%27%2523cbe6ff%27%20stroke%3D%27%2523000%27%20stroke-width%3D%275%27%2F%253E%253Cpath%20d%3D%27M80%20135%20A%2075%2075%200%200%201%20220%20135%27%20fill%3D%27none%27%20id%3D%27tpath%27%2F%253E%253Ctext%20font-family%3D%27Arial%2C%20sans-serif%27%20font-weight%3D%27bold%27%20font-size%3D%2715%27%20fill%3D%27%2523000%27%20text-anchor%3D%27middle%27%253E%253CtextPath%20href%3D%27%2523tpath%27%20startOffset%3D%2750%25%27%253ESMP%20NEGERI%201%20PABEDILAN%253C%2FtextPath%253E%253C%2Ftext%253E%253Cg%20transform%3D%27translate(150%2C%20175)%20scale(0.85)%27%253E%253Cpath%20d%3D%27M-12%20-25%20L0%20-60%20L12%20-25%20Z%27%20fill%3D%27%2523f59e0b%27%2F%253E%253Cpath%20d%3D%27M-8%20-60%20C-15%20-75%200%20-90%200%20-90%20C0%20-90%2015%20-75%208%20-60%20Z%27%20fill%3D%27%2523ef4444%27%2F%253E%253Cellipse%20cx%3D%27-30%27%20cy%3D%27-20%27%20rx%3D%2716%27%20ry%3D%2716%27%20fill%3D%27none%27%20stroke%3D%27%25233b82f6%27%20stroke-width%3D%275%27%2F%253E%253Cellipse%20cx%3D%270%27%20cy%3D%27-20%27%20rx%3D%2716%27%20ry%3D%2716%27%20fill%3D%27none%27%20stroke%3D%27%2523eab308%27%20stroke-width%3D%275%27%2F%253E%253Cellipse%20cx%3D%2730%27%20cy%3D%27-20%27%20rx%3D%2716%27%20ry%3D%2716%27%20fill%3D%27none%27%20stroke%3D%27%2523ef4444%27%20stroke-width%3D%275%27%2F%253E%253Cpath%20d%3D%27M-45%2010%20Q0%20-10%2045%2010%20L45%2035%20Q0%2015%20-45%2035%20Z%27%20fill%3D%27%2523fff%27%20stroke%3D%27%2523000%27%20stroke-width%3D%273%27%2F%253E%253Cpath%20d%3D%27M0%205%20L0%2030%27%20stroke%3D%27%2523000%27%20stroke-width%3D%273%27%2F%253E%253Cellipse%20cx%3D%270%27%20cy%3D%2722%27%20rx%3D%2712%27%20ry%3D%2716%27%20fill%3D%27%2523dc2626%27%2F%253E%253C%2Fg%253E%253Cpath%20d%3D%27M70%20295%20Q150%20280%20230%20295%20L220%20315%20Q150%20300%2080%20315%20Z%27%20fill%3D%27%25231e3a8a%27%20stroke%3D%27%2523000%27%20stroke-width%3D%273%27%2F%253E%253Ctext%20x%3D%27150%27%20y%3D%27309%27%20font-family%3D%27Arial%2C%20sans-serif%27%20font-weight%3D%27bold%27%20font-size%3D%2712%27%20fill%3D%27%2523fff%27%20text-anchor%3D%27middle%27%253EKAB.%20CIREBON%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22192x192%20512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="data:application/manifest+json,{'name':'CBT PANESA','short_name':'PANESA','start_url':'/','display':'standalone','background_color':'#ffffff','theme_color':'#2563eb','icons':[{'src':'data:image/png;base64,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','sizes':'192x192','type':'image/png','purpose':'any maskable'},{'src':'data:image/png;base64,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','sizes':'512x512','type':'image/png','purpose':'any maskable'}]}">
 
-    <!-- SERVICE WORKER VIRTUAL -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                try {
-                    const swCode = "self.addEventListener('install', e => self.skipWaiting()); self.addEventListener('activate', e => e.waitUntil(clients.claim())); self.addEventListener('fetch', e => {});";
-                    const blob = new Blob([swCode], { type: 'application/javascript' });
-                    const swUrl = URL.createObjectURL(blob);
-                    navigator.serviceWorker.register(swUrl).catch(err => {});
-                } catch (e) {}
-            });
-        }
-    </script>
-
+    <!-- Tailwind CSS & FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
-        
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #070913; 
-            color: #f1f5f9;
-            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overscroll-behavior-y: contain;
         }
-
-        .vibrant-login-bg {
-            background: linear-gradient(135deg, #090d16 0%, #171c30 40%, #29153d 80%, #3f1140 100%);
-            position: relative;
-            overflow: hidden;
+        .admin-tab-btn.active {
+            background-color: #2563eb;
+            color: #ffffff;
+            font-weight: 700;
         }
-        .vibrant-login-bg::before {
-            content: ''; position: absolute; width: 700px; height: 700px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, rgba(139, 92, 246, 0.05) 70%);
-            top: -250px; left: -250px; border-radius: 50%;
-            animation: floatOrb 12s ease-in-out infinite alternate;
-        }
-        .vibrant-login-bg::after {
-            content: ''; position: absolute; width: 700px; height: 700px;
-            background: radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, rgba(59, 130, 246, 0.05) 70%);
-            bottom: -250px; right: -250px; border-radius: 50%;
-            animation: floatOrb 15s ease-in-out infinite alternate-reverse;
-        }
-        @keyframes floatOrb {
-            0% { transform: translateY(0) scale(1) rotate(0deg); }
-            100% { transform: translateY(60px) scale(1.2) rotate(15deg); }
-        }
-
-        .glow-bg { background: radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.15), transparent 60%), radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.12), transparent 50%), radial-gradient(circle at 10% 90%, rgba(16, 185, 129, 0.12), transparent 50%); }
-        .glass-card-dark { background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); }
-        .glass-input { background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(255, 255, 255, 0.15); color: #f8fafc; transition: all 0.3s ease; }
-        .glass-input:focus { background: rgba(30, 41, 59, 0.98); border-color: #6366f1; box-shadow: 0 0 25px rgba(99, 102, 241, 0.35); outline: none; }
-        .gradient-btn { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #d946ef 100%); background-size: 200% 200%; animation: gradientShift 6s ease infinite; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .gradient-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.6); }
-        
-        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-        .loader-ring { display: inline-block; position: relative; width: 80px; height: 80px; }
-        .loader-ring div { box-sizing: border-box; display: block; position: absolute; width: 64px; height: 64px; margin: 8px; border: 8px solid #6366f1; border-radius: 50%; animation: loader-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite; border-color: #6366f1 transparent transparent transparent; }
-        .loader-ring div:nth-child(1) { animation-delay: -0.45s; }
-        .loader-ring div:nth-child(2) { animation-delay: -0.3s; }
-        .loader-ring div:nth-child(3) { animation-delay: -0.15s; }
-        @keyframes loader-ring { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
-
-    <script>
-        document.addEventListener('contextmenu', event => {
-            if (window.currentUser && window.currentUser.role === 'admin') return true;
-            event.preventDefault();
-        });
-        document.onkeydown = function(e) {
-            if (window.currentUser && window.currentUser.role === 'admin') return true;
-            if(e.keyCode === 123) return false;
-            if(e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) return false;
-            if(e.ctrlKey && e.keyCode === 85) return false;
-        };
-
-        // KONFIGURASI SUPABASE MULTI-SERVER
-        const DEFAULT_URL = "https://rcvuwfvcyxhqukjmnabz.supabase.co";
-        const DEFAULT_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjdnV3ZnZjeXhocXVram1uYWJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MzMwNDAsImV4cCI6MjEwNzMwOTA0MH0.qLlh_3IpQJdwNSXwmsFwX-9RS8vpEgk2SykKd4ZD5Ac";
-        const SB_URL_7 = DEFAULT_URL; const SB_KEY_7 = DEFAULT_KEY;
-        const SB_URL_8 = "https://bbfvxgbdisbjmjhmopqb.supabase.co";
-        const SB_KEY_8 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJiZnZ4Z2JkaXNiam1qaG1vcHFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4NjMzNTcsImV4cCI6MjEwNzQzOTM1N30.0GNE4g6NmECKti5fzRVfBH527f-pr7FQ0jlyNX4E5zc";
-        const SB_URL_9 = "https://rteagpcpykmggvcslxnq.supabase.co";
-        const SB_KEY_9 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0ZWFncGNweWttZ2d2Y3NseG5xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MTM2NjcsImV4cCI6MjEwNzM4OTY2N30.1lqcMUtt_T4381NXUiFJtmpcHsAiEBceKjk8eqLeVZE";
-        
-        let sbClient7, sbClient8, sbClient9;
-        try {
-            sbClient7 = window.supabase.createClient(SB_URL_7, SB_KEY_7);
-            sbClient8 = (SB_URL_8 === SB_URL_7) ? sbClient7 : window.supabase.createClient(SB_URL_8, SB_KEY_8);
-            sbClient9 = (SB_URL_9 === SB_URL_7) ? sbClient7 : window.supabase.createClient(SB_URL_9, SB_KEY_9);
-        } catch(e) { console.error("Supabase Init Error"); }
-
-        function getDb(tingkat) {
-            if (String(tingkat) === '8') return sbClient8;
-            if (String(tingkat) === '9') return sbClient9;
-            return sbClient7; 
-        }
-
-        const DEFAULT_LOGO = window.PANESA_LOGO;
-        const DEFAULT_LOGO_KAB = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lambang_Kabupaten_Cirebon.png/400px-Lambang_Kabupaten_Cirebon.png";
-
-        window.globalSettings = {
-            logoUrl: DEFAULT_LOGO, logoKabUrl: DEFAULT_LOGO_KAB, pemkab: "PEMERINTAH KABUPATEN CIREBON", dinas: "DINAS PENDIDIKAN",
-            namaSekolah: "SMP NEGERI 1 PABEDILAN", alamatSekolah: "Jl. Mayjen Sutoyo No. 159 Pabedilankulon Kec. Pabedilan",
-            kodePos: "45193", namaKasek: "H. Kepala Sekolah, M.Pd.", nipKasek: "196501011988031005",
-            namaPanitia: "Nama Ketua Panitia, S.Pd.", nipPanitia: "198001012005011001", ttdKepsek: "", ttdPanitia: ""
-        };
-
-        window.appData = { 
-            soal: [], peserta: [], jadwal: [], hasil: [], beritaAcara: [],
-            isFetched: { soal: false, peserta: false, jadwal: false, hasil: false, beritaAcara: false } 
-        };
-        
-        window.currentUser = null; window.signaturePadInstance = null; window.currentQuestionIndex = 0;
-        window.studentAnswers = {}; window.studentRagu = {}; window.examTimerInterval = null; window.currentRoute = 'login';
-        window.violationCount = 0; window.isExamActive = false;
-
-        window.mapKelas = { "7": ["7A","7B","7C","7D","7E","7F","7G","7H","7I","7J","7K"], "8": ["8A","8B","8C","8D","8E","8F","8G","8H","8I"], "9": ["9A","9B","9C","9D","9E","9F","9G","9H","9I","9J","9K"] };
-        window.listMapel = ['Pendidikan Agama dan Budi Pekerti', 'Pendidikan Pancasila', 'Bahasa Indonesia', 'Matematika', 'IPA', 'IPS', 'Bahasa Inggris', 'PJOK', 'Informatika', 'SBdP', 'Bahasa Sunda'];
-
-        async function initApp() {
-            try {
-                document.getElementById('apple-touch-icon-link').href = window.PANESA_LOGO;
-                const { data } = await sbClient7.from('settings').select('*').eq('id', 'global').maybeSingle();
-                if (data) {
-                    window.globalSettings = { ...window.globalSettings, ...data,
-                        logoUrl: data.logourl || window.globalSettings.logoUrl, logoKabUrl: data.logokaburl || window.globalSettings.logoKabUrl,
-                        namaSekolah: data.namasekolah || window.globalSettings.namaSekolah, alamatSekolah: data.alamatsekolah || window.globalSettings.alamatSekolah,
-                        kodePos: data.kodepos || window.globalSettings.kodePos, namaKasek: data.namakasek || window.globalSettings.namaKasek, nipKasek: data.nipkasek || window.globalSettings.nipKasek,
-                        namaPanitia: data.namapanitia || window.globalSettings.namaPanitia, nipPanitia: data.nippanitia || window.globalSettings.nipPanitia,
-                        ttdKepsek: data.ttdkepsek || window.globalSettings.ttdKepsek, ttdPanitia: data.ttdpanitia || window.globalSettings.ttdPanitia
-                    };
-                }
-            } catch (err) {} finally {
-                const localSettings = localStorage.getItem('cbt_global_settings');
-                if (localSettings) {
-                    try {
-                        const parsed = JSON.parse(localSettings);
-                        window.globalSettings = { ...window.globalSettings, ...parsed,
-                            logoUrl: parsed.logourl || window.globalSettings.logoUrl, logoKabUrl: parsed.logokaburl || window.globalSettings.logoKabUrl,
-                            namaSekolah: parsed.namasekolah || window.globalSettings.namaSekolah, alamatSekolah: parsed.alamatsekolah || window.globalSettings.alamatSekolah,
-                            kodePos: parsed.kodepos || window.globalSettings.kodePos, namaKasek: parsed.namakasek || window.globalSettings.namaKasek, nipKasek: parsed.nipkasek || window.globalSettings.nipKasek,
-                            namaPanitia: parsed.namapanitia || window.globalSettings.namaPanitia, nipPanitia: parsed.nippanitia || window.globalSettings.nipPanitia,
-                            ttdKepsek: parsed.ttdkepsek || window.globalSettings.ttdKepsek, ttdPanitia: parsed.ttdpanitia || window.globalSettings.ttdPanitia
-                        };
-                    } catch(e) {}
-                }
-
-                document.getElementById('loading-overlay').classList.add('hidden');
-                updateLogoDisplay(); updateAppHeaderTitles();
-                
-                const savedSession = sessionStorage.getItem('cbt_session');
-                if (savedSession) {
-                    window.currentUser = JSON.parse(savedSession);
-                    if (window.currentUser.role === 'siswa') {
-                        window.loadSiswaSelectMapelView(true);
-                    } else {
-                        initAppSession();
-                    }
-                } else {
-                    history.replaceState({page: 'login'}, '', '#login');
-                }
-            }
-        }
-        document.addEventListener('DOMContentLoaded', initApp);
-
-        // SYSTEM NAVIGASI BACK BUTTON HP / BROWSER
-        window.addEventListener('popstate', function(event) {
-            if (window.isExamActive) {
-                history.pushState(null, null, location.href);
-                window.showNotification("⚠️ Dilarang menggunakan tombol kembali saat ujian berlangsung!");
-            } else if (window.currentUser) {
-                if (window.currentUser.role === 'siswa') {
-                    if (window.currentRoute === 'siswa-konfirmasi') {
-                        window.loadSiswaSelectMapelView(true);
-                    } else if (window.currentRoute === 'siswa-mapel') {
-                        window.handleLogout(true);
-                    }
-                } else {
-                    history.pushState({page: 'dashboard'}, '', '#dashboard');
-                    window.showNotification("Gunakan menu navigasi di samping untuk berpindah halaman.");
-                }
-            } else {
-                history.pushState({page: 'login'}, '', '#login');
-            }
-        });
-
-        window.addEventListener('blur', function() {
-            if (window.isExamActive && window.currentUser && window.currentUser.role === 'siswa') {
-                window.violationCount++;
-                if (window.violationCount >= 2) { window.blockStudentDueToViolation(); } 
-                else { window.showNotification(`⚠️ PERINGATAN PELANGGARAN! Jangan beralih aplikasi/tab browser! Jika diulangi, Anda akan Dikeluarkan!`); }
-            }
-        });
-
-        window.blockStudentDueToViolation = async function() {
-            window.isExamActive = false; if(window.examTimerInterval) clearInterval(window.examTimerInterval);
-            try { const db = getDb(window.currentUser.tingkat); await db.from('peserta').update({ status_blokir: 'BLOKIR' }).eq('username', window.currentUser.nomor); } catch(e) {}
-            const container = document.getElementById('content-container');
-            container.innerHTML = `<div class="glass-card-dark p-8 md:p-12 rounded-3xl text-center max-w-lg mx-auto space-y-6 mt-10 border border-red-500/50 shadow-[0_0_50px_rgba(239,68,68,0.3)]"><div class="w-24 h-24 bg-red-600 text-white rounded-full flex items-center justify-center mx-auto text-4xl shadow-xl animate-bounce"><i class="fa-solid fa-ban"></i></div><div><h2 class="text-3xl font-black text-red-500 uppercase tracking-wider mb-2">AKUN DIBLOKIR!</h2><p class="text-sm text-slate-300">Terdeteksi melakukan pelanggaran. Ujian Anda dibatalkan otomatis.</p></div><button onclick="window.handleLogout()" class="w-full py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl uppercase tracking-widest text-xs transition">Keluar Sesi</button></div>`;
-        };
-
-        window.showNotification = function(message) {
-            let notif = document.getElementById('toast-notif');
-            if (!notif) {
-                notif = document.createElement('div'); notif.id = 'toast-notif';
-                notif.className = 'fixed top-5 right-5 z-[100] bg-indigo-600 text-white px-6 py-3 rounded-xl shadow-2xl transform transition-all duration-300 -translate-y-20 opacity-0 flex items-center space-x-3 font-bold text-sm border border-indigo-500';
-                document.body.appendChild(notif);
-            }
-            notif.innerHTML = `<i class="fa-solid fa-circle-info text-xl"></i><span>${message}</span>`;
-            setTimeout(() => notif.classList.remove('-translate-y-20', 'opacity-0'), 10);
-            setTimeout(() => notif.classList.add('-translate-y-20', 'opacity-0'), 4000);
-        }
-
-        function formatTanggalIndo(tglStr) {
-            if(!tglStr) return '';
-            const bulanIndo = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-            const d = new Date(tglStr); if(isNaN(d.getTime())) return tglStr;
-            return `${d.getDate()} ${bulanIndo[d.getMonth()]} ${d.getFullYear()}`;
-        }
-        function updateLogoDisplay() { 
-            const logoUrl = window.globalSettings.logoUrl || window.PANESA_LOGO; 
-            document.querySelectorAll('#app-logo-display, #sidebar-logo-display, #mobile-logo-display').forEach(img => { if (img) img.src = logoUrl; }); 
-        }
-        function updateAppHeaderTitles() { 
-            const headerTitle = document.getElementById('app-header-title'); 
-            if (headerTitle) headerTitle.innerText = window.globalSettings.namaSekolah.toUpperCase(); 
-            const sidebarTitle = document.getElementById('sidebar-user-name');
-            if (sidebarTitle) sidebarTitle.innerText = window.globalSettings.namaSekolah.toUpperCase();
-            document.title = window.globalSettings.namaSekolah;
-        }
-
-        window.switchLoginRole = function(role) {
-            ['siswa', 'pengawas', 'admin'].forEach(r => {
-                document.getElementById(`tab-${r}-btn`).className = "py-2.5 rounded-xl transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-bold uppercase tracking-wider text-[10px]";
-                document.getElementById(`${r}-login-form`)?.classList.add('hidden');
-            });
-            document.getElementById(`tab-${role}-btn`).className = "py-2.5 rounded-xl transition-all bg-indigo-600 text-white shadow-lg font-bold uppercase tracking-wider text-[10px] ring-1 ring-indigo-400/50";
-            document.getElementById(`${role}-login-form`)?.classList.remove('hidden');
-        }
-
-        window.handleSiswaLogin = async function(e) {
-            e.preventDefault(); 
-            const username = document.getElementById('siswa-nomor').value.trim();
-            const password = document.getElementById('siswa-password').value.trim();
-            
-            const btnSubmit = e.target.querySelector('button[type="submit"]'); 
-            const originalHtml = btnSubmit.innerHTML;
-            btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Memeriksa Data...'; 
-            btnSubmit.disabled = true;
-
-            try {
-                let foundPeserta = null;
-                for (let tk of ['7', '8', '9']) {
-                    const db = getDb(tk); 
-                    const { data, error } = await db.from('peserta').select('*').eq('username', username).maybeSingle();
-                    if (data) { foundPeserta = data; break; }
-                }
-
-                if (!foundPeserta) { showNotification('Username tidak ditemukan di Database!'); btnSubmit.innerHTML = originalHtml; btnSubmit.disabled = false; return; }
-                
-                const dbPassword = foundPeserta.password;
-                if (dbPassword) {
-                    if (password !== dbPassword) { showNotification('Password salah!'); btnSubmit.innerHTML = originalHtml; btnSubmit.disabled = false; return; }
-                } else {
-                    if (password !== "123456" && password !== username) { showNotification('Password salah! (Gunakan 123456 atau Username)'); btnSubmit.innerHTML = originalHtml; btnSubmit.disabled = false; return; }
-                }
-
-                if (String(foundPeserta.status_blokir || 'AKTIF').toUpperCase() === 'BLOKIR') { showNotification('AKUN ANDA DIBLOKIR! Silakan hubungi pengawas ruang.'); btnSubmit.innerHTML = originalHtml; btnSubmit.disabled = false; return; }
-
-                window.currentUser = { nomor: username, nama: foundPeserta.nama, tingkat: foundPeserta.tingkat, kelas: foundPeserta.kelas, role: 'siswa' };
-                sessionStorage.setItem('cbt_session', JSON.stringify(window.currentUser));
-                window.violationCount = 0; window.loadSiswaSelectMapelView();
-            } catch (err) { showNotification('Gagal koneksi ke Server Supabase.'); } finally { btnSubmit.innerHTML = originalHtml; btnSubmit.disabled = false; }
-        }
-
-        window.handlePengawasLogin = function(e) { e.preventDefault(); window.currentUser = { nama: document.getElementById('pengawas-nama').value.trim(), ruang: document.getElementById('pengawas-ruang').value, role: 'pengawas' }; sessionStorage.setItem('cbt_session', JSON.stringify(window.currentUser)); initAppSession(); }
-        window.handleAdminLogin = function(e) { e.preventDefault(); if (document.getElementById('admin-username').value.trim() === "admin" && document.getElementById('admin-password').value === "123tek") { window.currentUser = { nama: "Administrator", role: "admin" }; sessionStorage.setItem('cbt_session', JSON.stringify(window.currentUser)); initAppSession(); } else { showNotification('Username atau Password salah!'); } }
-
-        window.handleLogout = function(isPopState = false) {
-            sessionStorage.removeItem('cbt_session');
-            
-            document.body.style.userSelect = 'none';
-            document.body.style.webkitUserSelect = 'none';
-            document.body.style.msUserSelect = 'none';
-            document.body.style.mozUserSelect = 'none';
-
-            window.currentUser = null; window.isExamActive = false; if(window.examTimerInterval) clearInterval(window.examTimerInterval);
-            window.currentRoute = 'login'; document.getElementById('main-app').classList.add('hidden'); document.getElementById('login-view').classList.remove('hidden');
-            document.getElementById('sidebar').classList.add('hidden'); document.getElementById('sidebar').classList.remove('md:flex'); document.getElementById('mobile-header').classList.add('hidden');
-            document.getElementById('siswa-login-form').reset(); document.getElementById('pengawas-login-form').reset(); document.getElementById('admin-login-form').reset(); window.switchLoginRole('siswa');
-            
-            if (isPopState !== true) {
-                history.pushState({page: 'login'}, '', '#login');
-            }
-        }
-
-        function initAppSession() {
-            document.getElementById('login-view').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden');
-            
-            history.pushState({page: 'dashboard'}, '', '#dashboard');
-
-            if (window.currentUser && window.currentUser.role === 'admin') {
-                document.body.style.userSelect = 'auto';
-                document.body.style.webkitUserSelect = 'auto';
-                document.body.style.msUserSelect = 'auto';
-                document.body.style.mozUserSelect = 'auto';
-            }
-
-            document.getElementById('sidebar-user-name').innerText = window.globalSettings.namaSekolah;
-            const roleText = window.currentUser.role === 'admin' ? 'Administrator' : `Pengawas - ${window.currentUser.ruang}`;
-            document.getElementById('sidebar-user-role').innerText = roleText; document.getElementById('mobile-user-role').innerText = roleText;
-
-            const navMenu = document.getElementById('nav-menu'); navMenu.innerHTML = '';
-            if (window.currentUser.role === 'admin') {
-                const adminLinks = [
-                    { id: 'nav-soal', icon: 'fa-book-bookmark', text: 'Bank Soal', action: "loadManajemenSoal('semua')" },
-                    { id: 'nav-jadwal', icon: 'fa-calendar-days', text: 'Jadwal & Token', action: 'loadManajemenJadwal()' },
-                    { id: 'nav-peserta', icon: 'fa-users-rectangle', text: 'Database Siswa', action: "loadDatabasePeserta('semua')" },
-                    { id: 'nav-hadir', icon: 'fa-clipboard-user', text: 'Daftar Hadir Siswa', action: 'loadDaftarHadir()' },
-                    { id: 'nav-hadir-pengawas', icon: 'fa-user-tie', text: 'Hadir Pengawas', action: 'loadDaftarHadirPengawas()' },
-                    { id: 'nav-kartu', icon: 'fa-id-card-clip', text: 'Kartu Peserta', action: 'loadKartuUjian()' },
-                    { id: 'nav-nilai', icon: 'fa-chart-bar', text: 'Rekap Nilai', action: "loadRekapNilai('semua')" },
-                    { id: 'nav-ba', icon: 'fa-file-signature', text: 'Berita Acara', action: 'loadAdminDaftarBeritaAcara()' },
-                    { id: 'nav-tata-tertib', icon: 'fa-list-check', text: 'Tata Tertib Ujian', action: 'loadTataTertibAdmin()' },
-                    { id: 'nav-tips', icon: 'fa-lightbulb', text: 'Tips Teman Panitia', action: 'loadTipsPanitiaAdmin()' },
-                    { id: 'nav-panduan-gambar', icon: 'fa-images', text: 'Panduan Gambar', action: 'loadPanduanGambar()' },
-                    { id: 'nav-profil', icon: 'fa-school-flag', text: 'Profil Sekolah', action: 'loadPengaturanProfil()' },
-                    { id: 'nav-ttd', icon: 'fa-signature', text: 'Tanda Tangan Pejabat', action: 'loadPengaturanTTD()' },
-                    { id: 'nav-supabase', icon: 'fa-server', text: 'Konfigurasi Server', action: 'loadKonfigurasiSupabase()' }
-                ];
-                adminLinks.forEach(link => navMenu.innerHTML += createNavLink(link)); window.loadManajemenSoal('semua'); window.updateActiveNav('nav-soal');
-            } else if (window.currentUser.role === 'pengawas') {
-                const pengawasLinks = [ { id: 'nav-ba', icon: 'fa-file-signature', text: 'Isi Berita Acara', action: 'loadPengawasMode()' }, { id: 'nav-tata-tertib', icon: 'fa-list-check', text: 'Tata Tertib Ujian', action: 'loadTataTertibAdmin()' } ];
-                pengawasLinks.forEach(link => navMenu.innerHTML += createNavLink(link)); window.loadPengawasMode(); window.updateActiveNav('nav-ba');
-            }
-            const sidebar = document.getElementById('sidebar'); sidebar.classList.remove('hidden'); sidebar.classList.add('md:flex');
-            document.getElementById('mobile-header').classList.remove('hidden'); sidebar.classList.add('-translate-x-full'); sidebar.classList.add('md:translate-x-0');
-        }
-
-        window.toggleMobileSidebar = function() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('mobile-sidebar-overlay').classList.toggle('hidden'); }
-        window.closeMobileSidebar = function() { if(window.innerWidth < 768) { document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('mobile-sidebar-overlay').classList.add('hidden'); } }
-
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-
-        window.installPWA = async function() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt(); 
-                const { outcome } = await deferredPrompt.userChoice; 
-                deferredPrompt = null;
-            } else {
-                let modal = document.getElementById('pwa-install-modal');
-                if (!modal) {
-                    modal = document.createElement('div');
-                    modal.id = 'pwa-install-modal';
-                    modal.className = 'fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/90 p-4 backdrop-blur-sm';
-                    document.body.appendChild(modal);
-                }
-                
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-                let instructions = '';
-                
-                if(isIOS) { 
-                    instructions = `
-                        <div class="space-y-4 text-left text-sm text-slate-300">
-                            <p class="text-amber-400 text-[11px] leading-relaxed font-bold bg-amber-400/10 p-3 rounded-xl border border-amber-400/30">
-                                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Pastikan aplikasi dibuka dari tautan internet (HTTPS).
-                            </p>
-                            <ol class="list-decimal pl-5 space-y-2 font-medium">
-                                <li>Ketuk ikon <b class="text-white">Bagikan (Share)</b> <i class="fa-solid fa-arrow-up-from-bracket mx-1 text-indigo-400"></i> di menu Safari.</li>
-                                <li>Pilih opsi <b class="text-white">Tambah ke Layar Utama</b> <i class="fa-solid fa-square-plus mx-1 text-indigo-400"></i>.</li>
-                            </ol>
-                        </div>
-                    `;
-                } else { 
-                    instructions = `
-                        <div class="space-y-4 text-left text-sm text-slate-300">
-                            <p class="text-amber-400 text-[11px] leading-relaxed font-bold bg-amber-400/10 p-3 rounded-xl border border-amber-400/30">
-                                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Jika tombol instal tidak otomatis muncul:
-                            </p>
-                            <ol class="list-decimal pl-5 space-y-2 font-medium">
-                                <li>Ketuk ikon <b class="text-white">Titik Tiga</b> <i class="fa-solid fa-ellipsis-vertical mx-1 text-indigo-400"></i> di pojok atas Google Chrome.</li>
-                                <li>Pilih menu <b class="text-white">Tambahkan ke Layar Utama</b> atau <b class="text-white">Instal Aplikasi</b>.</li>
-                            </ol>
-                        </div>
-                    `;
-                }
-
-                modal.innerHTML = `
-                    <div class="glass-card-dark p-6 md:p-8 rounded-3xl max-w-sm w-full border border-indigo-500/30 shadow-[0_0_50px_rgba(99,102,241,0.2)] text-center relative overflow-hidden">
-                        <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
-                        <img src="${window.globalSettings.logoUrl || window.PANESA_LOGO}" class="w-16 h-16 object-contain mx-auto mb-4 drop-shadow-md">
-                        <h3 class="text-xl font-black text-white mb-4 uppercase tracking-wider">Instal Aplikasi</h3>
-                        ${instructions}
-                        <div class="mt-6 pt-4 border-t border-slate-800">
-                            <button onclick="document.getElementById('pwa-install-modal').classList.add('hidden')" class="w-full py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs uppercase tracking-widest transition shadow-md">Tutup Panduan</button>
-                        </div>
-                    </div>
-                `;
-                modal.classList.remove('hidden');
-            }
-        };
-
-        function createNavLink(link) {
-            let extraClass = link.id === 'nav-supabase' ? 'border border-amber-500/30 bg-amber-500/10 !text-amber-300 mb-4 mt-2 hover:bg-amber-600 hover:!text-white' : 'mb-1 hover:bg-slate-800 text-slate-400 hover:text-slate-200';
-            return `<button onclick="window.${link.action}; window.updateActiveNav('${link.id}'); window.closeMobileSidebar();" id="${link.id}" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-sm font-semibold text-left ${extraClass}"><i class="fa-solid ${link.icon} w-5 text-center"></i><span>${link.text}</span></button>`;
-        }
-        
-        window.updateActiveNav = function(activeId) {
-            document.querySelectorAll('.nav-btn').forEach(btn => { if (btn.id !== 'nav-supabase') { btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-md'); btn.classList.add('text-slate-400', 'hover:bg-slate-800'); } });
-            const active = document.getElementById(activeId); if(active && activeId !== 'nav-supabase') { active.classList.remove('text-slate-400', 'hover:bg-slate-800'); active.classList.add('bg-indigo-600', 'text-white', 'shadow-md'); }
-        };
-
-        // BANK SOAL UI DENGAN FITUR DELETE 1 / DELET BANYAK
-        window.renderSoalUI = function(allS, filterTingkat, isSyncing = false) {
-            const container = document.getElementById('content-container'); if(window.currentRoute !== 'soal') return;
-            let grouped = {}; allS.forEach(s => { let key = `Kelas ${s.tingkat} - ${s.mapel}`; if(!grouped[key]) grouped[key] = []; grouped[key].push(s); });
-            let html = `<div class="mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4"><div><h1 class="text-2xl md:text-3xl font-extrabold text-white">Bank Soal Ujian</h1><p class="text-sm text-slate-400 mt-1">Mengambil dari Database Multi-Server</p></div><div class="flex gap-2 flex-wrap w-full lg:w-auto"><button onclick="window.hapusSoalTerpilih()" id="btn-hapus-soal" class="hidden flex-1 lg:flex-none px-4 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs uppercase shadow-lg border border-red-500/50 transition"><i class="fa-solid fa-trash-can mr-1"></i> Hapus (<span id="count-soal-terpilih">0</span>)</button><button onclick="window.loadManajemenSoal('${filterTingkat}', true)" class="flex-1 lg:flex-none px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-rotate ${isSyncing?'fa-spin text-indigo-400':''}"></i></button><button onclick="window.openNewSoalModal()" class="flex-1 lg:flex-none px-4 py-3 bg-indigo-600 text-white font-bold rounded-xl text-xs uppercase shadow-md"><i class="fa-solid fa-plus mr-1"></i> Tambah Manual</button><button onclick="window.downloadExcelTemplateSoal()" class="flex-1 lg:flex-none px-4 py-3 bg-slate-800 text-slate-200 font-bold rounded-xl text-xs uppercase shadow-md">📥 Template</button><button onclick="document.getElementById('excel-soal-input').click()" class="flex-1 lg:flex-none px-5 py-3 gradient-btn text-white font-bold rounded-xl text-xs uppercase shadow-lg">📚 Import</button><input type="file" id="excel-soal-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="window.handleExcelImportSoal(event)"></div></div><div class="flex gap-2 mb-6 text-xs font-bold overflow-x-auto pb-2 scrollbar-hide"><button onclick="window.loadManajemenSoal('semua')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === 'semua' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Semua Tingkat</button><button onclick="window.loadManajemenSoal('7')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '7' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 7</button><button onclick="window.loadManajemenSoal('8')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '8' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 8</button><button onclick="window.loadManajemenSoal('9')" class="whitespace-nowrap px-4 py-2.5 rounded-xl transition ${filterTingkat === '9' ? 'bg-indigo-600 text-white' : 'bg-slate-900 text-slate-400'}">Kelas 9</button></div><div class="space-y-6">`;
-            
-            if(isSyncing && Object.keys(grouped).length === 0) { html += `<div class="glass-card-dark p-8 rounded-2xl text-center text-indigo-400 font-medium"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Mensinkronkan data...</div>`; }
-            else if(Object.keys(grouped).length === 0) { html += `<div class="glass-card-dark p-8 rounded-2xl text-center text-slate-500 font-medium">Belum ada soal ujian. Klik "Tambah Manual" atau "Import" untuk memulai.</div>`; } 
-            else { Object.keys(grouped).sort().forEach(groupKey => { html += `<div class="glass-card-dark rounded-2xl border border-slate-800 overflow-hidden shadow-lg"><div class="p-4 bg-slate-900/90 border-b border-slate-800 flex justify-between items-center"><span class="font-extrabold text-indigo-300 text-sm"><i class="fa-solid fa-book-bookmark text-indigo-500 mr-2"></i>${groupKey}</span><span class="px-3 py-1 bg-indigo-500/20 text-indigo-300 text-xs font-bold rounded-full">${grouped[groupKey].length} Soal</span></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="bg-slate-900/40 text-slate-400 font-bold uppercase"><th class="p-3 w-10 text-center"><input type="checkbox" onchange="window.toggleAllSoal(event)" class="cursor-pointer accent-indigo-500 w-4 h-4 rounded"></th><th class="p-3 w-12 text-center">No</th><th class="p-3">Pertanyaan & Pilihan</th><th class="p-3 text-center w-24">Kunci</th><th class="p-3 text-center w-24">Aksi</th></tr></thead><tbody class="divide-y divide-slate-800/60">`; grouped[groupKey].forEach((s, idx) => { html += `<tr class="hover:bg-slate-800/30"><td class="p-3 text-center"><input type="checkbox" class="chk-soal cursor-pointer accent-indigo-500 w-4 h-4 rounded" value="${s.id}|${s.tingkat}" onchange="window.updateBtnHapusSoalTerpilih()"></td><td class="p-3 text-center font-bold text-slate-400">${idx + 1}</td><td class="p-3"><div class="font-semibold text-slate-100 mb-1">${s.pertanyaan}</div><div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-slate-400 pt-1 border-t border-slate-800/50"><div class="truncate">A: ${s.pilihan_a||'-'}</div><div class="truncate">B: ${s.pilihan_b||'-'}</div><div class="truncate">C: ${s.pilihan_c||'-'}</div><div class="truncate">D: ${s.pilihan_d||'-'}</div></div></td><td class="p-3 text-center font-extrabold text-emerald-400 bg-emerald-500/5 text-base">${s.kunci}<div class="text-[9px] text-slate-500 mt-1 uppercase">Skor: ${s.skor||2}</div></td><td class="p-3 text-center space-x-1"><button onclick="window.openEditSoalModal('${s.id}', '${s.tingkat}')" class="w-8 h-8 bg-amber-500/10 text-amber-400 rounded-lg hover:bg-amber-500/20 transition" title="Edit Soal"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="window.hapusSoal('${s.id}', '${s.tingkat}', event)" class="w-8 h-8 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition" title="Hapus Soal"><i class="fa-solid fa-trash"></i></button></td></tr>`; }); html += `</tbody></table></div></div>`; }); }
-            container.innerHTML = html + `</div>`;
-        };
-
-        window.toggleAllSoal = function(e) {
-            const isChecked = e.target.checked; const table = e.target.closest('table');
-            table.querySelectorAll('.chk-soal').forEach(chk => chk.checked = isChecked); window.updateBtnHapusSoalTerpilih();
-        };
-
-        window.updateBtnHapusSoalTerpilih = function() {
-            const checkedCount = document.querySelectorAll('.chk-soal:checked').length; const btn = document.getElementById('btn-hapus-soal');
-            document.querySelectorAll('table').forEach(table => {
-                const chks = table.querySelectorAll('.chk-soal'); const chksChecked = table.querySelectorAll('.chk-soal:checked'); const chkAll = table.querySelector('thead input[type="checkbox"]');
-                if(chkAll && chks.length > 0) chkAll.checked = (chks.length === chksChecked.length);
-            });
-            if(btn) { if(checkedCount > 0) { btn.classList.remove('hidden'); document.getElementById('count-soal-terpilih').innerText = checkedCount; } else { btn.classList.add('hidden'); } }
-        };
-
-        window.hapusSoalTerpilih = async function() {
-            const checked = document.querySelectorAll('.chk-soal:checked');
-            if(checked.length === 0) return;
-            if(!confirm(`Yakin ingin menghapus ${checked.length} soal yang dipilih secara permanen?`)) return;
-
-            const btn = document.getElementById('btn-hapus-soal'); const originalHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...'; btn.disabled = true;
-
-            const toDelete = { '7': [], '8': [], '9': [] };
-            checked.forEach(chk => { const parts = chk.value.split('|'); if(parts.length === 2) { toDelete[parts[1]].push(parts[0]); } });
-
-            try {
-                for (let tk of ['7', '8', '9']) {
-                    if (toDelete[tk].length > 0) {
-                        const db = getDb(tk); 
-                        let { data, error } = await db.from('soal').delete().in('id', toDelete[tk]).select();
-                        if (error) throw error;
-                        
-                        if ((!data || data.length < toDelete[tk].length) && db !== sbClient7) {
-                            const fallback = await sbClient7.from('soal').delete().in('id', toDelete[tk]).eq('tingkat', tk).select();
-                            if (fallback.error) throw fallback.error;
-                            if (fallback.data) data = data ? [...data, ...fallback.data] : fallback.data;
-                        }
-
-                        if (!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS belum dinonaktifkan).");
-                    }
-                }
-                showNotification(`${checked.length} Soal berhasil dihapus.`); window.loadManajemenSoal(window.currentFilterTingkat, true);
-            } catch(err) {
-                showNotification('Gagal menghapus: ' + err.message); btn.innerHTML = originalHtml; btn.disabled = false;
-                window.loadManajemenSoal(window.currentFilterTingkat, true);
-            }
-        };
-
-        window.loadManajemenSoal = function(filterTingkat = 'semua', forceRefresh = false) {
-            window.currentRoute = 'soal'; window.currentFilterTingkat = filterTingkat;
-            let currentData = filterTingkat === 'semua' ? window.appData.soal : window.appData.soal.filter(s => String(s.tingkat) === filterTingkat);
-            window.renderSoalUI(currentData, filterTingkat, !window.appData.isFetched.soal || forceRefresh);
-
-            if (!window.appData.isFetched.soal || forceRefresh) {
-                const queries = [sbClient7.from('soal').select('*')];
-                if (sbClient8 !== sbClient7) queries.push(sbClient8.from('soal').select('*'));
-                if (sbClient9 !== sbClient7) queries.push(sbClient9.from('soal').select('*'));
-
-                Promise.allSettled(queries).then(results => {
-                    let newData = []; results.forEach(res => { if(res.status === 'fulfilled' && res.value.data) newData.push(...res.value.data); });
-                    window.appData.soal = newData; window.appData.isFetched.soal = true;
-                    if (window.currentRoute === 'soal') {
-                        let filtered = filterTingkat === 'semua' ? window.appData.soal : window.appData.soal.filter(s => String(s.tingkat) === filterTingkat);
-                        window.renderSoalUI(filtered, filterTingkat, false);
-                    }
-                });
-            }
-        };
-
-        window.hapusSoal = async function(id, tingkat, e) { 
-            if(confirm("Hapus soal ini?")) { 
-                const btn = e ? e.currentTarget : null; const ori = btn ? btn.innerHTML : ''; if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
-                try { 
-                    let db = getDb(tingkat); 
-                    let { data, error } = await db.from('soal').delete().eq('id', id).select(); 
-                    if(error) throw error; 
-                    
-                    if ((!data || data.length === 0) && db !== sbClient7) {
-                        const fallback = await sbClient7.from('soal').delete().eq('id', id).eq('tingkat', tingkat).select();
-                        data = fallback.data; error = fallback.error; if (error) throw error;
-                    }
-
-                    if(!data || data.length === 0) throw new Error("Akses ditolak oleh Server (RLS).");
-                    window.loadManajemenSoal(window.currentFilterTingkat, true); 
-                    showNotification('Soal berhasil dihapus.'); 
-                } catch(err){ 
-                    showNotification('Gagal Menghapus: ' + err.message); 
-                    if(btn) btn.innerHTML = ori; 
-                    window.loadManajemenSoal(window.currentFilterTingkat, true); 
-                } 
-            } 
-        };
-
-        window.loadSiswaSelectMapelView = async function(isPopState = false) {
-            window.currentRoute = 'siswa-mapel'; window.isExamActive = false; const container = document.getElementById('content-container');
-            if (!isPopState) history.pushState({ page: 'siswa-mapel' }, '', '#siswa-mapel');
-            
-            document.getElementById('login-view').classList.add('hidden'); document.getElementById('main-app').classList.remove('hidden'); document.getElementById('sidebar').classList.add('hidden'); document.getElementById('mobile-header').classList.add('hidden');
-            container.innerHTML = `<div class="flex flex-col items-center justify-center h-64 text-indigo-500"><i class="fa-solid fa-circle-notch fa-spin text-4xl mb-3"></i><p class="text-sm font-bold text-slate-400 uppercase tracking-widest">Memuat Jadwal Server...</p></div>`;
-            try { const db = getDb(window.currentUser.tingkat); const { data } = await db.from('jadwal').select('*').eq('tingkat', window.currentUser.tingkat).eq('status', 'Aktif'); window.appData.jadwal = data || []; } catch(e) { window.appData.jadwal = []; }
-
-            let html = `<div class="max-w-xl mx-auto space-y-6 mt-6 md:mt-12"><div class="glass-card-dark p-6 md:p-10 rounded-3xl border border-slate-800 shadow-2xl relative overflow-hidden text-center"><div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div><div class="w-16 h-16 bg-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto text-3xl font-bold border border-indigo-500/30 mb-4 shadow-inner"><i class="fa-solid fa-book-open"></i></div><h2 class="text-2xl font-extrabold text-white mb-1">Pilih Ujian</h2><p class="text-xs text-slate-400 mb-6">Halo, <b class="text-indigo-300 font-bold uppercase">${window.currentUser.nama}</b> (Kelas ${window.currentUser.kelas}).<br>Silakan pilih mata pelajaran yang aktif saat ini.</p><div class="space-y-3 text-left">`;
-            if(window.appData.jadwal.length === 0) { html += `<div class="p-6 bg-slate-900 rounded-2xl text-center text-slate-400 font-medium border border-slate-800 text-sm">Belum ada jadwal ujian yang berstatus <b>Aktif</b> untuk Kelas ${window.currentUser.tingkat}.</div>`; } 
-            else { window.appData.jadwal.forEach(j => { html += `<button onclick="window.proceedToConfirmation('${j.mapel}')" class="w-full flex items-center justify-between p-4 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500/50 transition-all group shadow-md"><div class="flex items-center space-x-3 text-left"><div class="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-sm group-hover:bg-indigo-600 group-hover:text-white transition"><i class="fa-solid fa-file-lines"></i></div><div><div class="font-extrabold text-white text-sm group-hover:text-indigo-300 transition">${j.mapel}</div><div class="text-[10px] text-slate-400 mt-0.5"><i class="fa-regular fa-clock mr-1"></i>Durasi: ${j.durasi || 90} Menit</div></div></div><i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-white transition transform group-hover:translate-x-1"></i></button>`; }); }
-            html += `</div><div class="mt-8 pt-4 border-t border-slate-800"><button onclick="window.handleLogout()" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs uppercase tracking-wider transition w-full md:w-auto">Keluar / Kembali</button></div></div></div>`;
-            container.innerHTML = html;
-        };
-
-        window.proceedToConfirmation = function(mapel) { window.currentUser.mapel = mapel; window.loadSiswaUjianView(); };
-        
-        window.loadSiswaUjianView = function(isPopState = false) {
-            window.currentRoute = 'siswa-konfirmasi'; window.isExamActive = false; const container = document.getElementById('content-container');
-            if (!isPopState) history.pushState({ page: 'siswa-konfirmasi' }, '', '#siswa-konfirmasi');
-            
-            container.innerHTML = `<div class="max-w-3xl mx-auto space-y-6 mt-4 md:mt-10"><div class="glass-card-dark p-6 md:p-10 rounded-3xl border border-slate-800 text-center shadow-2xl relative"><div class="w-20 h-20 bg-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto text-4xl mb-4"><i class="fa-solid fa-laptop-code"></i></div><h2 class="text-2xl md:text-3xl font-extrabold text-white">Konfirmasi Identitas</h2><div class="bg-slate-900 p-6 rounded-2xl border border-slate-700 text-left text-sm space-y-4 max-w-md mx-auto my-8 shadow-inner"><div class="flex flex-col sm:flex-row sm:justify-between border-b border-slate-800 pb-3 gap-1"><span class="text-slate-400 font-bold uppercase text-[10px] sm:text-xs">Username</span> <span class="font-bold text-indigo-400 font-mono text-base">${window.currentUser.nomor}</span></div><div class="flex flex-col sm:flex-row sm:justify-between border-b border-slate-800 pb-3 gap-1"><span class="text-slate-400 font-bold uppercase text-[10px] sm:text-xs">Nama Lengkap</span> <span class="font-extrabold text-white text-base">${window.currentUser.nama}</span></div><div class="flex flex-col sm:flex-row sm:justify-between border-b border-slate-800 pb-3 gap-1"><span class="text-slate-400 font-bold uppercase text-[10px] sm:text-xs">Kelas & Tingkat</span> <span class="font-bold text-slate-200 text-base">${window.currentUser.kelas} (Tk. ${window.currentUser.tingkat})</span></div><div class="flex flex-col sm:flex-row sm:justify-between gap-1"><span class="text-slate-400 font-bold uppercase text-[10px] sm:text-xs">Mata Pelajaran</span> <span class="font-black text-emerald-400 text-base">${window.currentUser.mapel}</span></div></div><div class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"><button onclick="window.loadSiswaSelectMapelView(true)" class="w-full sm:w-1/3 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition">Kembali</button><button onclick="window.mulaiKerjakanUjian(this)" class="w-full sm:w-2/3 py-4 gradient-btn text-white font-extrabold rounded-xl uppercase tracking-widest text-xs shadow-xl"><i class="fa-solid fa-play mr-2"></i> Mulai Kerjakan</button></div></div></div>`;
-        };
-    </script>
 </head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
-<body class="glow-bg min-h-screen flex flex-col justify-between">
-    <div id="loading-overlay" class="fixed inset-0 z-[200] bg-[#0b0f19] flex flex-col items-center justify-center"><div class="loader-ring mb-6"><div></div><div></div><div></div><div></div></div><h2 class="text-lg md:text-xl font-black text-indigo-400 uppercase tracking-[0.2em]">Memuat Sistem...</h2></div>
-
-    <div id="app-container" class="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
-        <div id="login-view" class="flex-1 flex flex-col items-center justify-center p-4 relative w-full h-full vibrant-login-bg">
-            <div class="absolute inset-0 bg-slate-950/40 backdrop-blur-md z-0"></div>
+    <!-- HEADER / NAV -->
+    <header class="bg-blue-600 text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="goHome()">
+                <img src="data:image/png;base64,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" alt="Logo PANESA" class="w-10 h-10 object-contain drop-shadow bg-white rounded-full p-1">
+                <div>
+                    <h1 class="font-extrabold text-lg tracking-wider leading-none">CBT PANESA</h1>
+                    <p class="text-[11px] text-blue-100 font-medium">SMP Negeri 1 Pabedilan</p>
+                </div>
+            </div>
             
-            <div class="glass-card-dark rounded-[2.5rem] p-6 md:p-10 max-w-md w-full text-center relative overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.7)] z-20 mb-6 border border-white/10">
-                <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
-                
-                <div class="mb-6 pt-2">
-                    <div class="w-24 h-24 mx-auto mb-4 bg-gradient-to-tr from-indigo-900/60 to-slate-900 rounded-3xl p-3 border border-indigo-500/30 shadow-2xl flex items-center justify-center transform hover:scale-105 transition duration-300">
-                        <img id="app-logo-display" src="" class="max-w-full max-h-full object-contain mx-auto drop-shadow-[0_5px_15px_rgba(99,102,241,0.4)]">
+            <div class="flex items-center space-x-3">
+                <span id="roleBadge" class="hidden bg-blue-700 text-blue-100 text-xs font-semibold px-2.5 py-1 rounded-md">
+                    Siswa
+                </span>
+                <button id="logoutBtn" onclick="logout()" class="hidden bg-red-500 hover:bg-red-600 px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all shadow flex items-center space-x-1">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Keluar</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- KONTEN UTAMA -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 flex flex-col justify-center">
+        
+        <!-- ================= HALAMAN 1: LOGIN ================= -->
+        <section id="viewLogin" class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl border border-slate-100 p-6 md:p-8 my-6 transition-all">
+            <div class="text-center mb-6">
+                <img src="data:image/png;base64,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" alt="Logo PANESA" class="w-24 h-24 mx-auto object-contain mb-4 filter drop-shadow-md">
+                <h2 class="text-2xl font-bold text-slate-800">Selamat Datang</h2>
+                <p class="text-slate-500 text-sm mt-1">Sistem Ujian Berbasis Komputer & HP</p>
+            </div>
+
+            <!-- Tab Login -->
+            <div class="flex bg-slate-100 p-1.5 rounded-xl mb-6">
+                <button onclick="switchTab('siswa')" id="tabSiswa" class="flex-1 py-2.5 rounded-lg font-semibold text-sm transition-all bg-white text-blue-600 shadow">
+                    Siswa
+                </button>
+                <button onclick="switchTab('pengawas')" id="tabPengawas" class="flex-1 py-2.5 rounded-lg font-semibold text-sm transition-all text-slate-600 hover:text-slate-800">
+                    Pengawas
+                </button>
+                <button onclick="switchTab('admin')" id="tabAdmin" class="flex-1 py-2.5 rounded-lg font-semibold text-sm transition-all text-slate-600 hover:text-slate-800">
+                    Admin
+                </button>
+            </div>
+
+            <!-- Form Login -->
+            <div id="formContainer" class="space-y-4">
+                <div>
+                    <label id="labelUser" class="block text-sm font-bold text-slate-700 mb-1.5">No. Peserta / NISN</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <input type="text" id="inputUser" placeholder="Masukkan ID / Username" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all text-slate-800 font-medium">
                     </div>
-                    <h1 id="app-header-title" class="text-xl md:text-2xl font-black text-white uppercase tracking-wider bg-gradient-to-r from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent">CBT PANESA</h1>
-                    <div class="inline-flex items-center px-3 py-1 mt-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-[10px] text-indigo-300 font-extrabold uppercase tracking-[0.25em]">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping mr-2"></span> Computer Based Test System
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1.5">Password / PIN Keamanan</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" id="inputPass" placeholder="••••••••" class="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all text-slate-800 font-medium">
+                        <button type="button" onclick="togglePassVisibility()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+                            <i id="passIcon" class="fa-solid fa-eye-slash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button onclick="prosesLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-[0.98] mt-2">
+                    Masuk Sekarang <i class="fa-solid fa-arrow-right-to-bracket ml-1.5"></i>
+                </button>
+            </div>
+
+            <!-- Tombol Instal Aplikasi PWA -->
+            <div id="pwaInstallContainer" class="mt-6 pt-5 border-t border-slate-100 text-center">
+                <button onclick="requestInstallPWA()" class="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-blue-700 border border-blue-200 py-2.5 px-4 rounded-xl text-xs font-bold transition-all transform hover:-translate-y-0.5">
+                    <img src="data:image/png;base64,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" class="w-5 h-5 object-contain mr-1">
+                    <span>INSTAL APLIKASI CBT DI HP</span>
+                </button>
+                <p class="text-[10px] text-slate-400 mt-2">Klik untuk memasang aplikasi di layar utama HP Android/iOS Anda.</p>
+            </div>
+        </section>
+
+        <!-- ================= HALAMAN 2: DASHBOARD SISWA ================= -->
+        <section id="viewSiswaJadwal" class="hidden w-full max-w-4xl mx-auto my-4 transition-all">
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-5 md:p-6 mb-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-100 mb-6 gap-4">
+                    <div>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">Dashboard Siswa</span>
+                        <h2 class="text-2xl font-black text-slate-800 mt-1" id="siswaNama">Memuat Nama Siswa...</h2>
+                        <p class="text-sm text-slate-500" id="siswaDetail">Memuat No Peserta & Kelas...</p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-100 rounded-xl px-4 py-2.5 text-center md:text-right">
+                        <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">Status Server Supabase</span>
+                        <div class="flex items-center justify-center md:justify-end space-x-1.5 mt-0.5">
+                            <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                            <span class="text-sm font-bold text-slate-700" id="currentDB">Server 7 Active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-lg font-extrabold text-slate-800 mb-4 flex items-center space-x-2">
+                    <i class="fa-solid fa-clipboard-list text-blue-600"></i>
+                    <span>Daftar Ujian Aktif Hari Ini</span>
+                </h3>
+
+                <!-- List Jadwal -->
+                <div id="jadwalList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Dynamic List -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= HALAMAN 3: KONFIRMASI (SISWA) ================= -->
+        <section id="viewSiswaKonfirmasi" class="hidden w-full max-w-2xl mx-auto my-4 transition-all">
+            <!-- Dynamic Confirmation View -->
+        </section>
+
+        <!-- ================= HALAMAN 4: UJIAN (SISWA) ================= -->
+        <section id="viewSiswaUjian" class="hidden w-full max-w-6xl mx-auto my-2 transition-all">
+            <div class="bg-white rounded-2xl shadow-md border border-slate-100 p-4 mb-4 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center space-x-3">
+                    <img src="data:image/png;base64,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" alt="Logo" class="w-10 h-10 object-contain">
+                    <div>
+                        <h3 class="font-bold text-slate-800 leading-tight" id="examTitle">Memuat Ujian...</h3>
+                        <p class="text-xs text-slate-500" id="examSubtitle">SMP Negeri 1 Pabedilan</p>
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-3 gap-1 rounded-xl bg-slate-900/90 p-1.5 text-[10px] font-bold uppercase mb-6 shadow-inner border border-slate-800">
-                    <button id="tab-siswa-btn" onclick="window.switchLoginRole('siswa')" class="py-2.5 rounded-lg bg-indigo-600 text-white shadow-lg tracking-wider transition-all">Siswa</button>
-                    <button id="tab-pengawas-btn" onclick="window.switchLoginRole('pengawas')" class="py-2.5 rounded-lg text-slate-400 hover:text-slate-200 tracking-wider transition-all">Pengawas</button>
-                    <button id="tab-admin-btn" onclick="window.switchLoginRole('admin')" class="py-2.5 rounded-lg text-slate-400 hover:text-slate-200 tracking-wider transition-all">Admin</button>
-                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="bg-red-50 text-red-700 border border-red-100 rounded-xl px-4 py-2 flex items-center space-x-2 font-mono">
+                        <i class="fa-solid fa-clock animate-pulse"></i>
+                        <div>
+                            <span class="block text-[9px] font-sans font-bold text-red-500 uppercase leading-none">Sisa Waktu</span>
+                            <span class="text-lg font-bold" id="timer">00:00:00</span>
+                        </div>
+                    </div>
 
-                <form id="siswa-login-form" onsubmit="window.handleSiswaLogin(event)" class="space-y-4 text-left">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest pl-1"><i class="fa-solid fa-id-card text-indigo-400 mr-1.5"></i> Username / NIS</label>
-                        <input type="text" id="siswa-nomor" required class="w-full px-4 py-3.5 rounded-xl glass-input text-sm font-mono tracking-widest placeholder-slate-600" placeholder="Ketik username Anda...">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest pl-1"><i class="fa-solid fa-key text-indigo-400 mr-1.5"></i> Password</label>
-                        <input type="password" id="siswa-password" required class="w-full px-4 py-3.5 rounded-xl glass-input text-sm font-mono tracking-widest placeholder-slate-600" placeholder="123456 atau NIS">
-                    </div>
-                    <div class="pt-2">
-                        <button type="submit" class="w-full py-4 gradient-btn text-white font-black rounded-xl text-[11px] uppercase tracking-[0.15em] shadow-xl shadow-indigo-600/30 flex items-center justify-center space-x-2">
-                            <span>Masuk Ujian</span> <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                        <div class="mt-4 text-center text-[10px] text-slate-500 font-medium tracking-widest lowercase">&copy; 2026 copyright: <span class="font-bold text-indigo-400">@yudh82</span></div>
-                    </div>
-                </form>
-
-                <form id="pengawas-login-form" onsubmit="window.handlePengawasLogin(event)" class="space-y-4 text-left hidden">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest pl-1"><i class="fa-solid fa-user-tie text-emerald-400 mr-1.5"></i> Nama Pengawas</label>
-                        <input type="text" id="pengawas-nama" required placeholder="Nama Lengkap & Gelar" class="w-full px-4 py-3.5 rounded-xl glass-input text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest pl-1"><i class="fa-solid fa-door-open text-emerald-400 mr-1.5"></i> Ruang Ujian</label>
-                        <select id="pengawas-ruang" required class="w-full px-4 py-3.5 rounded-xl glass-input text-sm bg-slate-900 cursor-pointer">
-                            <script>
-                                for(let i=1;i<=31;i++) document.write(`<option value="Ruang ${String(i).padStart(3,'0')}">Ruang ${String(i).padStart(3,'0')}</option>`);
-                                document.write(`<option value="Ruang Labkom">Ruang Labkom</option>`);
-                            </script>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest pl-1"><i class="fa-solid fa-lock text-emerald-400 mr-1.5"></i> Password Akses</label>
-                        <input type="password" id="pengawas-password" required placeholder="••••••••" class="w-full px-4 py-3.5 rounded-xl glass-input text-sm font-mono tracking-widest">
-                    </div>
-                    <div class="pt-2">
-                        <button type="submit" class="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black rounded-xl text-[11px] uppercase tracking-[0.15em] shadow-xl shadow-emerald-600/30 transition flex items-center justify-center space-x-2">
-                            <span>Masuk Dasbor</span> <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                        <div class="mt-4 text-center text-[10px] text-slate-500 font-medium tracking-widest lowercase">&copy; 2026 copyright: <span class="font-bold text-indigo-400">@yudh82</span></div>
-                    </div>
-                </form>
-
-                <form id="admin-login-form" onsubmit="window.handleAdminLogin(event)" class="space-y-4 text-left hidden">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest pl-1"><i class="fa-solid fa-user-shield text-pink-400 mr-1.5"></i> Admin Username</label>
-                        <input type="text" id="admin-username" required placeholder="admin" class="w-full px-4 py-3.5 rounded-xl glass-input text-sm font-mono">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest pl-1"><i class="fa-solid fa-key text-pink-400 mr-1.5"></i> Admin Password</label>
-                        <input type="password" id="admin-password" required placeholder="••••••••" class="w-full px-4 py-3.5 rounded-xl glass-input text-sm font-mono tracking-widest">
-                    </div>
-                    <div class="pt-2">
-                        <button type="submit" class="w-full py-4 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-black rounded-xl text-[11px] uppercase tracking-[0.15em] shadow-xl shadow-pink-600/30 transition flex items-center justify-center space-x-2">
-                            <span>Akses Sistem</span> <i class="fa-solid fa-lock-open"></i>
-                        </button>
-                        <div class="mt-4 text-center text-[10px] text-slate-500 font-medium tracking-widest lowercase">&copy; 2026 copyright: <span class="font-bold text-indigo-400">@yudh82</span></div>
-                    </div>
-                </form>
-
-                <div class="mt-6 pt-4 border-t border-slate-800/80">
-                    <button onclick="window.installPWA()" class="w-full py-3 bg-slate-800/60 hover:bg-slate-700/80 text-emerald-400 border border-emerald-500/20 font-bold rounded-xl text-[10px] uppercase tracking-widest transition flex items-center justify-center space-x-2 shadow-inner">
-                        <i class="fa-solid fa-mobile-screen-button text-sm mr-2"></i> <span>Instal Aplikasi ke Layar HP</span>
+                    <button onclick="toggleGridPanel()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold p-3 rounded-xl transition-all relative">
+                        <i class="fa-solid fa-th-large"></i>
+                        <span id="unreadIndicator" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
                     </button>
                 </div>
             </div>
-        </div>
 
-        <div id="main-app" class="hidden flex-1 flex flex-col h-full overflow-hidden bg-[#0b0f19]">
-            <div id="mobile-header" class="hidden md:hidden flex justify-between items-center bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-40 shadow-md">
-                <div class="flex items-center space-x-3"><div class="w-10 h-10 bg-slate-800 rounded-lg p-1 border border-slate-700 shadow-inner"><img id="mobile-logo-display" src="" class="max-w-full max-h-full object-contain mx-auto"></div><div><h2 class="font-extrabold text-white text-[11px] tracking-wider">CBT PANESA</h2><p id="mobile-user-role" class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mt-0.5">Role</p></div></div>
-                <button onclick="window.toggleMobileSidebar()" class="text-slate-300 hover:text-white text-2xl transition"><i class="fa-solid fa-bars"></i></button>
-            </div>
-            
-            <div class="flex-1 flex flex-col md:flex-row h-full overflow-hidden relative">
-                <aside id="sidebar" class="absolute inset-y-0 left-0 z-50 w-64 h-full glass-card-dark border-r border-slate-800 p-5 flex-col justify-between transform -translate-x-full md:relative md:translate-x-0 hidden md:flex transition-transform duration-300 ease-in-out">
-                    <div>
-                        <div class="border-b border-slate-800 pb-5 mb-6 flex items-center space-x-3">
-                            <div class="w-12 h-12 bg-slate-900 rounded-xl p-1.5 border border-slate-700 shadow-inner shrink-0"><img id="sidebar-logo-display" src="" class="max-w-full max-h-full object-contain mx-auto"></div>
-                            <div class="overflow-hidden"><h2 id="sidebar-user-name" class="font-black text-white text-[11px] tracking-wider truncate">SMP NEGERI</h2><p id="sidebar-user-role" class="text-[9px] text-emerald-400 font-bold uppercase tracking-[0.2em] mt-1 truncate">Role</p></div>
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
+                <div class="lg:col-span-3 space-y-4">
+                    <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-5 md:p-6">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-5">
+                            <span class="bg-blue-600 text-white font-black px-4 py-1.5 rounded-lg text-sm uppercase tracking-wider" id="soalNumber">SOAL NO. 1</span>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs font-bold text-slate-400">Ukuran Teks:</span>
+                                <button onclick="adjustTextSize('down')" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold px-2 py-1 rounded text-xs">A-</button>
+                                <button onclick="adjustTextSize('reset')" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold px-2 py-1 rounded text-xs">Normal</button>
+                                <button onclick="adjustTextSize('up')" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold px-2.5 py-1 rounded text-xs">A+</button>
+                            </div>
                         </div>
-                        <nav id="nav-menu" class="space-y-1.5 overflow-y-auto max-h-[60vh] pr-2 scrollbar-hide"></nav>
+
+                        <div id="soalText" class="text-slate-800 font-medium leading-relaxed mb-6 break-words" style="font-size: 16px;">
+                            Memuat soal...
+                        </div>
+
+                        <div id="pilihanContainer" class="space-y-3.5 mb-6">
+                            <!-- Dynamic Options -->
+                        </div>
+
+                        <div class="flex items-center justify-between pt-5 border-t border-slate-100">
+                            <button id="btnPrev" onclick="prevSoal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-5 rounded-xl transition-all flex items-center space-x-2">
+                                <i class="fa-solid fa-arrow-left"></i> <span>Kembali</span>
+                            </button>
+                            
+                            <label class="inline-flex items-center justify-center bg-amber-50 border border-amber-200 text-amber-700 py-2.5 px-4 rounded-xl cursor-pointer select-none font-bold text-sm transition-all hover:bg-amber-100">
+                                <input type="checkbox" id="checkRagu" onchange="toggleRagu(this.checked)" class="w-4 h-4 text-amber-600 border-amber-300 rounded focus:ring-amber-500 mr-2.5">
+                                <span>RAGU-RAGU</span>
+                            </label>
+
+                            <button id="btnNext" onclick="nextSoal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center space-x-2 shadow-md shadow-blue-100">
+                                <span>Lanjut</span> <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="mt-auto pt-5 border-t border-slate-800">
-                        <button onclick="window.handleLogout()" class="w-full flex items-center justify-center space-x-2 py-3.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-[10px] uppercase font-black tracking-widest transition border border-red-500/20"><i class="fa-solid fa-power-off text-sm"></i><span>Keluar Sesi</span></button>
-                        <div class="mt-5 text-center text-[9px] text-slate-500 font-medium tracking-widest lowercase">&copy; 2026 copyright: <span class="font-bold text-indigo-400">@yudh82</span></div>
+                </div>
+
+                <div id="gridPanel" class="hidden lg:block bg-white rounded-2xl shadow-xl border border-slate-100 p-5">
+                    <h4 class="font-extrabold text-slate-800 mb-3.5 flex items-center justify-between">
+                        <span>Navigasi Soal</span>
+                        <button onclick="toggleGridPanel()" class="lg:hidden text-slate-400 hover:text-slate-600"><i class="fa-solid fa-times"></i></button>
+                    </h4>
+                    <div id="soalGrid" class="grid grid-cols-5 gap-2 max-h-80 overflow-y-auto pr-1">
+                        <!-- Dynamic Grid -->
                     </div>
-                </aside>
-                <div id="mobile-sidebar-overlay" onclick="window.toggleMobileSidebar()" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden md:hidden z-40 transition-opacity"></div>
-                <main class="flex-1 p-4 md:p-8 overflow-y-auto pb-12 relative z-10 w-full scrollbar-hide"><div id="content-container" class="max-w-7xl mx-auto w-full flex-1"></div></main>
+                </div>
             </div>
-        </div>
-    </div>
-</body>
-</html>
+        </section>
+
+        <!-- ================= HALAMAN 5: DASHBOARD ADMIN (LENGKAP & BISA DIKLIK) ================= -->
+        <section id="viewAdmin" class="hidden w-full max-w-7xl mx-auto my-4 transition-all">
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-5 md:p-6 mb-6">
+                <!-- Header Admin -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-100 mb-6 gap-4">
+                    <div class="flex items-center space-x-3">
+                        <img src="data:image/png;base64,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" class="w-12 h-12 object-contain bg-slate-50 p-1 rounded-xl border border-slate-200">
+                        <div>
+                            <span class="bg-purple-100 text-purple-800 text-xs font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">Panel Administrator</span>
+                            <h2 class="text-2xl font-black text-slate-800 mt-0.5">Kelola Sistem CBT Panesa</h2>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs text-slate-500 font-semibold">Status Database:</span>
+                        <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
+                            <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Supabase Connected
+                        </span>
+                    </div>
+                </div>
+
+                <!-- MENU NAVIGASI UTAMA ADMIN (TAB BISA DIKLIK) -->
+                <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-4 mb-6">
+                    <button id="nav-bank-soal" onclick="switchAdminTab('bank-soal')" class="admin-tab-btn active px-4 py-2.5 rounded-xl font-bold text-sm text-slate-600 bg-slate-100 hover:bg-blue-50 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                        <span>Bank Soal</span>
+                    </button>
+                    <button id="nav-jadwal" onclick="switchAdminTab('jadwal')" class="admin-tab-btn px-4 py-2.5 rounded-xl font-bold text-sm text-slate-600 bg-slate-100 hover:bg-blue-50 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        <span>Jadwal Ujian</span>
+                    </button>
+                    <button id="nav-siswa" onclick="switchAdminTab('siswa')" class="admin-tab-btn px-4 py-2.5 rounded-xl font-bold text-sm text-slate-600 bg-slate-100 hover:bg-blue-50 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-users-gear"></i>
+                        <span>Data Siswa</span>
+                    </button>
+                    <button id="nav-hasil" onclick="switchAdminTab('hasil')" class="admin-tab-btn px-4 py-2.5 rounded-xl font-bold text-sm text-slate-600 bg-slate-100 hover:bg-blue-50 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Hasil Ujian</span>
+                    </button>
+                    <button id="nav-pengaturan" onclick="switchAdminTab('pengaturan')" class="admin-tab-btn px-4 py-2.5 rounded-xl font-bold text-sm text-slate-600 bg-slate-100 hover:bg-blue-50 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span>Pengaturan Server</span>
+                    </button>
+                </div>
+
+                <!-- SUB-VIEW 1: BANK SOAL -->
+                <div id="admin-bank-soal" class="admin-subview space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <div class="flex items-center space-x-2">
+                            <h3 class="font-extrabold text-slate-800 text-lg">Daftar Bank Soal</h3>
+                            <span id="soalCountBadge" class="bg-blue-100 text-blue-700 text-xs font-bold px-2.5 py-0.5 rounded-full">3 Soal</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="hapusBanyakSoal()" class="bg-red-500 hover:bg-red-600 text-white font-bold px-3.5 py-2 rounded-xl text-xs transition-all flex items-center space-x-1.5 shadow">
+                                <i class="fa-solid fa-trash-can"></i>
+                                <span>Hapus Terpilih</span>
+                            </button>
+                            <button onclick="tambahSoalBaru()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all flex items-center space-x-1.5 shadow">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Tambah Soal</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tabel Bank Soal -->
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 font-bold">
+                                    <th class="p-3 w-10 text-center">
+                                        <input type="checkbox" id="selectAllSoal" onchange="toggleSelectAllSoal(this.checked)" class="w-4 h-4 text-blue-600 rounded">
+                                    </th>
+                                    <th class="p-3 w-14 text-center">No</th>
+                                    <th class="p-3">Mata Pelajaran</th>
+                                    <th class="p-3">Teks Soal</th>
+                                    <th class="p-3 w-28 text-center">Kunci</th>
+                                    <th class="p-3 w-28 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bankSoalTableBody" class="divide-y divide-slate-100 bg-white">
+                                <!-- Dynamic Bank Soal Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SUB-VIEW 2: JADWAL UJIAN -->
+                <div id="admin-jadwal" class="admin-subview hidden space-y-4">
+                    <div class="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <h3 class="font-extrabold text-slate-800 text-lg">Manajemen Jadwal Ujian</h3>
+                        <button onclick="alert('Fitur tambah jadwal')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all">
+                            + Buat Jadwal
+                        </button>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 text-center text-slate-500">
+                        <i class="fa-solid fa-calendar-check text-4xl text-blue-500 mb-2"></i>
+                        <p class="font-bold">Jadwal Ujian Aktif: Matematika Semester Ganjil</p>
+                        <p class="text-xs text-slate-400 mt-1">Status: Berlangsung (40 Soal / 90 Menit)</p>
+                    </div>
+                </div>
+
+                <!-- SUB-VIEW 3: DATA SISWA -->
+                <div id="admin-siswa" class="admin-subview hidden space-y-4">
+                    <div class="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <h3 class="font-extrabold text-slate-800 text-lg">Data Peserta Ujian</h3>
+                        <button onclick="alert('Fitur import siswa via Excel')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all text-white">
+                            <i class="fa-solid fa-file-excel mr-1"></i> Import Excel
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-100 font-bold text-slate-700">
+                                <tr>
+                                    <th class="p-3">No. Peserta</th>
+                                    <th class="p-3">Nama Siswa</th>
+                                    <th class="p-3">Kelas</th>
+                                    <th class="p-3">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 bg-white">
+                                <tr>
+                                    <td class="p-3 font-mono font-bold text-blue-600">07-001-001-8</td>
+                                    <td class="p-3 font-semibold">Aris Budiman</td>
+                                    <td class="p-3">9-A</td>
+                                    <td class="p-3"><span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded-full font-bold">Aktif</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-mono font-bold text-blue-600">07-001-002-9</td>
+                                    <td class="p-3 font-semibold">Siti Nurhaliza</td>
+                                    <td class="p-3">9-B</td>
+                                    <td class="p-3"><span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded-full font-bold">Aktif</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SUB-VIEW 4: HASIL UJIAN -->
+                <div id="admin-hasil" class="admin-subview hidden space-y-4">
+                    <div class="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <h3 class="font-extrabold text-slate-800 text-lg">Hasil Nilai Ujian</h3>
+                        <button onclick="alert('Export Rekap Nilai PDF/Excel')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition-all">
+                            <i class="fa-solid fa-download mr-1"></i> Cetak Rekap Nilai
+                        </button>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 text-slate-600 text-sm">
+                        <p class="font-semibold text-center text-slate-500">Nilai akan otomatis terekap secara *real-time* setelah siswa menyelesaikan ujian.</p>
+                    </div>
+                </div>
+
+                <!-- SUB-VIEW 5: PENGATURAN SERVER -->
+                <div id="admin-pengaturan" class="admin-subview hidden space-y-4">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <h3 class="font-extrabold text-slate-800 text-lg">Konfigurasi Failover Multi-Server Supabase</h3>
+                        <p class="text-xs text-slate-500 mt-1">Sistem otomatis berpindah server jika kuota free tier habis.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                            <h4 class="font-bold text-emerald-900 text-sm">Server 7 (Utama)</h4>
+                            <p class="text-xs text-emerald-700 mt-1">Status: Online & Aktif</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                            <h4 class="font-bold text-slate-800 text-sm">Server 8 (Cadangan 1)</h4>
+                            <p class="text-xs text-slate-500 mt-1">Status: Siap (Standby)</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                            <h4 class="font-bold text-slate-800 text-sm">Server 9 (Cadangan 2)</h4>
+                            <p class="text-xs text-slate-500 mt-1">Status: Siap (Standby)</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 text-center py-4 border-t border-slate-800 mt-12 text-xs font-semibold">
+        <p>&copy; 2026 CBT PANESA &bull; SMP Negeri 1 Pabedilan</p>
+    </footer>
+
+    <!-- LOGIKA JAVASCRIPT LENGKAP -->
+    <script>
+        // Store Data URI Logo secara global
+        window.PANESA_LOGO = "data:image/png;base64,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";
+
+        // Multi-Server Supabase Pool
+        const DB_POOL = {
+            'Server 7': { url: 'https://SB_URL_7_PLACEHOLDER.supabase.co', key: 'SB_KEY_7_PLACEHOLDER' },
+            'Server 8': { url: 'https://SB_URL_8_PLACEHOLDER.supabase.co', key: 'SB_KEY_8_PLACEHOLDER' },
+            'Server 9': { url: 'https://SB_URL_9_PLACEHOLDER.supabase.co', key: 'SB_KEY_9_PLACEHOLDER' }
+        };
+        let currentDbName = 'Server 7';
+        let supabase = null;
+
+        // State Aplikasi
+        let appState = {
+            view: 'login',
+            role: 'siswa',
+            user: null,
+            exam: null,
+            soal: [],
+            jawaban: {},
+            currIdx: 0,
+            timerInterval: null
+        };
+
+        // Master Data Bank Soal (Untuk Admin)
+        let sampleBankSoal = [
+            { id: 1, mapel: 'Matematika', teks: 'Hasil dari 12 + (15 x 3) adalah...', opsi: { A: '57', B: '47', C: '81', D: '36' }, kunci: 'A' },
+            { id: 2, mapel: 'Matematika', teks: 'Luas persegi panjang dengan panjang 10 cm dan lebar 5 cm adalah...', opsi: { A: '15 cm²', B: '25 cm²', C: '50 cm²', D: '100 cm²' }, kunci: 'C' },
+            { id: 3, mapel: 'Matematika', teks: 'Akar kuadrat dari 144 adalah...', opsi: { A: '10', B: '12', C: '14', D: '16' }, kunci: 'B' }
+        ];
+
+        // Inisialisasi Aplikasi saat Load
+        window.addEventListener('DOMContentLoaded', () => {
+            initHistoryRouting();
+            initDatabase();
+            checkPWAInstallationStatus();
+            renderBankSoalTable();
+        });
+
+        // Routing History API (Tombol Back HP & Browser)
+        function initHistoryRouting() {
+            window.history.pushState({ view: 'login' }, 'Login', '#/login');
+
+            window.addEventListener('popstate', function(event) {
+                if (!event.state) return;
+
+                const targetView = event.state.view;
+
+                // Kunci Tombol Back saat Ujian Berlangsung
+                if (appState.view === 'ujian') {
+                    window.history.pushState({ view: 'ujian' }, 'Ujian', '#/ujian');
+                    alert("Peringatan: Anda tidak diizinkan meninggalkan halaman ujian! Selesaikan atau kumpulkan lembar jawaban Anda terlebih dahulu.");
+                    return;
+                }
+
+                if (targetView === 'login') {
+                    logout(true);
+                } else if (targetView === 'jadwal' && appState.role === 'siswa') {
+                    showView('viewSiswaJadwal', 'jadwal');
+                } else if (targetView === 'admin' && appState.role === 'admin') {
+                    showView('viewAdmin', 'admin');
+                } else {
+                    goBackNavigation();
+                }
+            });
+        }
+
+        function goBackNavigation() {
+            if (appState.view === 'ujian') return;
+
+            if (appState.view === 'viewSiswaKonfirmasi') {
+                showView('viewSiswaJadwal', 'jadwal');
+                window.history.pushState({ view: 'jadwal' }, 'Jadwal', '#/jadwal');
+            } else {
+                logout();
+            }
+        }
+
+        function showView(viewId, stateName) {
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            
+            const target = document.getElementById(viewId);
+            if (target) {
+                target.classList.remove('hidden');
+                appState.view = stateName || viewId.replace('view', '').toLowerCase();
+                
+                const logBtn = document.getElementById('logoutBtn');
+                const roleBadge = document.getElementById('roleBadge');
+                
+                if (appState.view === 'login') {
+                    logBtn.classList.add('hidden');
+                    roleBadge.classList.add('hidden');
+                } else {
+                    logBtn.classList.remove('hidden');
+                    roleBadge.classList.remove('hidden');
+                    roleBadge.innerText = appState.role.toUpperCase();
+                }
+            }
+        }
+
+        // Switch Tab Login (Siswa / Pengawas / Admin)
+        function switchTab(role) {
+            appState.role = role;
+            ['siswa', 'pengawas', 'admin'].forEach(r => {
+                const btn = document.getElementById('tab' + r.charAt(0).toUpperCase() + r.slice(1));
+                if (r === role) {
+                    btn.className = "flex-1 py-2.5 rounded-lg font-semibold text-sm transition-all bg-white text-blue-600 shadow";
+                } else {
+                    btn.className = "flex-1 py-2.5 rounded-lg font-semibold text-sm transition-all text-slate-600 hover:text-slate-800";
+                }
+            });
+
+            const labelUser = document.getElementById('labelUser');
+            if (role === 'siswa') {
+                labelUser.innerText = 'No. Peserta / NISN';
+            } else if (role === 'pengawas') {
+                labelUser.innerText = 'NIP / ID Pengawas';
+            } else {
+                labelUser.innerText = 'Username Admin';
+            }
+
+            document.getElementById('inputUser').value = '';
+            document.getElementById('inputPass').value = '';
+        }
+
+        function togglePassVisibility() {
+            const passInput = document.getElementById('inputPass');
+            const icon = document.getElementById('passIcon');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                icon.className = 'fa-solid fa-eye';
+            } else {
+                passInput.type = 'password';
+                icon.className = 'fa-solid fa-eye-slash';
+            }
+        }
+
+        function initDatabase() {
+            try {
+                const creds = DB_POOL[currentDbName];
+                supabase = supabase.createClient(creds.url, creds.key);
+                document.getElementById('currentDB').innerText = currentDbName + " Active";
+            } catch (err) {
+                console.error("DB connection error, using failover...", err);
+            }
+        }
+
+        // Process Login
+        function prosesLogin() {
+            const user = document.getElementById('inputUser').value.trim();
+            const pass = document.getElementById('inputPass').value.trim();
+
+            if (!user) {
+                alert("Silakan masukkan ID / Username terlebih dahulu.");
+                return;
+            }
+
+            if (appState.role === 'admin') {
+                // Login Admin
+                window.history.pushState({ view: 'admin' }, 'Admin Dashboard', '#/admin');
+                showView('viewAdmin', 'admin');
+                switchAdminTab('bank-soal');
+            } else if (appState.role === 'siswa') {
+                // Login Siswa
+                appState.user = { no_peserta: user, nama: "Aris Budiman", kelas: "9-A" };
+                document.getElementById('siswaNama').innerText = appState.user.nama;
+                document.getElementById('siswaDetail').innerText = `${appState.user.no_peserta} \vert{} Kelas${appState.user.kelas}`;
+                
+                window.history.pushState({ view: 'jadwal' }, 'Jadwal', '#/jadwal');
+                showView('viewSiswaJadwal', 'jadwal');
+                renderJadwalSiswa();
+            } else {
+                alert("Fitur Pengawas aktif saat jadwal ujian berjalan.");
+            }
+        }
+
+        // Render Dashboard Admin Tabs (Klik Menu Admin)
+        function switchAdminTab(tabName) {
+            // Sembunyikan semua sub-views
+            document.querySelectorAll('.admin-subview').forEach(sub => sub.classList.add('hidden'));
+            
+            // Reset status tombol nav
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-blue-600', 'text-white');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            });
+
+            // Tampilkan sub-view yang dipilih
+            const targetSub = document.getElementById('admin-' + tabName);
+            const targetNav = document.getElementById('nav-' + tabName);
+
+            if (targetSub && targetNav) {
+                targetSub.classList.remove('hidden');
+                targetNav.classList.add('active', 'bg-blue-600', 'text-white');
+                targetNav.classList.remove('bg-slate-100', 'text-slate-600');
+            }
+        }
+
+        // Render & Kelola Bank Soal (Admin)
+        function renderBankSoalTable() {
+            const tbody = document.getElementById('bankSoalTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+            document.getElementById('soalCountBadge').innerText = `${sampleBankSoal.length} Soal`;
+
+            sampleBankSoal.forEach((soal, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-all";
+                tr.innerHTML = `
+                    <td class="p-3 text-center">
+                        <input type="checkbox" class="soal-checkbox w-4 h-4 text-blue-600 rounded" value="${soal.id}">
+                    </td>
+                    <td class="p-3 text-center font-bold text-slate-500">${index + 1}</td>
+                    <td class="p-3 font-bold text-blue-600">${soal.mapel}</td>
+                    <td class="p-3 font-medium text-slate-700 max-w-xs truncate">${soal.teks}</td>
+                    <td class="p-3 text-center font-black text-emerald-600 bg-emerald-50 rounded-lg">${soal.kunci}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="hapusSatuSoal(${soal.id})" class="text-red-500 hover:text-red-700 font-bold p-1.5 rounded-lg hover:bg-red-50 transition-all" title="Hapus Soal">
+                            <i class="fa-solid fa-trash-can text-base"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function toggleSelectAllSoal(checked) {
+            document.querySelectorAll('.soal-checkbox').forEach(cb => cb.checked = checked);
+        }
+
+        function hapusSatuSoal(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus soal ini dari Bank Soal?")) {
+                sampleBankSoal = sampleBankSoal.filter(s => s.id !== id);
+                renderBankSoalTable();
+            }
+        }
+
+        function hapusBanyakSoal() {
+            const checkedCbs = Array.from(document.querySelectorAll('.soal-checkbox:checked')).map(cb => parseInt(cb.value));
+            if (checkedCbs.length === 0) {
+                alert("Silakan pilih/centang minimal satu soal yang ingin dihapus.");
+                return;
+            }
+            if (confirm(`Apakah Anda yakin ingin menghapus ${checkedCbs.length} soal terpilih?`)) {
+                sampleBankSoal = sampleBankSoal.filter(s => !checkedCbs.includes(s.id));
+                renderBankSoalTable();
+            }
+        }
+
+        function tambahSoalBaru() {
+            const teks = prompt("Masukkan Teks Soal Baru:");
+            if (teks && teks.trim() !== "") {
+                const newId = sampleBankSoal.length > 0 ? Math.max(...sampleBankSoal.map(s => s.id)) + 1 : 1;
+                sampleBankSoal.push({
+                    id: newId,
+                    mapel: 'Matematika',
+                    teks: teks.trim(),
+                    opsi: { A: 'Pilihan A', B: 'Pilihan B', C: 'Pilihan C', D: 'Pilihan D' },
+                    kunci: 'A'
+                });
+                renderBankSoalTable();
+                alert("Soal baru berhasil ditambahkan!");
+            }
+        }
+
+        // Render Dashboard Siswa
+        function renderJadwalSiswa() {
+            const container = document.getElementById('jadwalList');
+            container.innerHTML = `
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-5 relative overflow-hidden">
+                    <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase absolute top-4 right-4">Tersedia</span>
+                    <h4 class="text-lg font-bold text-slate-800">Ujian Matematika Semester Ganjil</h4>
+                    <p class="text-xs text-slate-500 mt-0.5">Waktu: 90 Menit | KKM: 75</p>
+                    <div class="mt-4 flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-400"><i class="fa-solid fa-file-invoice"></i> 40 Soal Pilihan Ganda</span>
+                        <button onclick="pilihUjian('Matematika')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-
